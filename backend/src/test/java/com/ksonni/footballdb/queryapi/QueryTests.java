@@ -2,7 +2,6 @@ package com.ksonni.footballdb.queryapi;
 
 import org.junit.jupiter.api.Test;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -20,9 +19,9 @@ public class QueryTests {
 
     @Test
     void constructsQuery() throws URISyntaxException, InvalidQueryKeyException, InvalidQueryValueException {
-        var uri = new URI("https://ksonni.com?lt:someField=23&otherField=hha&sort=desc:someField,otherField&limit=20&page=2" +
-                "&created=2021-02-01T20:00:00Z");
-        var query = new Query<>(uri, TestClass.class);
+        var queryStr = "lt:someField=23&otherField=hha&sort=desc:someField,otherField&limit=20&page=2" +
+        "&created=2021-02-01T20:00:00Z";
+        var query = new Query<>(queryStr, TestClass.class);
 
         assertEquals(Arrays.asList(
             new NumericFilterQueryComponent(new FilterQueryKey("lt:someField"), "23"),
@@ -41,14 +40,13 @@ public class QueryTests {
 
     @Test
     void rejectsInvalidQueries() throws URISyntaxException  {
-        var uri = new URI("https://ksonni.com?lt:someField=23&otherField:=hha&sort=desc:someField,otherField&limit=20&page=2");
-        assertThrows(InvalidQueryKeyException.class, () -> new Query<>(uri, TestClass.class));
+        var queryStr = "lt:someField=23&otherField:=hha&sort=desc:someField,otherField&limit=20&page=2";
+        assertThrows(InvalidQueryKeyException.class, () -> new Query<>(queryStr, TestClass.class));
     }
 
     @Test
     void picksTheRightDefaults() throws URISyntaxException, InvalidQueryKeyException, InvalidQueryValueException {
-        var uri = new URI("https://ksonni.com");
-        var query = new Query<>(uri, TestClass.class);
+       var query = new Query<>("", TestClass.class);
         assertEquals(Arrays.asList(), query.getSortQueryKeys());
         assertEquals(Arrays.asList(), query.getFilterQueryComponents());
         assertEquals(0, query.getPage());
@@ -57,15 +55,15 @@ public class QueryTests {
 
     @Test
     void enforcesMaxPageSizeLimits() throws URISyntaxException, InvalidQueryKeyException, InvalidQueryValueException {
-        var uri = new URI("https://ksonni.com?limit=10000000");
-        var query = new Query<>(uri, TestClass.class);
+        var queryStr = "limit=10000000";
+        var query = new Query<>(queryStr, TestClass.class);
         assertEquals(1000, query.getPageSize());
     }
 
     @Test
     void ignoresInvalidPagingValues() throws URISyntaxException, InvalidQueryKeyException, InvalidQueryValueException {
-        var uri = new URI("https://ksonni.com?limit=asdf&page=sssss");
-        var query = new Query<>(uri, TestClass.class);
+        var queryStr = "limit=asdf&page=sssss";
+        var query = new Query<>(queryStr, TestClass.class);
         assertEquals(100, query.getPageSize());
         assertEquals(0, query.getPage());
     }

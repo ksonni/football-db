@@ -1,9 +1,10 @@
 package com.ksonni.footballdb.controllers;
 
-import com.ksonni.footballdb.domain.Club;
-import com.ksonni.footballdb.lib.HttpUtils;
+import com.ksonni.footballdb.clubs.Club;
+import com.ksonni.footballdb.clubs.ClubsController;
+import com.ksonni.footballdb.clubs.ClubsRepository;
 import com.ksonni.footballdb.queryapi.Query;
-import com.ksonni.footballdb.repositories.ClubsRepository;
+import com.ksonni.footballdb.queryapi.QueryParseException;
 import com.ksonni.footballdb.testutils.HttpTestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ class ClubsControllerTest {
     ClubsController controller;
 
     @Test
-    void enumerateClubs() throws HttpUtils.QueryParseException {
+    void enumerateClubs() throws QueryParseException {
         HttpTestUtils.mockQuery(request,"name=Manchester");
 
         controller.enumerateClubs(request);
@@ -42,7 +43,7 @@ class ClubsControllerTest {
     void enumerateClubsInvalidQuery() {
         HttpTestUtils.mockQuery(request,"name::=Manchester");
 
-        assertThrows(HttpUtils.QueryParseException.class, () -> {
+        assertThrows(QueryParseException.class, () -> {
             controller.enumerateClubs(request);
         });
     }

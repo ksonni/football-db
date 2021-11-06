@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.domain;
+package com.ksonni.footballdb.leagues;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +12,10 @@ import javax.persistence.Table;
 @NoArgsConstructor(force = true)
 @Table(name = "leagues")
 public class League {
+
     @Id
     private final String id;
 
     private final String name;
+
 }

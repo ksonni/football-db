@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -38,12 +37,12 @@ public final class Query<T> {
     private static final String SORT_KEY = "sort";
     private static final String SORT_SEPARATOR = ",";
 
-    public Query(URI uri, Class<T> objectType) throws InvalidQueryKeyException, InvalidQueryValueException {
+    public Query(String query, Class<T> objectType) throws InvalidQueryKeyException, InvalidQueryValueException {
         int page = DEFAULT_PAGE;
         int pageSize = DEFAULT_PAGE_SIZE;
         List<SortQueryKey> sortQueryComponents = new ArrayList<>();
         List<FilterQueryComponent<T>> filterQueryComponents = new ArrayList<>();
-        List<NameValuePair> pairs = URLEncodedUtils.parse(uri, StandardCharsets.UTF_8);
+        List<NameValuePair> pairs = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
         fieldMap = new QueryableFieldsMap<>(objectType);
 
         for (var pair: pairs) {

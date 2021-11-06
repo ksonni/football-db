@@ -1,6 +1,6 @@
-package com.ksonni.footballdb.controllers;
+package com.ksonni.footballdb;
 
-import com.ksonni.footballdb.lib.HttpUtils;
+import com.ksonni.footballdb.queryapi.QueryParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
-public class ExceptionHandlerController {
+public class GlobalExceptionHandler {
 
-    @ExceptionHandler(HttpUtils.QueryParseException.class)
+    @ExceptionHandler(QueryParseException.class)
     public ResponseEntity<String> handleInvalidQueries(HttpServletRequest request, Exception ex) {
         return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
