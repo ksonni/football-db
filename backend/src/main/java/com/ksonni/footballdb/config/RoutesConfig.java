@@ -8,5 +8,7 @@ public class RoutesConfig {
 
     public static final String CLUBS_PATH = API_BASE_PATH + "clubs";
 
+    public static final String PLAYERS_PATH = API_BASE_PATH + "players";
+
 }
 
