@@ -1,5 +1,7 @@
 package com.ksonni.footballdb.clubs;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +12,8 @@ import javax.persistence.Table;
 @Entity
 @Data
 @NoArgsConstructor(force = true)
+@Builder
+@AllArgsConstructor
 @Table(name = "clubs")
 public class Club {
 
