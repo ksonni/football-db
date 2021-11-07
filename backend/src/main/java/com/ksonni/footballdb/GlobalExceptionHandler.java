@@ -1,6 +1,6 @@
 package com.ksonni.footballdb;
 
-import com.ksonni.footballdb.queryapi.QueryParseException;
+import com.ksonni.footballdb.queryparser.QueryParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

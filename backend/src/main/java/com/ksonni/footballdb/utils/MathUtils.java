@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.lib;
+package com.ksonni.footballdb.utils;
 
 public class MathUtils {
 

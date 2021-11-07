@@ -1,10 +1,8 @@
-package com.ksonni.footballdb.controllers;
+package com.ksonni.footballdb.clubs;
 
-import com.ksonni.footballdb.clubs.Club;
-import com.ksonni.footballdb.clubs.ClubsController;
-import com.ksonni.footballdb.clubs.ClubsRepository;
-import com.ksonni.footballdb.queryapi.Query;
-import com.ksonni.footballdb.queryapi.QueryParseException;
+import com.ksonni.footballdb.queryparser.Query;
+import com.ksonni.footballdb.queryparser.QueryParseException;
+import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.testutils.HttpTestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +26,9 @@ class ClubsControllerTest {
 
     @Mock
     HttpServletRequest request;
+
+    @Mock
+    QueryParser<Club> queryParser;
 
     @InjectMocks
     ClubsController controller;
@@ -40,8 +43,9 @@ class ClubsControllerTest {
     }
 
     @Test
-    void enumerateClubsInvalidQuery() {
+    void enumerateClubsInvalidQuery() throws QueryParseException {
         HttpTestUtils.mockQuery(request,"name::=Manchester");
+        given(queryParser.parse(anyString())).willThrow(QueryParseException.class);
 
         assertThrows(QueryParseException.class, () -> {
             controller.enumerateClubs(request);

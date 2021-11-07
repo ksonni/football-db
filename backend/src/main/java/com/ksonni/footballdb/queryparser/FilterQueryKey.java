@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.queryapi;
+package com.ksonni.footballdb.queryparser;
 
 import lombok.Getter;
 

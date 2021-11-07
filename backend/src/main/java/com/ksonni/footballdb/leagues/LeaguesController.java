@@ -1,9 +1,9 @@
 package com.ksonni.footballdb.leagues;
 
 import com.ksonni.footballdb.config.RoutesConfig;
-import com.ksonni.footballdb.queryapi.Query;
-import com.ksonni.footballdb.queryapi.QueryParseException;
-import lombok.AllArgsConstructor;
+import com.ksonni.footballdb.queryparser.QueryParseException;
+import com.ksonni.footballdb.queryparser.QueryParser;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,14 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(value = RoutesConfig.LEAGUES_PATH)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LeaguesController {
 
-    private LeaguesRepository leaguesRepository;
+    private final LeaguesRepository leaguesRepository;
+    private final QueryParser<League> queryParser;
 
     @GetMapping
     public Page<League> enumerateLeagues(HttpServletRequest request) throws QueryParseException {
-        return leaguesRepository.findAll(new Query<>(request.getQueryString(), League.class));
+        return leaguesRepository.findAll(queryParser.parse(request.getQueryString()));
     }
 
 }

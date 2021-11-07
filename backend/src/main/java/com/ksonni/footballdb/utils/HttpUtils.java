@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.lib;
+package com.ksonni.footballdb.utils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;

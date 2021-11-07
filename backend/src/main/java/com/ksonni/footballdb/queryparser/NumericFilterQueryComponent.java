@@ -1,6 +1,6 @@
-package com.ksonni.footballdb.queryapi;
+package com.ksonni.footballdb.queryparser;
 
-import com.ksonni.footballdb.lib.MathUtils;
+import com.ksonni.footballdb.utils.MathUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 

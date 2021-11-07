@@ -1,15 +1,14 @@
-package com.ksonni.footballdb.queryapi;
+package com.ksonni.footballdb.queryparser;
 
 import org.junit.jupiter.api.Test;
 
-import java.net.URISyntaxException;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class QueryTests {
+public class QueryParserTests {
 
     class TestClass {
         Integer someField;
@@ -17,11 +16,13 @@ public class QueryTests {
         ZonedDateTime created;
     }
 
+    private QueryParser<TestClass> queryParser = new DefaultQueryParser<>(TestClass.class);
+
     @Test
-    void constructsQuery() throws URISyntaxException, InvalidQueryKeyException, InvalidQueryValueException {
+    void constructsQuery() throws QueryParseException {
         var queryStr = "lt:someField=23&otherField=hha&sort=desc:someField,otherField&limit=20&page=2" +
         "&created=2021-02-01T20:00:00Z";
-        var query = new Query<>(queryStr, TestClass.class);
+        Query<TestClass> query = queryParser.parse(queryStr);
 
         assertEquals(Arrays.asList(
             new NumericFilterQueryComponent(new FilterQueryKey("lt:someField"), "23"),
@@ -39,14 +40,14 @@ public class QueryTests {
     }
 
     @Test
-    void rejectsInvalidQueries() throws URISyntaxException  {
+    void rejectsInvalidQueries() {
         var queryStr = "lt:someField=23&otherField:=hha&sort=desc:someField,otherField&limit=20&page=2";
-        assertThrows(InvalidQueryKeyException.class, () -> new Query<>(queryStr, TestClass.class));
+        assertThrows(InvalidQueryKeyException.class, () -> queryParser.parse(queryStr));
     }
 
     @Test
-    void picksTheRightDefaults() throws URISyntaxException, InvalidQueryKeyException, InvalidQueryValueException {
-       var query = new Query<>("", TestClass.class);
+    void picksTheRightDefaults() throws QueryParseException {
+       Query<TestClass> query = queryParser.parse("");
         assertEquals(Arrays.asList(), query.getSortQueryKeys());
         assertEquals(Arrays.asList(), query.getFilterQueryComponents());
         assertEquals(0, query.getPage());
@@ -54,16 +55,16 @@ public class QueryTests {
     }
 
     @Test
-    void enforcesMaxPageSizeLimits() throws URISyntaxException, InvalidQueryKeyException, InvalidQueryValueException {
+    void enforcesMaxPageSizeLimits() throws QueryParseException {
         var queryStr = "limit=10000000";
-        var query = new Query<>(queryStr, TestClass.class);
+        Query<TestClass> query = queryParser.parse(queryStr);
         assertEquals(1000, query.getPageSize());
     }
 
     @Test
-    void ignoresInvalidPagingValues() throws URISyntaxException, InvalidQueryKeyException, InvalidQueryValueException {
+    void ignoresInvalidPagingValues() throws QueryParseException {
         var queryStr = "limit=asdf&page=sssss";
-        var query = new Query<>(queryStr, TestClass.class);
+        Query<TestClass> query = queryParser.parse(queryStr);
         assertEquals(100, query.getPageSize());
         assertEquals(0, query.getPage());
     }
