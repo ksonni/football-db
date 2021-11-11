@@ -16,7 +16,7 @@ public class DateFilterQueryComponent<T> implements FilterQueryComponent<T> {
     private final FilterQueryKey key;
     private final ZonedDateTime value;
 
-    DateFilterQueryComponent(FilterQueryKey key, String value) throws InvalidQueryValueException {
+    public DateFilterQueryComponent(FilterQueryKey key, String value) throws InvalidQueryValueException {
         this.key = key;
         try {
             this.value = ZonedDateTime.parse(value, DateTimeFormatter.ISO_ZONED_DATE_TIME);

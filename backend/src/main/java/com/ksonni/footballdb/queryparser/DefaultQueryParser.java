@@ -38,6 +38,7 @@ public class DefaultQueryParser<T> implements QueryParser<T> {
         } else if (ZonedDateTime.class.isAssignableFrom(type)) {
             return (key, value) -> new DateFilterQueryComponent<T>(key, value);
         }
+
         return null;
     }
 
@@ -51,11 +52,11 @@ public class DefaultQueryParser<T> implements QueryParser<T> {
         for (var pair: pairs) {
             switch (pair.getName()) {
                 case PAGE_SIZE_KEY:
-                    pageSize = MathUtils.tryParseInt(pair.getValue(), pageSize);
+                    pageSize = MathUtils.tryParse(Integer::parseInt, pair.getValue(), pageSize);
                     pageSize = Math.min(pageSize, MAX_PAGE_SIZE);
                     break;
                 case PAGE_KEY:
-                    page = MathUtils.tryParseInt(pair.getValue(), page);
+                    page = MathUtils.tryParse(Integer::parseInt, pair.getValue(), page);
                     page = Math.max(page, DEFAULT_PAGE);
                     break;
                 case SORT_KEY:
@@ -78,7 +79,9 @@ public class DefaultQueryParser<T> implements QueryParser<T> {
         for (var field: objectType.getDeclaredFields()) {
             if (!field.isAnnotationPresent(NonQueryable.class)) {
                 FilterQueryComponentSupplier<T> supplier = getQueryComponentSupplier(field);
-                map.put(field.getName(), supplier);
+                if (supplier != null) {
+                    map.put(field.getName(), supplier);
+                }
             }
         }
         return map;

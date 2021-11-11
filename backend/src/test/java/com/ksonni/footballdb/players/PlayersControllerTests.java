@@ -45,8 +45,9 @@ class PlayersControllerTests {
     @BeforeEach
     void setup() {
         players = Arrays.asList(
-                Player.builder().id("id").fullName("Some player").build(),
-                Player.builder().id("id2").fullName("Some player 2").build()
+            Player.builder().id("id").fullName("Some player").attackingWorkRate(WorkRate.HIGH)
+                    .defensiveWorkRate(WorkRate.LOW).preferredFoot(Side.LEFT).build(),
+            Player.builder().id("id2").fullName("Some player 2").build()
         );
         Page<Player> pagedPlayers = new PageImpl<>(players,
                 PageRequest.of(0, 2), 2);
@@ -65,6 +66,12 @@ class PlayersControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(players.size())))
                 .andExpect(jsonPath("$.content[0].id", is(players.get(0).getId())))
+                .andExpect(jsonPath("$.content[0].attackingWorkRate",
+                        is(players.get(0).getAttackingWorkRate().getValue())))
+                .andExpect(jsonPath("$.content[0].defensiveWorkRate",
+                        is(players.get(0).getDefensiveWorkRate().getValue())))
+                .andExpect(jsonPath("$.content[0].preferredFoot",
+                        is(players.get(0).getPreferredFoot().getValue())))
                 .andExpect(jsonPath("$.content[1].id", is(players.get(1).getId())));
     }
 

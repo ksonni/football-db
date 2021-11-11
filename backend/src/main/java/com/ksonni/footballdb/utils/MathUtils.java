@@ -2,33 +2,22 @@ package com.ksonni.footballdb.utils;
 
 public class MathUtils {
 
-    public static int tryParseInt(String val, int defaultVal) {
+    @FunctionalInterface
+    public interface Parser<T> {
+        T parse(String value);
+    }
+
+    public static <T> T tryParse(Parser<T> parser, String str, T defaultVal) {
         try {
-            return Integer.parseInt(val);
+            return parser.parse(str);
         } catch (NumberFormatException e) {
             return defaultVal;
         }
     }
 
-    public static Integer tryParseInt(String val) {
+    public static <T> T tryParse(Parser<T> parser, String str) {
         try {
-            return Integer.parseInt(val);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    public static double tryParseDouble(String val, double defaultVal) {
-        try {
-            return Double.parseDouble(val);
-        } catch (NumberFormatException e) {
-            return defaultVal;
-        }
-    }
-
-    public static Double tryParseDouble(String val) {
-        try {
-            return Double.parseDouble(val);
+            return parser.parse(str);
         } catch (NumberFormatException e) {
             return null;
         }

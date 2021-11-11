@@ -9,10 +9,15 @@ import lombok.Getter;
 public class NumericFilterQueryComponent<T> implements FilterQueryComponent<T> {
 
     private final FilterQueryKey key;
-    private final Double value;
+    private final Comparable value;
 
-    NumericFilterQueryComponent(FilterQueryKey key, String strValue) throws InvalidQueryValueException {
-        Double value = MathUtils.tryParseDouble(strValue);
+    public NumericFilterQueryComponent(FilterQueryKey key, String strValue) throws InvalidQueryValueException {
+        Comparable value;
+        if (strValue.contains(".")) {
+            value = MathUtils.tryParse(Double::parseDouble, strValue);
+        } else {
+            value = MathUtils.tryParse(Long::parseLong, strValue);
+        }
         if (value == null) {
             throw new InvalidQueryValueException(key.getField(), strValue);
         }

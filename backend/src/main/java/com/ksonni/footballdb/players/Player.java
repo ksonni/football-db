@@ -35,13 +35,13 @@ public class Player {
 
     private Integer contractStartYear;
 
-    private String preferredFoot;
+    private Side preferredFoot;
 
     private Integer reputation;
 
-    private String attackingWorkRate;
+    private WorkRate attackingWorkRate;
 
-    private String defensiveWorkRate;
+    private WorkRate defensiveWorkRate;
 
     private Integer shootingTotal;
 

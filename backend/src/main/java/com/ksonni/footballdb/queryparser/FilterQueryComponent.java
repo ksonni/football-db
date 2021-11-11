@@ -23,10 +23,7 @@ public interface FilterQueryComponent<T> extends Specification<T> {
             case EQUALS:
                 return builder.equal(root.get(field), value);
             case CONTAINS:
-                if(root.get(field).getJavaType() == String.class) {
-                    return builder.like(root.get(field),"%" + value + "%");
-                }
-                return null;
+                return builder.like(root.get(field).as(String.class), "%" + value.toString() + "%");
             case GREATER_THAN:
                 return builder.greaterThan(root.get(field), value);
             case LESS_THAN:
