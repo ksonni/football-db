@@ -1,0 +1,31 @@
+version: '3'
+services:
+  db:
+    platform: linux/x86_64
+    image: 'mysql:8'
+    env_file:
+      - .env
+    volumes:
+      - db-volume:/var/lib/mysql
+    restart: on-failure
+  backend:
+    image: backend:latest
+    env_file:
+      - .env
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    restart: on-failure
+  ui:
+    image: ui:latest
+    build:
+      context: ui
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: on-failure
+volumes:
+  db-volume:
