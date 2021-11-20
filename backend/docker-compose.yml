@@ -10,7 +10,7 @@ services:
       - data-volume:/var/lib/mysql
     restart: on-failure
   football-db-app:
-    image: football-db-app:1
+    image: football-db-app:latest
     ports:
       - "8080:8080"
     env_file:
