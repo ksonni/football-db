@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  db-service:
+    platform: linux/x86_64
+    image: 'mysql:8'
+    env_file:
+      - .env
+    volumes:
+      - data-volume:/var/lib/mysql
+    restart: on-failure
+  football-db-app:
+    image: football-db-app:1
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - db-service
+    restart: on-failure
+volumes:
+  data-volume:
