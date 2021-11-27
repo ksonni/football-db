@@ -1,4 +1,6 @@
-package com.ksonni.footballdb.queryparser;
+package com.ksonni.footballdb.queryparser.components;
+
+import com.ksonni.footballdb.queryparser.QueryParseException;
 
 public class InvalidQueryValueException extends QueryParseException {
 

@@ -1,5 +1,7 @@
 package com.ksonni.footballdb.queryparser;
 
+import com.ksonni.footballdb.queryparser.keys.InvalidQueryKeyException;
+import com.ksonni.footballdb.queryparser.keys.SortQueryKey;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

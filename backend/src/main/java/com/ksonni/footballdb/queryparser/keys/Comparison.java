@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.queryparser;
+package com.ksonni.footballdb.queryparser.keys;
 
 public enum Comparison {
     EQUALS,

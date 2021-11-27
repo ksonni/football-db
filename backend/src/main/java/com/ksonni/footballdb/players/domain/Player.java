@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.players;
+package com.ksonni.footballdb.players.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

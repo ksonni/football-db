@@ -1,5 +1,7 @@
 package com.ksonni.footballdb.queryparser;
 
+import com.ksonni.footballdb.queryparser.components.FilterQueryComponent;
+import com.ksonni.footballdb.queryparser.keys.SortQueryKey;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

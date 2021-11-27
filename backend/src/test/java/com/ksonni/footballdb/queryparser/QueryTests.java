@@ -1,5 +1,8 @@
 package com.ksonni.footballdb.queryparser;
 
+import com.ksonni.footballdb.queryparser.components.*;
+import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
+import com.ksonni.footballdb.queryparser.keys.SortQueryKey;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

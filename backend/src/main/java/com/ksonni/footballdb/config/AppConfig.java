@@ -1,9 +1,9 @@
 package com.ksonni.footballdb.config;
 
-import com.ksonni.footballdb.clubs.Club;
-import com.ksonni.footballdb.leagues.League;
-import com.ksonni.footballdb.players.Player;
-import com.ksonni.footballdb.players.PlayerQueryParser;
+import com.ksonni.footballdb.clubs.domain.Club;
+import com.ksonni.footballdb.leagues.domain.League;
+import com.ksonni.footballdb.players.domain.Player;
+import com.ksonni.footballdb.players.services.PlayerQueryParser;
 import com.ksonni.footballdb.queryparser.DefaultQueryParser;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import org.springframework.context.annotation.Bean;

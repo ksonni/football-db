@@ -1,6 +1,8 @@
 package com.ksonni.footballdb.clubs;
 
 
+import com.ksonni.footballdb.clubs.services.ClubsRepository;
+import com.ksonni.footballdb.clubs.domain.Club;
 import com.ksonni.footballdb.config.RoutesConfig;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;

@@ -1,6 +1,10 @@
 package com.ksonni.footballdb.players;
 
 import com.ksonni.footballdb.config.RoutesConfig;
+import com.ksonni.footballdb.players.domain.Player;
+import com.ksonni.footballdb.players.domain.Side;
+import com.ksonni.footballdb.players.domain.WorkRate;
+import com.ksonni.footballdb.players.services.PlayersRepository;
 import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;

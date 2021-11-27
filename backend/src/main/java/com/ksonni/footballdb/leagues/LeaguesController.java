@@ -1,6 +1,8 @@
 package com.ksonni.footballdb.leagues;
 
 import com.ksonni.footballdb.config.RoutesConfig;
+import com.ksonni.footballdb.leagues.domain.League;
+import com.ksonni.footballdb.leagues.services.LeaguesRepository;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import lombok.RequiredArgsConstructor;

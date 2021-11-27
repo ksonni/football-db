@@ -1,6 +1,13 @@
 package com.ksonni.footballdb.players;
 
+import com.ksonni.footballdb.players.domain.Player;
+import com.ksonni.footballdb.players.domain.Side;
+import com.ksonni.footballdb.players.domain.WorkRate;
+import com.ksonni.footballdb.players.services.PlayerQueryParser;
 import com.ksonni.footballdb.queryparser.*;
+import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
+import com.ksonni.footballdb.queryparser.components.InvalidQueryValueException;
+import com.ksonni.footballdb.queryparser.Query;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -18,9 +25,9 @@ public class PlayersQueryParserTests {
         Query<Player> query = queryParser.parse(queryStr);
 
         assertEquals(Arrays.asList(
-            new WorkRateFilterQueryComponent(new FilterQueryKey("attackingWorkRate"), "1"),
-            new WorkRateFilterQueryComponent(new FilterQueryKey("defensiveWorkRate"), "2"),
-            new SideFilterQueryComponent(new FilterQueryKey("preferredFoot"), "LEFT")
+            new WorkRate.WorkRateFilterQueryComponent(new FilterQueryKey("attackingWorkRate"), "1"),
+            new WorkRate.WorkRateFilterQueryComponent(new FilterQueryKey("defensiveWorkRate"), "2"),
+            new Side.SideFilterQueryComponent(new FilterQueryKey("preferredFoot"), "LEFT")
         ), query.getFilterQueryComponents());
     }
 
@@ -30,9 +37,9 @@ public class PlayersQueryParserTests {
         Query<Player> query = queryParser.parse(queryStr);
 
         assertEquals(Arrays.asList(
-                new WorkRateFilterQueryComponent(new FilterQueryKey("lt:attackingWorkRate"), "1"),
-                new WorkRateFilterQueryComponent(new FilterQueryKey("gt:defensiveWorkRate"), "2"),
-                new SideFilterQueryComponent(new FilterQueryKey("preferredFoot"), "LEFT")
+                new WorkRate.WorkRateFilterQueryComponent(new FilterQueryKey("lt:attackingWorkRate"), "1"),
+                new WorkRate.WorkRateFilterQueryComponent(new FilterQueryKey("gt:defensiveWorkRate"), "2"),
+                new Side.SideFilterQueryComponent(new FilterQueryKey("preferredFoot"), "LEFT")
         ), query.getFilterQueryComponents());
     }
 

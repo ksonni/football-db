@@ -1,5 +1,6 @@
-package com.ksonni.footballdb.queryparser;
+package com.ksonni.footballdb.queryparser.components;
 
+import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
