@@ -1,3 +1,4 @@
+# Exposes ports for debugging
 version: '3'
 services:
   db:
@@ -7,17 +8,22 @@ services:
       - .env
     volumes:
       - db-volume:/var/lib/mysql
-    restart: on-failure
+    ports:
+      - "4000:3306"
   backend:
     image: backend:latest
     env_file:
       - .env
+    environment:
+      - JAVA_OPTS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
     build:
       context: backend
       dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8000:8000"
     depends_on:
       - db
-    restart: on-failure
   ui:
     image: ui:latest
     build:
@@ -28,6 +34,5 @@ services:
       - "443:443"
     depends_on:
       - backend
-    restart: on-failure
 volumes:
   db-volume:

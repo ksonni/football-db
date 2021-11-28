@@ -1,1 +1,0 @@
-./gradlew build -x test && cd .. && docker-compose build backend && docker-compose up backend
