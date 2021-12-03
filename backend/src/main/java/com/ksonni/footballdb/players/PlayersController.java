@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = RoutesConfig.PLAYERS_PATH)
+@RequestMapping(value = RoutesConfig.Players.PATH)
 public class PlayersController {
 
     private final PlayersRepository playersRepository;

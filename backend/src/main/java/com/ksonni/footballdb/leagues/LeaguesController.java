@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping(value = RoutesConfig.LEAGUES_PATH)
+@RequestMapping(value = RoutesConfig.Leagues.PATH)
 @RequiredArgsConstructor
 public class LeaguesController {
 

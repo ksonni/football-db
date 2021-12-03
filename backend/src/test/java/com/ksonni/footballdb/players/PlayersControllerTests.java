@@ -66,7 +66,7 @@ class PlayersControllerTests {
 
     @Test
     void enumeratePlayers() throws Exception {
-        mockMvc.perform(get(RoutesConfig.PLAYERS_PATH))
+        mockMvc.perform(get(RoutesConfig.Players.PATH))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(players.size())))
                 .andExpect(jsonPath("$.content[0].id", is(players.get(0).getId())))
@@ -82,7 +82,7 @@ class PlayersControllerTests {
     @Test
     void enumeratePlayersInvalidQuery() throws Exception {
         given(queryParser.parse(anyString())).willThrow(QueryParseException.class);
-        mockMvc.perform(get(RoutesConfig.PLAYERS_PATH + "?badquery:"))
+        mockMvc.perform(get(RoutesConfig.Players.PATH + "?badquery:"))
                 .andExpect(status().isBadRequest());
     }
 

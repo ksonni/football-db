@@ -4,10 +4,11 @@ import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.domain.Side;
 import com.ksonni.footballdb.players.domain.WorkRate;
 import com.ksonni.footballdb.players.services.PlayerQueryParser;
-import com.ksonni.footballdb.queryparser.*;
-import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
-import com.ksonni.footballdb.queryparser.components.InvalidQueryValueException;
 import com.ksonni.footballdb.queryparser.Query;
+import com.ksonni.footballdb.queryparser.QueryParseException;
+import com.ksonni.footballdb.queryparser.QueryParser;
+import com.ksonni.footballdb.queryparser.components.InvalidQueryValueException;
+import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

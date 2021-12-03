@@ -63,7 +63,7 @@ class ClubsControllerTests {
 
     @Test
     void enumerateClubs() throws Exception {
-        mockMvc.perform(get(RoutesConfig.CLUBS_PATH))
+        mockMvc.perform(get(RoutesConfig.Clubs.PATH))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(clubs.size())))
                 .andExpect(jsonPath("$.content[0].id", is(clubs.get(0).getId())))
@@ -73,7 +73,7 @@ class ClubsControllerTests {
     @Test
     void enumerateClubsInvalidQuery() throws Exception {
         given(queryParser.parse(anyString())).willThrow(QueryParseException.class);
-        mockMvc.perform(get(RoutesConfig.CLUBS_PATH + "?badquery:"))
+        mockMvc.perform(get(RoutesConfig.Clubs.PATH + "?badquery:"))
                 .andExpect(status().isBadRequest());
     }
 

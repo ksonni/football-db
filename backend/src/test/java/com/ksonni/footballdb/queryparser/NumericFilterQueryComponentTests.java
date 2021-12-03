@@ -1,7 +1,7 @@
 package com.ksonni.footballdb.queryparser;
 
-import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import com.ksonni.footballdb.queryparser.components.NumericFilterQueryComponent;
+import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

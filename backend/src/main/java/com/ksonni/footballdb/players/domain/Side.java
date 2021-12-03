@@ -3,8 +3,8 @@ package com.ksonni.footballdb.players.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.ksonni.footballdb.queryparser.components.EnumFilterQueryComponent;
-import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import com.ksonni.footballdb.queryparser.components.InvalidQueryValueException;
+import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import com.ksonni.footballdb.utils.EnumUtils;
 import lombok.RequiredArgsConstructor;
 

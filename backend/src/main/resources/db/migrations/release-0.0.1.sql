@@ -58,3 +58,13 @@ CREATE TABLE `players` (
   CONSTRAINT `fk_players_teams` FOREIGN KEY (`club_id`) REFERENCES `clubs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 --rollback DROP TABLE players;
+
+--changeset root:release-0.0.1-c4
+CREATE TABLE `users` (
+  `id` VARCHAR(36) NOT NULL,
+  `email_id` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `email_id_UNIQUE` (`email_id` ASC) VISIBLE
+);
+--rollback DROP TABLE users;
