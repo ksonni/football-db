@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -35,9 +36,10 @@ class ClubsControllerTests {
 
     @MockBean
     ClubsRepository clubsRepository;
-
     @MockBean
     QueryParser<Club> queryParser;
+    @MockBean
+    UserDetailsService userDetailsService;
 
     @Autowired
     MockMvc mockMvc;
@@ -58,7 +60,7 @@ class ClubsControllerTests {
 
     @AfterEach
     void tearDown() {
-        reset(clubsRepository, queryParser);
+        reset(clubsRepository, queryParser, userDetailsService);
     }
 
     @Test

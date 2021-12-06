@@ -1,0 +1,25 @@
+package com.ksonni.footballdb.users.services;
+
+import com.ksonni.footballdb.users.domain.User;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+@AllArgsConstructor
+@Service
+public class DefaultUserDetailsService implements UserDetailsService {
+
+    private final UsersRepository usersRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String emailId) throws UsernameNotFoundException {
+        User user = usersRepository.findByEmailId(emailId);
+        if (user == null) {
+            throw new UsernameNotFoundException("Did not find user with email address: " + emailId);
+        }
+        return user;
+    }
+
+}

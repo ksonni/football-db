@@ -16,6 +16,7 @@ import javax.persistence.Table;
 @NoArgsConstructor(force = true)
 @Table(name = "players")
 public class Player {
+
     @Id
     private String id;
 

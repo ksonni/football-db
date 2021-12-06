@@ -1,3 +1,5 @@
+set -xe
+
 COMPOSE_FILE=../docker-compose-debug.yml
 
 ./gradlew build -x test

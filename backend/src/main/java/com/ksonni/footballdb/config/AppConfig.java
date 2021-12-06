@@ -6,6 +6,8 @@ import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.services.PlayerQueryParser;
 import com.ksonni.footballdb.queryparser.DefaultQueryParser;
 import com.ksonni.footballdb.queryparser.QueryParser;
+import com.ksonni.footballdb.users.services.AuthService;
+import com.ksonni.footballdb.users.services.DefaultAuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,6 +27,11 @@ public class AppConfig {
     @Bean
     public QueryParser<League> leaguesQueryParser() {
         return new DefaultQueryParser<>(League.class);
+    }
+
+    @Bean
+    public AuthService authService() {
+        return new DefaultAuthService();
     }
 
 }
