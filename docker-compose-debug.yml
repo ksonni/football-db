@@ -3,13 +3,16 @@ version: '3'
 services:
   db:
     platform: linux/x86_64
-    image: 'mysql:8'
+    image: 'db:latest'
+    build:
+      context: .
+      dockerfile: db/Dockerfile
     env_file:
       - .env-debug
     volumes:
       - db-volume:/var/lib/mysql
     ports:
-      - "4000:3306"
+      - "3306:3306"
   backend:
     image: backend:latest
     env_file:

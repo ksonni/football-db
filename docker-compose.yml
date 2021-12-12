@@ -2,7 +2,10 @@ version: '3'
 services:
   db:
     platform: linux/x86_64
-    image: 'mysql:8'
+    image: 'db:latest'
+    build:
+      context: .
+      dockerfile: db/Dockerfile
     env_file:
       - .env
     volumes:
