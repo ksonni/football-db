@@ -68,3 +68,7 @@ CREATE TABLE `users` (
   UNIQUE INDEX `email_id_UNIQUE` (`email_id` ASC) VISIBLE
 );
 --rollback DROP TABLE users;
+
+--changeset root:release-0.0.1-c5
+ALTER TABLE `users` ADD COLUMN `role` VARCHAR(40) NULL AFTER `password`;
+--rollback ALTER TABLE `users` DROP COLUMN `role`;

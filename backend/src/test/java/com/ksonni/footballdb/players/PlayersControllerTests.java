@@ -56,7 +56,7 @@ class PlayersControllerTests {
             Player.builder().id("id2").fullName("Some player 2").build()
         );
         Page<Player> pagedPlayers = new PageImpl<>(players,
-                PageRequest.of(0, 2), 2);
+                PageRequest.of(0, players.size()), players.size());
         given(playersRepository.findAll(ArgumentMatchers.<Query<Player>>any()))
                 .willReturn(pagedPlayers);
     }

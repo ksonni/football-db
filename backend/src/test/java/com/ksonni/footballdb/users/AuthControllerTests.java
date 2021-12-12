@@ -1,6 +1,7 @@
 package com.ksonni.footballdb.users;
 
 import com.ksonni.footballdb.config.RoutesConfig;
+import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.dto.LoginRequest;
 import com.ksonni.footballdb.users.dto.RegisterUserRequest;
@@ -11,6 +12,7 @@ import com.ksonni.footballdb.users.services.UsersRepository;
 import com.ksonni.footballdb.utils.MockMvcUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,6 +26,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -66,15 +69,22 @@ class AuthControllerTests {
             .build();
 
     @Test
-    void registerUserSucceeds() throws Exception {
-        given(mapper.toUser(any(RegisterUserRequest.class)))
-                .willReturn(validUser);
+    void registerUserWhenThereArePreExistingUsers() throws Exception {
+        User preExistingUser = User.builder().emailId("something@ksonni.com").build();
+        given(usersRepository.findFirstByOrderByEmailIdAsc()).willReturn(preExistingUser);
 
-        mockMvc.perform(utils.postJSON(RoutesConfig.Auth.REGISTER_PATH, validRegisterRequest))
-                .andExpect(status().isCreated());
+        ArgumentCaptor<User> createdUser = testSuccessfulUserRegistration();
 
-        verify(encoder, times(1)).encode(anyString());
-        verify(usersRepository, times(1)).save(any(User.class));
+        assertEquals(Role.USER, createdUser.getValue().getRole());
+    }
+
+    @Test
+    void registerUserWhenThereAreNoPreExistingUsers() throws Exception {
+        given(usersRepository.findFirstByOrderByEmailIdAsc()).willReturn(null);
+
+        ArgumentCaptor<User> createdUser = testSuccessfulUserRegistration();
+
+        assertEquals(Role.ADMIN, createdUser.getValue().getRole());
     }
 
     @Test
@@ -169,6 +179,19 @@ class AuthControllerTests {
     private void testBadRegisterUserRequest(RegisterUserRequest request) throws Exception {
         mockMvc.perform(utils.postJSON(RoutesConfig.Auth.REGISTER_PATH, request))
                 .andExpect(status().isBadRequest());
+    }
+
+    private ArgumentCaptor<User> testSuccessfulUserRegistration() throws Exception {
+        given(mapper.toUser(any(RegisterUserRequest.class))).willReturn(validUser);
+
+        mockMvc.perform(utils.postJSON(RoutesConfig.Auth.REGISTER_PATH, validRegisterRequest))
+                .andExpect(status().isCreated());
+
+        verify(encoder, times(1)).encode(anyString());
+        ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
+        verify(usersRepository).save(argument.capture());
+
+        return argument;
     }
 
     @AfterEach

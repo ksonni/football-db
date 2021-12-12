@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,6 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
+@EnableGlobalMethodSecurity(
+    jsr250Enabled = true
+)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
@@ -25,7 +29,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http = http.cors().and();
         http = http.csrf().disable();
         http = configureUnauthenticatedRoutes(http);
-        http = configurePrivilegedRoutes(http);
         http = enableAuthentication(http);
     }
 
@@ -51,10 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             auth = auth.antMatchers(route.getMethod(), route.getPattern()).permitAll();
         }
         return auth.and();
-    }
-
-    private HttpSecurity configurePrivilegedRoutes(HttpSecurity http) throws Exception {
-        return http; // TODO
     }
 
     private HttpSecurity enableAuthentication(HttpSecurity http) throws Exception {

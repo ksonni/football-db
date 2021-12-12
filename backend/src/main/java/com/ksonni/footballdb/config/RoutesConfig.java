@@ -46,6 +46,10 @@ public class RoutesConfig {
         public static final String ME_PATH = PATH + ME;
     }
 
+    public static class Users {
+        public static final String PATH = API_BASE_PATH + "/users";
+    }
+
     public static final List<UnauthenticatedRoute> UNAUTHENTICATED_ROUTES = Arrays.asList(
         // Auth
         new UnauthenticatedRoute(HttpMethod.POST, Auth.LOGIN_PATH),

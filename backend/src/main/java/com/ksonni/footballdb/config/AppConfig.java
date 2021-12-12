@@ -6,10 +6,13 @@ import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.services.PlayerQueryParser;
 import com.ksonni.footballdb.queryparser.DefaultQueryParser;
 import com.ksonni.footballdb.queryparser.QueryParser;
+import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.DefaultAuthService;
+import com.ksonni.footballdb.users.services.UserQueryParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 
 @Configuration
 public class AppConfig {
@@ -30,8 +33,18 @@ public class AppConfig {
     }
 
     @Bean
+    public QueryParser<User> usersQueryParser() {
+        return new UserQueryParser(User.class);
+    }
+
+    @Bean
     public AuthService authService() {
         return new DefaultAuthService();
+    }
+
+    @Bean
+    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults("");
     }
 
 }

@@ -42,11 +42,11 @@ public enum Side implements EnumUtils.ValueEnum {
     @Converter(autoApply = true)
     public static class SideConverter implements AttributeConverter<Side, String> {
         @Override
-        public String convertToDatabaseColumn(Side category) {
-            if (category == null) {
+        public String convertToDatabaseColumn(Side value) {
+            if (value == null) {
                 return null;
             }
-            return category.getValue();
+            return value.getValue();
         }
 
         @Override

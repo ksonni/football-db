@@ -7,4 +7,6 @@ public interface UsersRepository extends QueryableRepository<User, String> {
 
     User findByEmailId(String emailId);
 
+    User findFirstByOrderByEmailIdAsc();
+
 }

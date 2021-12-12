@@ -14,6 +14,7 @@ public interface UsersMapper {
     UsersMapper INSTANCE = Mappers.getMapper(UsersMapper.class);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "role", ignore = true)
     User toUser(RegisterUserRequest request);
 
     UserResponse toUserResponse(User user);

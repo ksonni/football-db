@@ -18,7 +18,7 @@ public class DefaultAuthService implements AuthService {
 
     @Override
     public void clearSessionAuth() {
-
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
 }
