@@ -20,17 +20,8 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
-    restart: on-failure
-  ui:
-    image: ui:latest
-    build:
-      context: ui
-      dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - backend
+      - "80:8080"
     restart: on-failure
 volumes:
   db-volume:

@@ -1,7 +1,5 @@
-image: openjdk:11
-stages:
-  - test-backend
-test-backend:
-  stage: test-backend
+test:
+  image: openjdk:11
+  stage: test
   script:
     - cd backend && ./gradlew test

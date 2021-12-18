@@ -23,19 +23,9 @@ services:
       context: backend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "80:8080"
       - "8000:8000"
     depends_on:
       - db
-  ui:
-    image: ui:latest
-    build:
-      context: ui
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - backend
 volumes:
   db-volume:
