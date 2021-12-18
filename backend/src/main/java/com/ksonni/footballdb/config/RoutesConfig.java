@@ -50,6 +50,12 @@ public class RoutesConfig {
         public static final String PATH = API_BASE_PATH + "/users";
     }
 
+    public static class Docs {
+        public static final String UI = "/swagger-ui/**";
+        public static final String JSON = "/v3/api-docs";
+        public static final String YML = "/v3/api-docs.yaml";
+    }
+
     public static final List<UnauthenticatedRoute> UNAUTHENTICATED_ROUTES = Arrays.asList(
         // Auth
         new UnauthenticatedRoute(HttpMethod.POST, Auth.LOGIN_PATH),
@@ -59,7 +65,12 @@ public class RoutesConfig {
         // Queries
         new UnauthenticatedRoute(HttpMethod.GET, Leagues.PATH),
         new UnauthenticatedRoute(HttpMethod.GET, Clubs.PATH),
-        new UnauthenticatedRoute(HttpMethod.GET, Players.PATH)
+        new UnauthenticatedRoute(HttpMethod.GET, Players.PATH),
+
+        // Docs
+        new UnauthenticatedRoute(HttpMethod.GET, Docs.UI),
+        new UnauthenticatedRoute(HttpMethod.GET, Docs.JSON),
+        new UnauthenticatedRoute(HttpMethod.GET, Docs.YML)
     );
 
 }

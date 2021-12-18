@@ -21,6 +21,7 @@ dependencies {
 	implementation 'org.projectlombok:lombok:1.18.22'
 	implementation 'org.liquibase:liquibase-core:4.6.1'
 	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.1'
 
 	runtimeOnly 'mysql:mysql-connector-java:8.0.26'
 
