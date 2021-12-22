@@ -32,12 +32,29 @@ public enum Permission implements EnumUtils.ValueEnum, GrantedAuthority {
         return getValue();
     }
 
+    /**
+     * Simple permissions that can be used with @Secured
+     */
     public static class Code {
         public static final String VIEW_USERS = "VIEW_USERS";
         public static final String MANAGE_USERS = "MANAGE_USERS";
         public static final String MANAGE_PLAYERS = "MANAGE_PLAYERS";
         public static final String MANAGE_LEAGUES = "MANAGE_LEAGUES";
         public static final String MANAGE_CLUBS = "MANAGE_CLUBS";
+    }
+
+    /**
+     * Compound SpEL expressions that can be used with @PreAuthorize
+     */
+    public static class Compound {
+        public static final String DELETE_CLUBS =
+                "hasRole('" + Code.MANAGE_CLUBS + "') and " +
+                "hasRole('" + Code.MANAGE_PLAYERS + "')";
+
+        public static final String DELETE_LEAGUES =
+                "hasRole('" + Code.MANAGE_LEAGUES + "') and " +
+                "hasRole('" + Code.MANAGE_CLUBS + "') and " +
+                "hasRole('" + Code.MANAGE_PLAYERS + "')";
     }
 
 }

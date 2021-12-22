@@ -28,6 +28,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +68,13 @@ class ClubsControllerTests {
 
     private static final String CLUB_ID = "id";
     private static final String CLUB_PATH = RoutesConfig.Clubs.PATH + "/" + CLUB_ID;
+
+    @WithMockUser(roles = {
+        Permission.Code.MANAGE_CLUBS,
+        Permission.Code.MANAGE_PLAYERS
+    })
+    @Retention(RetentionPolicy.RUNTIME)
+    private @interface DeletePermissions {}
 
     private final MockMvcUtils utils = new MockMvcUtils();
 
@@ -259,7 +268,7 @@ class ClubsControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_CLUBS })
+    @DeletePermissions
     void deleteClubSucceeds() throws Exception {
         given(clubsRepository.findById(CLUB_ID))
                 .willReturn(Optional.ofNullable(Club.builder().build()));
@@ -269,7 +278,7 @@ class ClubsControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_CLUBS })
+    @DeletePermissions
     void deleteClubRejectsUnknownClubs() throws Exception {
         given(clubsRepository.findById(CLUB_ID)).willReturn(Optional.empty());
         mockMvc.perform(delete(CLUB_PATH)).andExpect(status().isNotFound());

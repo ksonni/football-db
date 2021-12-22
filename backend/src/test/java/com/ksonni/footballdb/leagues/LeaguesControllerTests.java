@@ -26,6 +26,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +66,14 @@ class LeaguesControllerTests {
     private final String LEAGUES_PATH = RoutesConfig.Leagues.PATH + "/" + LEAGUE_ID;
 
     private final MockMvcUtils utils = new MockMvcUtils();
+
+    @WithMockUser(roles = {
+        Permission.Code.MANAGE_LEAGUES,
+        Permission.Code.MANAGE_CLUBS,
+        Permission.Code.MANAGE_PLAYERS
+    })
+    @Retention(RetentionPolicy.RUNTIME)
+    private @interface DeletePermissions {}
 
     @BeforeEach
     void setup() {
@@ -192,7 +202,7 @@ class LeaguesControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_LEAGUES })
+    @DeletePermissions
     void deleteLeagueSucceeds() throws Exception {
         given(leaguesRepository.findById(LEAGUE_ID))
                 .willReturn(Optional.ofNullable(League.builder().build()));
@@ -201,7 +211,7 @@ class LeaguesControllerTests {
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_LEAGUES })
+    @DeletePermissions
     void deleteLeagueRejectsUnknownLeagues() throws Exception {
         given(leaguesRepository.findById(LEAGUE_ID))
                 .willReturn(Optional.empty());

@@ -14,6 +14,7 @@ import com.ksonni.footballdb.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -61,7 +62,7 @@ public class LeaguesController {
     }
 
     @DeleteMapping("/{id}")
-    @RolesAllowed({ Permission.Code.MANAGE_LEAGUES })
+    @PreAuthorize(Permission.Compound.DELETE_LEAGUES)
     public void deleteLeague(@PathVariable("id") String id) {
         Optional<League> leagueOptional = leaguesRepository.findById(id);
         if (leagueOptional.isEmpty()) {
