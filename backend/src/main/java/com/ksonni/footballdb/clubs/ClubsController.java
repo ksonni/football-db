@@ -63,8 +63,8 @@ public class ClubsController {
     @RolesAllowed({ Permission.Code.MANAGE_CLUBS })
     @Transactional
     public ClubResponse patchClub(@PathVariable("id") String id, @Valid @RequestBody PatchClubRequest request) {
-        Optional<Club> clubVal = clubsRepository.findById(id);
-        if (clubVal.isEmpty()) {
+        Optional<Club> clubOptional = clubsRepository.findById(id);
+        if (clubOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found");
         }
 
@@ -73,7 +73,7 @@ public class ClubsController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid League ID");
         }
 
-        Club club = mapper.toClub(request, clubVal.get());
+        Club club = mapper.toClub(request, clubOptional.get());
         clubsRepository.save(club);
         return mapper.toClubResponse(club);
     }
@@ -82,8 +82,8 @@ public class ClubsController {
     @PreAuthorize(Permission.Compound.DELETE_CLUBS)
     @Transactional
     public void deleteClub(@PathVariable("id") String id) {
-        Optional<Club> clubVal = clubsRepository.findById(id);
-        if (clubVal.isEmpty()) {
+        Optional<Club> clubOptional = clubsRepository.findById(id);
+        if (clubOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found");
         }
         clubsRepository.deleteById(id);

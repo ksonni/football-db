@@ -15,13 +15,6 @@ public interface ClubsMapper {
     ClubsMapper INSTANCE = Mappers.getMapper(ClubsMapper.class);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "overallRating", defaultValue = "0")
-    @Mapping(target = "attackRating", defaultValue = "0")
-    @Mapping(target = "midfieldRating", defaultValue = "0")
-    @Mapping(target = "defenseRating", defaultValue = "0")
-    @Mapping(target = "transferBudget", defaultValue = "0")
-    @Mapping(target = "domesticPrestige", defaultValue = "0")
-    @Mapping(target = "internationalPrestige", defaultValue = "0")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
     Club toClub(RegisterClubRequest request);
 
