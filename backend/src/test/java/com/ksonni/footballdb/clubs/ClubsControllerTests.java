@@ -75,10 +75,12 @@ class ClubsControllerTests {
             Club.builder().id("id").name("Some club").build(),
             Club.builder().id("id2").name("Some club 2").build()
         );
+
         Page<Club> pagedClubs = new PageImpl<>(clubs,
                 PageRequest.of(0, 2), 2);
         given(clubsRepository.findAll(ArgumentMatchers.<Query<Club>>any()))
                 .willReturn(pagedClubs);
+
         for (Club club: clubs) {
             given(mapper.toClubResponse(club)).willReturn(
                 ClubResponse.builder().id(club.getId()).name(club.getName()).build()
@@ -126,7 +128,7 @@ class ClubsControllerTests {
                 () -> RegisterClubRequest.builder()
                 .name("Test").leagueId("League ID");
 
-        RegisterClubRequest badRequests[] = {
+        RegisterClubRequest[] badRequests = {
             RegisterClubRequest.builder().build(),
             base.get().overallRating(-1).build(),
             base.get().overallRating(101).build(),
@@ -154,7 +156,7 @@ class ClubsControllerTests {
     void registerClubDoesNotAcceptInvalidLeagueIds() throws Exception {
         String leagueId = validRegisterRequest.getLeagueId();
         given(leaguesRepository.findById(leagueId))
-                .willReturn(Optional.ofNullable(null));
+                .willReturn(Optional.empty());
 
         mockMvc.perform(utils.postJSON(RoutesConfig.Clubs.PATH, validRegisterRequest))
                 .andExpect(status().isBadRequest());
@@ -190,7 +192,7 @@ class ClubsControllerTests {
     @Test
     @WithMockUser(roles = { Permission.Code.MANAGE_CLUBS })
     void patchClubValidatesData() throws Exception {
-        PatchClubRequest badRequests[] = {
+        PatchClubRequest[] badRequests = {
             PatchClubRequest.builder().overallRating(-1).build(),
             PatchClubRequest.builder().overallRating(101).build(),
             PatchClubRequest.builder().attackRating(-1).build(),
@@ -217,13 +219,37 @@ class ClubsControllerTests {
     void patchClubDoesNotAcceptInvalidLeagueIds() throws Exception {
         String leagueId = validRegisterRequest.getLeagueId();
         given(leaguesRepository.findById(leagueId))
-                .willReturn(Optional.ofNullable(null));
+                .willReturn(Optional.empty());
         given(clubsRepository.findById(CLUB_ID))
                 .willReturn(Optional.ofNullable(Club.builder().build()));
 
         mockMvc.perform(utils.patchJSON(CLUB_PATH,
                         PatchClubRequest.builder().leagueId("bad id").build()))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = { Permission.Code.MANAGE_CLUBS })
+    void patchClubRequestSucceeds() throws Exception {
+        Club club = Club.builder().id(CLUB_ID).build();
+        Club updated = Club.builder().id(CLUB_ID)
+                .name(validPatchRequest.getName()).build();
+
+        given(clubsRepository.findById(CLUB_ID)).willReturn(Optional.ofNullable(club));
+        given(mapper.toClub(validPatchRequest, club)).willReturn(updated);
+
+        mockMvc.perform(utils.patchJSON(CLUB_PATH, validPatchRequest))
+                .andExpect(status().isOk());
+
+        verify(clubsRepository, times(1)).save(updated);
+    }
+
+    @Test
+    @WithMockUser(roles = { Permission.Code.MANAGE_CLUBS })
+    void patchClubRejectsUnknownClubs() throws Exception {
+        given(clubsRepository.findById(CLUB_ID)).willReturn(Optional.empty());
+        mockMvc.perform(utils.patchJSON(CLUB_PATH, validPatchRequest))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -239,6 +265,14 @@ class ClubsControllerTests {
                 .willReturn(Optional.ofNullable(Club.builder().build()));
 
         mockMvc.perform(delete(CLUB_PATH)).andExpect(status().isOk());
+        verify(clubsRepository, times(1)).deleteById(CLUB_ID);
+    }
+
+    @Test
+    @WithMockUser(roles = { Permission.Code.MANAGE_CLUBS })
+    void deleteClubRejectsUnknownClubs() throws Exception {
+        given(clubsRepository.findById(CLUB_ID)).willReturn(Optional.empty());
+        mockMvc.perform(delete(CLUB_PATH)).andExpect(status().isNotFound());
     }
 
 }

@@ -18,8 +18,8 @@ import javax.persistence.Table;
 public class League {
 
     @Id
-    private final String id;
+    private String id;
 
-    private final String name;
+    private String name;
 
 }
