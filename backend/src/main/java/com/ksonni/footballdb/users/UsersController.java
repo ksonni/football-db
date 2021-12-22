@@ -10,6 +10,7 @@ import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,7 @@ public class UsersController {
 
     @GetMapping
     @RolesAllowed({ Permission.Code.VIEW_USERS })
+    @Transactional(readOnly = true)
     public Page<UserResponse> enumerateUsers(HttpServletRequest request) throws QueryParseException {
         Page<User> page = usersRepository.findAll(queryParser.parse(request.getQueryString()));
         return page.map(usersMapper::toUserResponse);

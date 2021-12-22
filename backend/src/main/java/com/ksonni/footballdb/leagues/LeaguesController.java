@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,6 +34,7 @@ public class LeaguesController {
     private final LeaguesMapper mapper;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public Page<LeagueResponse> enumerateLeagues(HttpServletRequest request) throws QueryParseException {
         return leaguesRepository.findAll(queryParser.parse(request.getQueryString()))
                 .map(mapper::toLeagueResponse);
@@ -41,6 +43,7 @@ public class LeaguesController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @RolesAllowed({ Permission.Code.MANAGE_LEAGUES })
+    @Transactional
     public LeagueResponse registerLeague(@Valid @RequestBody RegisterLeagueRequest request) {
         League league = mapper.toLeague(request);
         league.setId(StringUtils.uuid());
@@ -50,6 +53,7 @@ public class LeaguesController {
 
     @PatchMapping("/{id}")
     @RolesAllowed({ Permission.Code.MANAGE_LEAGUES })
+    @Transactional
     public LeagueResponse patchLeague(@PathVariable("id") String id, @Valid @RequestBody PatchLeagueRequest request) {
         Optional<League> leagueOptional = leaguesRepository.findById(id);
         if (leagueOptional.isEmpty()) {
@@ -63,6 +67,7 @@ public class LeaguesController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize(Permission.Compound.DELETE_LEAGUES)
+    @Transactional
     public void deleteLeague(@PathVariable("id") String id) {
         Optional<League> leagueOptional = leaguesRepository.findById(id);
         if (leagueOptional.isEmpty()) {

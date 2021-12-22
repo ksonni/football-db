@@ -7,6 +7,7 @@ import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ public class PlayersController {
     private final QueryParser<Player> queryParser;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public Page<Player> enumeratePlayers(HttpServletRequest request) throws QueryParseException {
         return playersRepository.findAll(queryParser.parse(request.getQueryString()));
     }

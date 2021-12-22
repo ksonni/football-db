@@ -16,6 +16,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -36,6 +37,7 @@ public class AuthController {
 
     @PostMapping(value = RoutesConfig.Auth.REGISTER)
     @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
     public void registerUser(@Valid @RequestBody RegisterUserRequest request) {
         User user = mapper.toUser(request);
 
@@ -54,6 +56,7 @@ public class AuthController {
     }
 
     @PostMapping(value = RoutesConfig.Auth.LOGIN)
+    @Transactional(readOnly = true)
     public void loginUser(@Valid @RequestBody LoginRequest request) {
         var token = new UsernamePasswordAuthenticationToken(request.getEmailId(), request.getPassword());
 
@@ -73,6 +76,7 @@ public class AuthController {
     }
 
     @GetMapping(value = RoutesConfig.Auth.ME)
+    @Transactional(readOnly = true)
     public UserResponse getMe() {
         User user = authService.getAuthenticatedUser();
         if (user == null) {

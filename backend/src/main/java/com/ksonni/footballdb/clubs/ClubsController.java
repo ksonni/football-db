@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -36,6 +37,7 @@ public class ClubsController {
     private final ClubsMapper mapper;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public Page<ClubResponse> enumerateClubs(HttpServletRequest request) throws QueryParseException {
         return clubsRepository.findAll(queryParser.parse(request.getQueryString()))
                 .map(mapper::toClubResponse);
@@ -44,6 +46,7 @@ public class ClubsController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @RolesAllowed({ Permission.Code.MANAGE_CLUBS })
+    @Transactional
     public ClubResponse registerClub(@Valid @RequestBody RegisterClubRequest request) {
         Optional<League> league = leaguesRepository.findById(request.getLeagueId());
         if (league.isEmpty()) {
@@ -58,6 +61,7 @@ public class ClubsController {
 
     @PatchMapping("/{id}")
     @RolesAllowed({ Permission.Code.MANAGE_CLUBS })
+    @Transactional
     public ClubResponse patchClub(@PathVariable("id") String id, @Valid @RequestBody PatchClubRequest request) {
         Optional<Club> clubVal = clubsRepository.findById(id);
         if (clubVal.isEmpty()) {
@@ -76,6 +80,7 @@ public class ClubsController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize(Permission.Compound.DELETE_CLUBS)
+    @Transactional
     public void deleteClub(@PathVariable("id") String id) {
         Optional<Club> clubVal = clubsRepository.findById(id);
         if (clubVal.isEmpty()) {
