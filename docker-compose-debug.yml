@@ -8,7 +8,7 @@ services:
       context: .
       dockerfile: db/Dockerfile
     env_file:
-      - .env-debug
+      - .env
     volumes:
       - db-volume:/var/lib/mysql
     ports:
@@ -16,7 +16,7 @@ services:
   backend:
     image: backend:latest
     env_file:
-      - .env-debug
+      - .env
     environment:
       - JAVA_OPTS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
     build:
