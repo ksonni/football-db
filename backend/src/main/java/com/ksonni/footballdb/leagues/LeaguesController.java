@@ -12,6 +12,7 @@ import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Leagues.PATH)
@@ -48,6 +50,7 @@ public class LeaguesController {
         League league = mapper.toLeague(request);
         league.setId(StringUtils.uuid());
         leaguesRepository.save(league);
+        log.info("created league {}", league.getId());
         return mapper.toLeagueResponse(league);
     }
 
@@ -62,6 +65,7 @@ public class LeaguesController {
 
         League league = mapper.toLeague(request, leagueOptional.get());
         leaguesRepository.save(league);
+        log.info("updated league {}", league.getId());
         return mapper.toLeagueResponse(league);
     }
 
@@ -73,6 +77,7 @@ public class LeaguesController {
         if (leagueOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "League not found");
         }
+        log.info("deleted league {}", id);
         leaguesRepository.deleteById(id);
     }
 

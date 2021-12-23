@@ -14,6 +14,7 @@ import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Clubs.PATH)
@@ -56,6 +58,7 @@ public class ClubsController {
         Club club = mapper.toClub(request);
         club.setId(StringUtils.uuid());
         clubsRepository.save(club);
+        log.info("created club {}", club.getId());
         return mapper.toClubResponse(club);
     }
 
@@ -75,6 +78,7 @@ public class ClubsController {
 
         Club club = mapper.toClub(request, clubOptional.get());
         clubsRepository.save(club);
+        log.info("updated club {}", club.getId());
         return mapper.toClubResponse(club);
     }
 
@@ -87,6 +91,7 @@ public class ClubsController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found");
         }
         clubsRepository.deleteById(id);
+        log.info("deleted club {}", id);
     }
 
 }

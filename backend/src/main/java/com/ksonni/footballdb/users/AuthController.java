@@ -10,6 +10,7 @@ import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Auth.PATH)
@@ -53,6 +55,7 @@ public class AuthController {
         user.setRole(isFirstUser ? Role.ADMIN : Role.USER);
 
         usersRepository.save(user);
+        log.info("created user {} with role {}", user.getEmailId(), user.getRole());
     }
 
     @PostMapping(value = RoutesConfig.Auth.LOGIN)
@@ -68,10 +71,12 @@ public class AuthController {
         }
 
         authService.setSessionAuth(auth);
+        log.info("logged in");
     }
 
     @PostMapping(value = RoutesConfig.Auth.LOGOUT)
     public void logoutUser(HttpServletRequest request) {
+        log.info("logging out");
         authService.clearSessionAuth();
     }
 

@@ -14,6 +14,7 @@ import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.StringUtils;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = RoutesConfig.Players.PATH)
@@ -55,6 +57,7 @@ public class PlayersController {
         Player player = mapper.toPlayer(request);
         player.setId(StringUtils.uuid());
         playersRepository.save(player);
+        log.info("created player {}", player.getId());
         return mapper.toPlayerResponse(player);
     }
 
@@ -74,6 +77,7 @@ public class PlayersController {
 
         Player player = mapper.toPlayer(request, playerOptional.get());
         playersRepository.save(player);
+        log.info("updated player {}", player.getId());
         return mapper.toPlayerResponse(player);
     }
 
@@ -86,6 +90,7 @@ public class PlayersController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player not found");
         }
         playersRepository.deleteById(id);
+        log.info("deleted player {}", id);
     }
 
 }
