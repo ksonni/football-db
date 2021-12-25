@@ -1,5 +1,0 @@
-test:
-  image: openjdk:11
-  stage: test
-  script:
-    - cd backend && ./gradlew test
