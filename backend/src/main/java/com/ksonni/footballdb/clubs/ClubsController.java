@@ -31,6 +31,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Clubs.PATH)
+@ClubsControllerDoc
 public class ClubsController {
 
     private final LeaguesRepository leaguesRepository;
@@ -40,6 +41,7 @@ public class ClubsController {
 
     @GetMapping
     @Transactional(readOnly = true)
+    @EnumerateClubsDoc
     public Page<ClubResponse> enumerateClubs(HttpServletRequest request) throws QueryParseException {
         return clubsRepository.findAll(queryParser.parse(request.getQueryString()))
                 .map(mapper::toClubResponse);
@@ -49,6 +51,7 @@ public class ClubsController {
     @ResponseStatus(HttpStatus.CREATED)
     @RolesAllowed({ Permission.Code.MANAGE_CLUBS })
     @Transactional
+    @RegisterClubDoc
     public ClubResponse registerClub(@Valid @RequestBody RegisterClubRequest request) {
         Optional<League> league = leaguesRepository.findById(request.getLeagueId());
         if (league.isEmpty()) {
@@ -65,6 +68,7 @@ public class ClubsController {
     @PatchMapping("/{id}")
     @RolesAllowed({ Permission.Code.MANAGE_CLUBS })
     @Transactional
+    @PatchClubDoc
     public ClubResponse patchClub(@PathVariable("id") String id, @Valid @RequestBody PatchClubRequest request) {
         Optional<Club> clubOptional = clubsRepository.findById(id);
         if (clubOptional.isEmpty()) {
@@ -85,6 +89,7 @@ public class ClubsController {
     @DeleteMapping("/{id}")
     @PreAuthorize(Permission.Compound.DELETE_CLUBS)
     @Transactional
+    @DeleteClubDoc
     public void deleteClub(@PathVariable("id") String id) {
         Optional<Club> clubOptional = clubsRepository.findById(id);
         if (clubOptional.isEmpty()) {

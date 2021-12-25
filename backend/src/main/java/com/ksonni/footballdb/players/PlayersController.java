@@ -30,6 +30,7 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = RoutesConfig.Players.PATH)
+@PlayersControllerDoc
 public class PlayersController {
 
     private final ClubsRepository clubsRepository;
@@ -39,6 +40,7 @@ public class PlayersController {
 
     @GetMapping
     @Transactional(readOnly = true)
+    @EnumeratePlayersDoc
     public Page<PlayerResponse> enumeratePlayers(HttpServletRequest request) throws QueryParseException {
         return playersRepository.findAll(queryParser.parse(request.getQueryString()))
                 .map(mapper::toPlayerResponse);
@@ -48,6 +50,7 @@ public class PlayersController {
     @ResponseStatus(HttpStatus.CREATED)
     @RolesAllowed({ Permission.Code.MANAGE_PLAYERS })
     @Transactional
+    @RegisterPlayerDoc
     public PlayerResponse registerPlayer(@Valid @RequestBody RegisterPlayerRequest request) {
         Optional<Club> club = clubsRepository.findById(request.getClubId());
         if (club.isEmpty()) {
@@ -64,6 +67,7 @@ public class PlayersController {
     @PatchMapping("/{id}")
     @RolesAllowed({ Permission.Code.MANAGE_PLAYERS })
     @Transactional
+    @PatchPlayerDoc
     public PlayerResponse patchPlayer(@PathVariable("id") String id, @Valid @RequestBody PatchPlayerRequest request) {
         Optional<Player> playerOptional = playersRepository.findById(id);
         if (playerOptional.isEmpty()) {
@@ -84,6 +88,7 @@ public class PlayersController {
     @DeleteMapping("/{id}")
     @RolesAllowed({ Permission.Code.MANAGE_PLAYERS })
     @Transactional
+    @DeletePlayerDoc
     public void deleteClub(@PathVariable("id") String id) {
         Optional<Player> playerOptional = playersRepository.findById(id);
         if (playerOptional.isEmpty()) {

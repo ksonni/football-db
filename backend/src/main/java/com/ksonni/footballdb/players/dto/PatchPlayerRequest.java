@@ -5,8 +5,8 @@ import com.ksonni.footballdb.players.domain.WorkRate;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 @Data
@@ -16,13 +16,16 @@ public class PatchPlayerRequest {
     @Length(min = 1, max = 40)
     private String fullName;
 
-    @Range(min = 0, max = 500)
+    @Min(0)
+    @Max(500)
     private Integer height;
 
-    @Range(min = 0, max = 1000)
+    @Min(0)
+    @Max(1000)
     private Integer weight;
 
-    @Range(min = 0, max =  100)
+    @Min(0)
+    @Max(100)
     private Integer overall;
 
     @Min(0)
@@ -39,29 +42,36 @@ public class PatchPlayerRequest {
 
     private Side preferredFoot;
 
-    @Range(min = 0, max = 10)
+    @Min(0)
+    @Max(10)
     private Integer reputation;
 
     private WorkRate attackingWorkRate;
 
     private WorkRate defensiveWorkRate;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer shootingTotal;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer passingTotal;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer dribblingTotal;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer defendingTotal;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer headingAccuracy;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer penalties;
 
     private String clubId;

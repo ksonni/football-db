@@ -29,6 +29,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Leagues.PATH)
+@LeaguesControllerDoc
 public class LeaguesController {
 
     private final LeaguesRepository leaguesRepository;
@@ -37,6 +38,7 @@ public class LeaguesController {
 
     @GetMapping
     @Transactional(readOnly = true)
+    @EnumerateLeaguesDoc
     public Page<LeagueResponse> enumerateLeagues(HttpServletRequest request) throws QueryParseException {
         return leaguesRepository.findAll(queryParser.parse(request.getQueryString()))
                 .map(mapper::toLeagueResponse);
@@ -46,6 +48,7 @@ public class LeaguesController {
     @ResponseStatus(HttpStatus.CREATED)
     @RolesAllowed({ Permission.Code.MANAGE_LEAGUES })
     @Transactional
+    @RegisterLeagueDoc
     public LeagueResponse registerLeague(@Valid @RequestBody RegisterLeagueRequest request) {
         League league = mapper.toLeague(request);
         league.setId(StringUtils.uuid());
@@ -57,6 +60,7 @@ public class LeaguesController {
     @PatchMapping("/{id}")
     @RolesAllowed({ Permission.Code.MANAGE_LEAGUES })
     @Transactional
+    @PatchLeagueDoc
     public LeagueResponse patchLeague(@PathVariable("id") String id, @Valid @RequestBody PatchLeagueRequest request) {
         Optional<League> leagueOptional = leaguesRepository.findById(id);
         if (leagueOptional.isEmpty()) {
@@ -72,6 +76,7 @@ public class LeaguesController {
     @DeleteMapping("/{id}")
     @PreAuthorize(Permission.Compound.DELETE_LEAGUES)
     @Transactional
+    @DeleteLeagueDoc
     public void deleteLeague(@PathVariable("id") String id) {
         Optional<League> leagueOptional = leaguesRepository.findById(id);
         if (leagueOptional.isEmpty()) {

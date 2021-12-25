@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Users.PATH)
+@UsersControllerDoc
 public class UsersController {
 
     private final UsersRepository usersRepository;
@@ -30,6 +31,7 @@ public class UsersController {
     @GetMapping
     @RolesAllowed({ Permission.Code.VIEW_USERS })
     @Transactional(readOnly = true)
+    @EnumerateUsersDoc
     public Page<UserResponse> enumerateUsers(HttpServletRequest request) throws QueryParseException {
         Page<User> page = usersRepository.findAll(queryParser.parse(request.getQueryString()));
         return page.map(usersMapper::toUserResponse);

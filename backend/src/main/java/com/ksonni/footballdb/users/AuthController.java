@@ -29,6 +29,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Auth.PATH)
+@AuthControllerDoc
 public class AuthController {
 
     private final UsersMapper mapper;
@@ -40,6 +41,7 @@ public class AuthController {
     @PostMapping(value = RoutesConfig.Auth.REGISTER)
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
+    @RegisterUserDoc
     public void registerUser(@Valid @RequestBody RegisterUserRequest request) {
         User user = mapper.toUser(request);
 
@@ -60,6 +62,7 @@ public class AuthController {
 
     @PostMapping(value = RoutesConfig.Auth.LOGIN)
     @Transactional(readOnly = true)
+    @LoginDoc
     public void loginUser(@Valid @RequestBody LoginRequest request) {
         var token = new UsernamePasswordAuthenticationToken(request.getEmailId(), request.getPassword());
 
@@ -75,6 +78,7 @@ public class AuthController {
     }
 
     @PostMapping(value = RoutesConfig.Auth.LOGOUT)
+    @LogoutDoc
     public void logoutUser(HttpServletRequest request) {
         log.info("logging out");
         authService.clearSessionAuth();
@@ -82,6 +86,7 @@ public class AuthController {
 
     @GetMapping(value = RoutesConfig.Auth.ME)
     @Transactional(readOnly = true)
+    @MeDoc
     public UserResponse getMe() {
         User user = authService.getAuthenticatedUser();
         if (user == null) {

@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
@@ -21,25 +21,31 @@ public class RegisterClubRequest {
     @NotBlank
     private String leagueId;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer overallRating;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer attackRating;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer midfieldRating;
 
-    @Range(min = 0, max = 100)
+    @Min(0)
+    @Max(100)
     private Integer defenseRating;
 
     @Min(0)
     private Integer transferBudget;
 
-    @Range(min = 0, max = 10)
+    @Min(0)
+    @Max(10)
     private Integer domesticPrestige;
 
-    @Range(min = 0, max = 10)
+    @Min(0)
+    @Max(10)
     private Integer internationalPrestige;
 
 }
