@@ -31,8 +31,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -157,7 +155,7 @@ class AuthControllerTests {
                     .emailId(validUser.getEmailId()).build()
         );
 
-        mockMvc.perform(get(RoutesConfig.Auth.ME_PATH))
+        mockMvc.perform(utils.get(RoutesConfig.Auth.ME_PATH))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(validUser.getId())))
                 .andExpect(jsonPath("$.emailId", is(validUser.getEmailId())));
@@ -165,12 +163,12 @@ class AuthControllerTests {
 
     @Test
     void meRequestUnauthenticated() throws Exception {
-        mockMvc.perform(get(RoutesConfig.Auth.ME_PATH)).andExpect(status().isForbidden());
+        mockMvc.perform(utils.get(RoutesConfig.Auth.ME_PATH)).andExpect(status().isForbidden());
     }
 
     @Test
     void logoutRequest() throws Exception {
-        mockMvc.perform(post(RoutesConfig.Auth.LOGOUT_PATH))
+        mockMvc.perform(utils.post(RoutesConfig.Auth.LOGOUT_PATH))
                 .andExpect(status().isOk());
 
         verify(authService, times(1)).clearSessionAuth();

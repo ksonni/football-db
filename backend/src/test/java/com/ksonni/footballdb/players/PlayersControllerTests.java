@@ -43,8 +43,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -114,7 +112,7 @@ class PlayersControllerTests {
 
     @Test
     void enumeratePlayers() throws Exception {
-        mockMvc.perform(get(RoutesConfig.Players.PATH))
+        mockMvc.perform(utils.get(RoutesConfig.Players.PATH))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(players.size())))
                 .andExpect(jsonPath("$.content[0].id", is(players.get(0).getId())))
@@ -130,7 +128,7 @@ class PlayersControllerTests {
     @Test
     void enumeratePlayersInvalidQuery() throws Exception {
         given(queryParser.parse(anyString())).willThrow(QueryParseException.class);
-        mockMvc.perform(get(RoutesConfig.Players.PATH + "?badquery:"))
+        mockMvc.perform(utils.get(RoutesConfig.Players.PATH + "?badquery:"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -304,7 +302,7 @@ class PlayersControllerTests {
     @Test
     @WithMockUser
     void deletePlayerEnforcesPermission() throws Exception {
-        mockMvc.perform(delete(PLAYER_PATH)).andExpect(status().isForbidden());
+        mockMvc.perform(utils.delete(PLAYER_PATH)).andExpect(status().isForbidden());
     }
 
     @Test
@@ -313,7 +311,7 @@ class PlayersControllerTests {
         given(playersRepository.findById(PLAYER_ID))
             .willReturn(Optional.ofNullable(Player.builder().build()));
 
-        mockMvc.perform(delete(PLAYER_PATH)).andExpect(status().isOk());
+        mockMvc.perform(utils.delete(PLAYER_PATH)).andExpect(status().isOk());
         verify(playersRepository, times(1)).deleteById(PLAYER_ID);
     }
 
@@ -321,7 +319,7 @@ class PlayersControllerTests {
     @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
     void deletePlayerRejectsUnknownPlayers() throws Exception {
         given(playersRepository.findById(PLAYER_ID)).willReturn(Optional.empty());
-        mockMvc.perform(delete(PLAYER_PATH)).andExpect(status().isNotFound());
+        mockMvc.perform(utils.delete(PLAYER_PATH)).andExpect(status().isNotFound());
     }
 
 }

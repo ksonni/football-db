@@ -39,3 +39,6 @@ out/
 # Scripts
 db/scripts/.bin
 db/scripts/deps
+
+# SSL
+backend/ssl/.certs
