@@ -9,6 +9,7 @@ import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.dto.UserResponse;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
+import com.ksonni.footballdb.utils.MockMvcUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.reset;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,6 +52,8 @@ public class UsersControllerTests {
     List<User> users;
     User user;
 
+    private final MockMvcUtils utils = new MockMvcUtils();
+
     @BeforeEach
     void setup() {
         user = User.builder().id("id").emailId("user@ksonni.com")
@@ -72,7 +74,7 @@ public class UsersControllerTests {
     @Test
     @WithMockUser(roles = { Permission.Code.VIEW_USERS })
     void enumerateUsers() throws Exception {
-        mockMvc.perform(get(RoutesConfig.Users.PATH))
+        mockMvc.perform(utils.get(RoutesConfig.Users.PATH))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(users.size())))
                 .andExpect(jsonPath("$.content[0].id", is(user.getId())))
@@ -85,7 +87,7 @@ public class UsersControllerTests {
     @Test
     @WithMockUser
     void enumerateUsersErrorsWithoutPermission() throws Exception {
-        mockMvc.perform(get(RoutesConfig.Users.PATH))
+        mockMvc.perform(utils.get(RoutesConfig.Users.PATH))
                 .andExpect(status().isForbidden());
     }
 

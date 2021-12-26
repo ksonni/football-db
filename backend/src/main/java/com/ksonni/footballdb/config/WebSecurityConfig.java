@@ -27,6 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity security) throws Exception {
         HttpSecurity http = security;
+        http = requireHttps(http);
         http = http.cors().and();
         http = http.csrf().disable();
         http = configureUnauthenticatedRoutes(http);
@@ -59,6 +60,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private HttpSecurity enableAuthentication(HttpSecurity http) throws Exception {
         return http.authorizeRequests().anyRequest().authenticated().and();
+    }
+
+    private HttpSecurity requireHttps(HttpSecurity http) throws Exception {
+        return http.portMapper().http(80).mapsTo(443).and()
+                .requiresChannel().anyRequest().requiresSecure().and();
     }
 
 }
