@@ -12,18 +12,26 @@ public class NumericFilterQueryComponent<T> implements FilterQueryComponent<T> {
     private final FilterQueryKey key;
     private final Comparable value;
 
-    public NumericFilterQueryComponent(FilterQueryKey key, String strValue) throws InvalidQueryValueException {
-        Comparable value;
+    /**
+     * Parses URL query components used to lookup numbers.
+     *
+     * @param key      Parsed key of a URL filter query
+     * @param strValue String value of a URL query
+     * @throws InvalidQueryValueException if the value could not be parsed as a datetime
+     */
+    public NumericFilterQueryComponent(final FilterQueryKey key, final String strValue)
+            throws InvalidQueryValueException {
+        final Comparable val;
         if (strValue.contains(".")) {
-            value = MathUtils.tryParse(Double::parseDouble, strValue);
+            val = MathUtils.tryParse(Double::parseDouble, strValue);
         } else {
-            value = MathUtils.tryParse(Long::parseLong, strValue);
+            val = MathUtils.tryParse(Long::parseLong, strValue);
         }
-        if (value == null) {
+        if (val == null) {
             throw new InvalidQueryValueException(key.getField(), strValue);
         }
         this.key = key;
-        this.value = value;
+        this.value = val;
     }
 
 }

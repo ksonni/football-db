@@ -2,22 +2,24 @@ package com.ksonni.footballdb.queryparser;
 
 import com.ksonni.footballdb.queryparser.components.NumericFilterQueryComponent;
 import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NumericFilterQueryComponentTests {
 
     @Test
     void parsesDecimalQueries() throws QueryParseException {
-        var component = new NumericFilterQueryComponent<Object>(new FilterQueryKey("test"), "12.3");
-        assertEquals((Double) component.getValue(), 12.3, 0.001);
+        final var component = new NumericFilterQueryComponent<Object>(new FilterQueryKey("test"), "12.3");
+        final var expected = 12.3;
+        final var delta = 0.001;
+        Assertions.assertEquals(expected, (Double) component.getValue(), delta);
     }
 
     @Test
     void parsesIntegralValues() throws QueryParseException {
-        var component = new NumericFilterQueryComponent<Object>(new FilterQueryKey("test"), "12");
-        assertEquals((Long) component.getValue(), 12);
+        final var component = new NumericFilterQueryComponent<Object>(new FilterQueryKey("test"), "12");
+        final var expected = 12;
+        Assertions.assertEquals(expected, (Long) component.getValue());
     }
 
 }

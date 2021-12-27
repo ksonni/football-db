@@ -19,7 +19,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.security.RolesAllowed;
@@ -39,59 +47,85 @@ public class ClubsController {
     private final QueryParser<Club> queryParser;
     private final ClubsMapper mapper;
 
+    /**
+     * Query clubs.
+     *
+     * @param request HTTP request.
+     * @return Paginated list of clubs.
+     * @throws QueryParseException if the query is not valid
+     */
     @GetMapping
     @Transactional(readOnly = true)
     @EnumerateClubsDoc
-    public Page<ClubResponse> enumerateClubs(HttpServletRequest request) throws QueryParseException {
+    public Page<ClubResponse> enumerateClubs(final HttpServletRequest request) throws QueryParseException {
         return clubsRepository.findAll(queryParser.parse(request.getQueryString()))
                 .map(mapper::toClubResponse);
     }
 
+    /**
+     * Register a new club.
+     *
+     * @param request club registration request
+     * @return the created club
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @RolesAllowed({ Permission.Code.MANAGE_CLUBS })
+    @RolesAllowed({Permission.Code.MANAGE_CLUBS})
     @Transactional
     @RegisterClubDoc
-    public ClubResponse registerClub(@Valid @RequestBody RegisterClubRequest request) {
-        Optional<League> league = leaguesRepository.findById(request.getLeagueId());
+    public ClubResponse registerClub(final @Valid @RequestBody RegisterClubRequest request) {
+        final Optional<League> league = leaguesRepository.findById(request.getLeagueId());
         if (league.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid league ID");
         }
 
-        Club club = mapper.toClub(request);
+        final Club club = mapper.toClub(request);
         club.setId(StringUtils.uuid());
         clubsRepository.save(club);
         log.info("created club {}", club.getId());
         return mapper.toClubResponse(club);
     }
 
+    /**
+     * Partially update a club.
+     *
+     * @param id      id of the club to update
+     * @param request club update request
+     * @return success/error response
+     */
     @PatchMapping("/{id}")
-    @RolesAllowed({ Permission.Code.MANAGE_CLUBS })
+    @RolesAllowed({Permission.Code.MANAGE_CLUBS})
     @Transactional
     @PatchClubDoc
-    public ClubResponse patchClub(@PathVariable("id") String id, @Valid @RequestBody PatchClubRequest request) {
-        Optional<Club> clubOptional = clubsRepository.findById(id);
+    public ClubResponse patchClub(final @PathVariable("id") String id,
+                                  final @Valid @RequestBody PatchClubRequest request) {
+        final Optional<Club> clubOptional = clubsRepository.findById(id);
         if (clubOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found");
         }
 
-        if (request.getLeagueId() != null &&
-            leaguesRepository.findById(request.getLeagueId()).isEmpty()) {
+        if (request.getLeagueId() != null
+                && leaguesRepository.findById(request.getLeagueId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid League ID");
         }
 
-        Club club = mapper.toClub(request, clubOptional.get());
+        final Club club = mapper.toClub(request, clubOptional.get());
         clubsRepository.save(club);
         log.info("updated club {}", club.getId());
         return mapper.toClubResponse(club);
     }
 
+    /**
+     * Delete a club.
+     *
+     * @param id id of the club to delete
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize(Permission.Compound.DELETE_CLUBS)
     @Transactional
     @DeleteClubDoc
-    public void deleteClub(@PathVariable("id") String id) {
-        Optional<Club> clubOptional = clubsRepository.findById(id);
+    public void deleteClub(final @PathVariable("id") String id) {
+        final Optional<Club> clubOptional = clubsRepository.findById(id);
         if (clubOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found");
         }

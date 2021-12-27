@@ -31,7 +31,6 @@ public class User implements UserDetails {
 
     @Override
     public List<Permission> getAuthorities() {
-        Role role = getRole();
         if (role == null) {
             return Arrays.asList();
         }
@@ -62,5 +61,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    
+
 }

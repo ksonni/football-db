@@ -5,6 +5,7 @@ import com.ksonni.footballdb.queryparser.components.NumericFilterQueryComponent;
 import com.ksonni.footballdb.queryparser.components.StringFilterQueryComponent;
 import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import com.ksonni.footballdb.queryparser.keys.SortQueryKey;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,66 +16,64 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 public class QueryTests {
 
-    public QueryTests() throws QueryParseException {}
+    private static final int TESTING_PAGE_SIZE = 20;
 
-    class TestClass {
-        Integer someField;
-        String otherField;
+    private final List<FilterQueryComponent<TestClass>> filterComponents = Arrays.asList(
+            new NumericFilterQueryComponent<TestClass>(new FilterQueryKey("someField"), "1"),
+            new StringFilterQueryComponent<TestClass>(new FilterQueryKey("or:otherField"), "other")
+    );
+    private final List<SortQueryKey> sortKeys = Arrays.asList(
+            new SortQueryKey("someField"),
+            new SortQueryKey("desc:otherField")
+    );
+    private final Query<TestClass> query = new Query<>(filterComponents, sortKeys,
+            TESTING_PAGE_SIZE, 1);
+
+    QueryTests() throws QueryParseException {
     }
-
-    private List<FilterQueryComponent<TestClass>> filterComponents = Arrays.asList(
-        new NumericFilterQueryComponent<TestClass>(new FilterQueryKey("someField"),"1"),
-        new StringFilterQueryComponent<TestClass>(new FilterQueryKey("or:otherField"), "other")
-    );
-
-    private List<SortQueryKey> sortKeys = Arrays.asList(
-        new SortQueryKey("someField"),
-        new SortQueryKey("desc:otherField")
-    );
-
-    Query<TestClass> query = new Query<>(filterComponents, sortKeys,
-            20, 1);
 
     @Test
     void constructsPageRequest() {
-        PageRequest req = query.constructPageRequest();
+        final PageRequest req = query.constructPageRequest();
 
-        assertEquals(1, req.getPageNumber());
-        assertEquals(20, req.getPageSize());
+        Assertions.assertEquals(1, req.getPageNumber());
+        Assertions.assertEquals(TESTING_PAGE_SIZE, req.getPageSize());
         assertSortMatchesKeys(sortKeys, req.getSort());
     }
 
     @Test
     void constructsSort() {
-        Sort sort = query.constructSort();
+        final Sort sort = query.constructSort();
         assertSortMatchesKeys(sortKeys, sort);
     }
 
     @Test
     void constructsSpecification() {
-        Specification<TestClass> spec = query.constructFilterSpec();
-        assertNotNull(spec); // Unable to test more without JPA context
+        final Specification<TestClass> spec = query.constructFilterSpec();
+        Assertions.assertNotNull(spec); // Unable to test more without JPA context
     }
 
-    private void assertSortMatchesKeys(List<SortQueryKey> keys, Sort sort) {
-        List<Sort.Order> orders = sort.get().collect(Collectors.toList());
+    private void assertSortMatchesKeys(final List<SortQueryKey> keys, final Sort sort) {
+        final List<Sort.Order> orders = sort.get().collect(Collectors.toList());
 
-        assertEquals(keys.size(), orders.size());
+        Assertions.assertEquals(keys.size(), orders.size());
 
-        Iterator<SortQueryKey> keysItr = keys.iterator();
-        Iterator<Sort.Order> ordersItr = orders.iterator();
+        final Iterator<SortQueryKey> keysItr = keys.iterator();
+        final Iterator<Sort.Order> ordersItr = orders.iterator();
 
         while (keysItr.hasNext() && ordersItr.hasNext()) {
-            var key = keysItr.next();
-            var order = ordersItr.next();
-            assertEquals(key.getField(), order.getProperty());
-            assertEquals(key.isDescending(), order.isDescending());
+            final var key = keysItr.next();
+            final var order = ordersItr.next();
+            Assertions.assertEquals(key.getField(), order.getProperty());
+            Assertions.assertEquals(key.isDescending(), order.isDescending());
         }
+    }
+
+    class TestClass {
+        private Integer someField;
+        private String otherField;
     }
 
 }

@@ -8,17 +8,33 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+/**
+ * Represents a URL query component to be used for filtering data.
+ *
+ * @param <T> Type of entity the component will be used to filter.
+ */
 public interface FilterQueryComponent<T> extends Specification<T> {
 
+    /**
+     * Gets the parsed key of a FilterQueryComponent.
+     *
+     * @return filter query key
+     */
     FilterQueryKey getKey();
 
+    /**
+     * Gets the parsed value of a FilterQueryComponent.
+     *
+     * @return filter query key
+     */
     Comparable getValue();
 
+    @Override
     @SuppressWarnings("unchecked")
     default Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        FilterQueryKey key = getKey();
-        Comparable value = getValue();
-        String field = key.getField();
+        final FilterQueryKey key = getKey();
+        final Comparable value = getValue();
+        final String field = key.getField();
 
         switch (key.getComparison()) {
             case EQUALS:
@@ -38,6 +54,13 @@ public interface FilterQueryComponent<T> extends Specification<T> {
         }
     }
 
+    /**
+     * Creates a Specification by merging another Specification,
+     * using the aggregator specified in the key.
+     *
+     * @param other Specification to merge with
+     * @return Aggregated Specification that can be used by data repositories
+     */
     default Specification<T> combine(Specification<T> other) {
         switch (getKey().getAggregator()) {
             case AND:

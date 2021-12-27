@@ -17,6 +17,11 @@ import javax.persistence.Table;
 @Table(name = "clubs")
 public class Club {
 
+    /**
+     * Max prestige of a Club.
+     */
+    public static final int MAX_PRESTIGE = 10;
+
     @Id
     private String id;
 

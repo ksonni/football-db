@@ -11,32 +11,37 @@ import java.util.List;
 @EqualsAndHashCode
 public class QueryKey {
 
+    private static final String SEPARATOR = ":";
     private final String field;
     private final List<String> modifiers;
 
-    private static final String SEPARATOR = ":";
-
-    public QueryKey(String key) throws InvalidQueryKeyException {
+    /**
+     * Parses the key of a URL query component.
+     *
+     * @param key String key
+     * @throws InvalidQueryKeyException if parsing a key fails
+     */
+    public QueryKey(final String key) throws InvalidQueryKeyException {
         if (!isKeyValid(key)) {
             throw new InvalidQueryKeyException(key);
         }
-        String[] components = key.split(SEPARATOR);
+        final String[] components = key.split(SEPARATOR);
         modifiers = extractModifiers(components);
         field = components[components.length - 1];
     }
 
-    private boolean isKeyValid(String key) {
-        return key.length() > 0 && !key.startsWith(SEPARATOR) &&
-                !key.endsWith(SEPARATOR);
+    private boolean isKeyValid(final String key) {
+        return key.length() > 0 && !key.startsWith(SEPARATOR)
+                && !key.endsWith(SEPARATOR);
     }
 
-    private List<String> extractModifiers(String[] components) {
-        List<String> modifiers = new ArrayList<>();
+    private List<String> extractModifiers(final String[] components) {
+        final List<String> mods = new ArrayList<>();
         for (int i = 0; i < components.length - 1; i++) {
-            modifiers.add(components[i]);
+            mods.add(components[i]);
         }
-        Collections.sort(modifiers);
-        return modifiers;
+        Collections.sort(mods);
+        return mods;
     }
 
 }

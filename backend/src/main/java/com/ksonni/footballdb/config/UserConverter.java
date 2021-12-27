@@ -7,13 +7,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Used by logback to append the current username in log messages
+ * Used by logback to append the current username in log messages.
  */
 public class UserConverter extends ClassicConverter {
 
     @Override
-    public String convert(ILoggingEvent event) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public String convert(final ILoggingEvent event) {
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
             return "'" + auth.getName() + "'";
         }

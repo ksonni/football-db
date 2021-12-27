@@ -15,11 +15,17 @@ import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
+import com.ksonni.footballdb.utils.MathUtils;
 import com.ksonni.footballdb.utils.MockMvcUtils;
+import com.ksonni.footballdb.utils.TestStringUtils;
+import org.hamcrest.Matchers;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,297 +35,291 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static com.ksonni.footballdb.utils.TestStringUtils.longString;
-import static com.ksonni.footballdb.utils.TestStringUtils.repeatedSequence;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(PlayersController.class)
 class PlayersControllerTests {
 
-    @MockBean
-    PlayersRepository playersRepository;
-    @MockBean
-    QueryParser<Player> queryParser;
-    @MockBean
-    UserDetailsService userDetailsService;
-    @MockBean
-    PlayersMapper mapper;
-    @MockBean
-    ClubsRepository clubsRepository;
-
-    @Autowired
-    MockMvc mockMvc;
-
-    List<Player> players;
-    Supplier<RegisterPlayerRequest.RegisterPlayerRequestBuilder> registerRequestSupplier;
-    RegisterPlayerRequest validRegisterRequest;
-    PatchPlayerRequest validPatchRequest;
-
     private static final String PLAYER_ID = "id";
     private static final String PLAYER_PATH = RoutesConfig.Players.PATH + "/" + PLAYER_ID;
+    private static final int RANDOM_SQUAD_NUM = 10;
+    private static final String LONG_COUNTRY_CODE = TestStringUtils.repeatedSequence("X", 5);
 
     private final MockMvcUtils utils = new MockMvcUtils();
+    @MockBean
+    private PlayersRepository playersRepository;
+    @MockBean
+    private QueryParser<Player> queryParser;
+    @MockBean
+    private UserDetailsService userDetailsService;
+    @MockBean
+    private PlayersMapper mapper;
+    @MockBean
+    private ClubsRepository clubsRepository;
+    @Autowired
+    private MockMvc mockMvc;
+    private List<Player> players;
+    private Supplier<RegisterPlayerRequest.RegisterPlayerRequestBuilder> registerRequestSupplier;
+    private RegisterPlayerRequest validRegisterRequest;
+    private PatchPlayerRequest validPatchRequest;
 
     @BeforeEach
     void setup() {
         players = Arrays.asList(
-            Player.builder().id("id").fullName("Some player").attackingWorkRate(WorkRate.HIGH)
-                    .defensiveWorkRate(WorkRate.LOW).preferredFoot(Side.LEFT).build(),
-            Player.builder().id("id2").fullName("Some player 2").build()
+                Player.builder().id("id").fullName("Some player").attackingWorkRate(WorkRate.HIGH)
+                        .defensiveWorkRate(WorkRate.LOW).preferredFoot(Side.LEFT).build(),
+                Player.builder().id("id2").fullName("Some player 2").build()
         );
 
-        Page<Player> pagedPlayers = new PageImpl<>(players,
+        final Page<Player> pagedPlayers = new PageImpl<>(players,
                 PageRequest.of(0, players.size()), players.size());
-        given(playersRepository.findAll(ArgumentMatchers.<Query<Player>>any()))
+        BDDMockito.given(playersRepository.findAll(ArgumentMatchers.<Query<Player>>any()))
                 .willReturn(pagedPlayers);
 
-        for (Player player: players) {
-            given(mapper.toPlayerResponse(player)).willReturn(
-                PlayerResponse.builder().id(player.getId())
-                        .fullName(player.getFullName())
-                        .attackingWorkRate(player.getAttackingWorkRate())
-                        .defensiveWorkRate(player.getDefensiveWorkRate())
-                        .preferredFoot(player.getPreferredFoot())
-                        .build()
+        for (Player player : players) {
+            BDDMockito.given(mapper.toPlayerResponse(player)).willReturn(
+                    PlayerResponse.builder().id(player.getId())
+                            .fullName(player.getFullName())
+                            .attackingWorkRate(player.getAttackingWorkRate())
+                            .defensiveWorkRate(player.getDefensiveWorkRate())
+                            .preferredFoot(player.getPreferredFoot())
+                            .build()
             );
         }
 
         registerRequestSupplier = () -> RegisterPlayerRequest.builder()
-                    .fullName("Some player").preferredFoot(Side.LEFT).clubId("id")
-                    .squadNumber(10).position("FW").countryCode("GB");
+                .fullName("Some player").preferredFoot(Side.LEFT).clubId("id")
+                .squadNumber(RANDOM_SQUAD_NUM).position("FW").countryCode("GB");
         validRegisterRequest = registerRequestSupplier.get().build();
         validPatchRequest = PatchPlayerRequest.builder().fullName("Some other player").build();
     }
 
     @AfterEach
     void tearDown() {
-        reset(playersRepository, queryParser, userDetailsService,
+        Mockito.reset(playersRepository, queryParser, userDetailsService,
                 clubsRepository, mapper);
     }
 
     @Test
     void enumeratePlayers() throws Exception {
         mockMvc.perform(utils.get(RoutesConfig.Players.PATH))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(players.size())))
-                .andExpect(jsonPath("$.content[0].id", is(players.get(0).getId())))
-                .andExpect(jsonPath("$.content[0].attackingWorkRate",
-                        is(players.get(0).getAttackingWorkRate().getValue())))
-                .andExpect(jsonPath("$.content[0].defensiveWorkRate",
-                        is(players.get(0).getDefensiveWorkRate().getValue())))
-                .andExpect(jsonPath("$.content[0].preferredFoot",
-                        is(players.get(0).getPreferredFoot().getValue())))
-                .andExpect(jsonPath("$.content[1].id", is(players.get(1).getId())));
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(players.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id", Is.is(players.get(0).getId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].attackingWorkRate",
+                        Is.is(players.get(0).getAttackingWorkRate().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].defensiveWorkRate",
+                        Is.is(players.get(0).getDefensiveWorkRate().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].preferredFoot",
+                        Is.is(players.get(0).getPreferredFoot().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].id", Is.is(players.get(1).getId())));
     }
 
     @Test
     void enumeratePlayersInvalidQuery() throws Exception {
-        given(queryParser.parse(anyString())).willThrow(QueryParseException.class);
+        BDDMockito.given(queryParser.parse(ArgumentMatchers.anyString()))
+                .willThrow(QueryParseException.class);
         mockMvc.perform(utils.get(RoutesConfig.Players.PATH + "?badquery:"))
-                .andExpect(status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     @WithMockUser
     void registerPlayerEnforcesPermission() throws Exception {
         mockMvc.perform(utils.postJSON(RoutesConfig.Players.PATH, validRegisterRequest))
-                .andExpect(status().isForbidden());
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void registerPlayerValidatesData() throws Exception {
-        var base = registerRequestSupplier;
-        RegisterPlayerRequest[] badRequests = {
-            RegisterPlayerRequest.builder().build(),
-            base.get().fullName("").build(),
-            base.get().fullName(longString()).build(),
-            base.get().height(-1).build(),
-            base.get().height(501).build(),
-            base.get().weight(-1).build(),
-            base.get().weight(1001).build(),
-            base.get().overall(-1).build(),
-            base.get().overall(101).build(),
-            base.get().valueEuro(-1).build(),
-            base.get().wageEuro(-1).build(),
-            base.get().contractEndYear(-1).build(),
-            base.get().contractStartYear(-1).build(),
-            base.get().reputation(-1).build(),
-            base.get().reputation(11).build(),
-            base.get().shootingTotal(-1).build(),
-            base.get().shootingTotal(101).build(),
-            base.get().passingTotal(-1).build(),
-            base.get().passingTotal(101).build(),
-            base.get().dribblingTotal(-1).build(),
-            base.get().dribblingTotal(101).build(),
-            base.get().defendingTotal(-1).build(),
-            base.get().defendingTotal(101).build(),
-            base.get().headingAccuracy(-1).build(),
-            base.get().headingAccuracy(101).build(),
-            base.get().penalties(-1).build(),
-            base.get().penalties(101).build(),
-            base.get().squadNumber(-1).build(),
-            base.get().birthYear(-1).build(),
-            base.get().countryCode("").build(),
-            base.get().countryCode(repeatedSequence("X", 5)).build(),
+        final var base = registerRequestSupplier;
+        final RegisterPlayerRequest[] badRequests = {
+                RegisterPlayerRequest.builder().build(),
+                base.get().fullName("").build(),
+                base.get().fullName(TestStringUtils.longString()).build(),
+                base.get().height(-1).build(),
+                base.get().height(Player.MAX_HEIGHT + 1).build(),
+                base.get().weight(-1).build(),
+                base.get().weight(Player.MAX_WEIGHT + 1).build(),
+                base.get().overall(-1).build(),
+                base.get().overall(MathUtils.MAX_PERCENT + 1).build(),
+                base.get().valueEuro(-1).build(),
+                base.get().wageEuro(-1).build(),
+                base.get().contractEndYear(-1).build(),
+                base.get().contractStartYear(-1).build(),
+                base.get().reputation(-1).build(),
+                base.get().reputation(Player.MAX_REPUTATION + 1).build(),
+                base.get().shootingTotal(-1).build(),
+                base.get().shootingTotal(MathUtils.MAX_PERCENT + 1).build(),
+                base.get().passingTotal(-1).build(),
+                base.get().passingTotal(MathUtils.MAX_PERCENT + 1).build(),
+                base.get().dribblingTotal(-1).build(),
+                base.get().dribblingTotal(MathUtils.MAX_PERCENT + 1).build(),
+                base.get().defendingTotal(-1).build(),
+                base.get().defendingTotal(MathUtils.MAX_PERCENT + 1).build(),
+                base.get().headingAccuracy(-1).build(),
+                base.get().headingAccuracy(MathUtils.MAX_PERCENT + 1).build(),
+                base.get().penalties(-1).build(),
+                base.get().penalties(MathUtils.MAX_PERCENT + 1).build(),
+                base.get().squadNumber(-1).build(),
+                base.get().birthYear(-1).build(),
+                base.get().countryCode("").build(),
+                base.get().countryCode(LONG_COUNTRY_CODE).build(),
         };
 
-        for (var request: badRequests) {
+        for (var request : badRequests) {
             mockMvc.perform(utils.postJSON(RoutesConfig.Players.PATH, request))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void registerPlayerDoesNotAcceptInvalidClubIds() throws Exception {
-        String clubId = validRegisterRequest.getClubId();
-        given(clubsRepository.findById(clubId)).willReturn(Optional.empty());
+        final String clubId = validRegisterRequest.getClubId();
+        BDDMockito.given(clubsRepository.findById(clubId)).willReturn(Optional.empty());
 
         mockMvc.perform(utils.postJSON(RoutesConfig.Players.PATH, validRegisterRequest))
-                .andExpect(status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void registerPlayerSucceeds() throws Exception {
-        String clubId = validRegisterRequest.getClubId();
-        Optional<Club> clubOptional = Optional.ofNullable(
-            Club.builder().id(clubId).build());
+        final String clubId = validRegisterRequest.getClubId();
+        final Optional<Club> clubOptional = Optional.ofNullable(
+                Club.builder().id(clubId).build());
 
-        given(clubsRepository.findById(clubId)).willReturn(clubOptional);
+        BDDMockito.given(clubsRepository.findById(clubId)).willReturn(clubOptional);
 
-        given(mapper.toPlayer(validRegisterRequest))
+        BDDMockito.given(mapper.toPlayer(validRegisterRequest))
                 .willReturn(Player.builder().id(PLAYER_ID).build());
 
         mockMvc.perform(utils.postJSON(RoutesConfig.Players.PATH, validRegisterRequest))
-                .andExpect(status().isCreated());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        verify(playersRepository, times(1)).save(any(Player.class));
+        Mockito.verify(playersRepository, Mockito.times(1))
+                .save(ArgumentMatchers.any(Player.class));
     }
 
     @Test
     @WithMockUser
     void patchPlayerEnforcesPermission() throws Exception {
         mockMvc.perform(utils.patchJSON(PLAYER_PATH, validPatchRequest))
-                .andExpect(status().isForbidden());
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void patchPlayerValidatesData() throws Exception {
-        PatchPlayerRequest[] badRequests = {
-            PatchPlayerRequest.builder().fullName("").build(),
-            PatchPlayerRequest.builder().fullName(longString()).build(),
-            PatchPlayerRequest.builder().height(-1).build(),
-            PatchPlayerRequest.builder().height(501).build(),
-            PatchPlayerRequest.builder().weight(-1).build(),
-            PatchPlayerRequest.builder().weight(1001).build(),
-            PatchPlayerRequest.builder().overall(-1).build(),
-            PatchPlayerRequest.builder().overall(101).build(),
-            PatchPlayerRequest.builder().valueEuro(-1).build(),
-            PatchPlayerRequest.builder().wageEuro(-1).build(),
-            PatchPlayerRequest.builder().contractEndYear(-1).build(),
-            PatchPlayerRequest.builder().contractStartYear(-1).build(),
-            PatchPlayerRequest.builder().reputation(-1).build(),
-            PatchPlayerRequest.builder().reputation(11).build(),
-            PatchPlayerRequest.builder().shootingTotal(-1).build(),
-            PatchPlayerRequest.builder().shootingTotal(101).build(),
-            PatchPlayerRequest.builder().passingTotal(-1).build(),
-            PatchPlayerRequest.builder().passingTotal(101).build(),
-            PatchPlayerRequest.builder().dribblingTotal(-1).build(),
-            PatchPlayerRequest.builder().dribblingTotal(101).build(),
-            PatchPlayerRequest.builder().defendingTotal(-1).build(),
-            PatchPlayerRequest.builder().defendingTotal(101).build(),
-            PatchPlayerRequest.builder().headingAccuracy(-1).build(),
-            PatchPlayerRequest.builder().headingAccuracy(101).build(),
-            PatchPlayerRequest.builder().penalties(-1).build(),
-            PatchPlayerRequest.builder().penalties(101).build(),
-            PatchPlayerRequest.builder().squadNumber(-1).build(),
-            PatchPlayerRequest.builder().birthYear(-1).build(),
-            PatchPlayerRequest.builder().countryCode("").build(),
-            PatchPlayerRequest.builder().countryCode(repeatedSequence("X", 5)).build(),
+        final PatchPlayerRequest[] badRequests = {
+                PatchPlayerRequest.builder().fullName("").build(),
+                PatchPlayerRequest.builder().fullName(TestStringUtils.longString()).build(),
+                PatchPlayerRequest.builder().height(-1).build(),
+                PatchPlayerRequest.builder().height(Player.MAX_HEIGHT + 1).build(),
+                PatchPlayerRequest.builder().weight(-1).build(),
+                PatchPlayerRequest.builder().weight(Player.MAX_WEIGHT + 1).build(),
+                PatchPlayerRequest.builder().overall(-1).build(),
+                PatchPlayerRequest.builder().overall(MathUtils.MAX_PERCENT + 1).build(),
+                PatchPlayerRequest.builder().valueEuro(-1).build(),
+                PatchPlayerRequest.builder().wageEuro(-1).build(),
+                PatchPlayerRequest.builder().contractEndYear(-1).build(),
+                PatchPlayerRequest.builder().contractStartYear(-1).build(),
+                PatchPlayerRequest.builder().reputation(-1).build(),
+                PatchPlayerRequest.builder().reputation(Player.MAX_REPUTATION + 1).build(),
+                PatchPlayerRequest.builder().shootingTotal(-1).build(),
+                PatchPlayerRequest.builder().shootingTotal(MathUtils.MAX_PERCENT + 1).build(),
+                PatchPlayerRequest.builder().passingTotal(-1).build(),
+                PatchPlayerRequest.builder().passingTotal(MathUtils.MAX_PERCENT + 1).build(),
+                PatchPlayerRequest.builder().dribblingTotal(-1).build(),
+                PatchPlayerRequest.builder().dribblingTotal(MathUtils.MAX_PERCENT + 1).build(),
+                PatchPlayerRequest.builder().defendingTotal(-1).build(),
+                PatchPlayerRequest.builder().defendingTotal(MathUtils.MAX_PERCENT + 1).build(),
+                PatchPlayerRequest.builder().headingAccuracy(-1).build(),
+                PatchPlayerRequest.builder().headingAccuracy(MathUtils.MAX_PERCENT + 1).build(),
+                PatchPlayerRequest.builder().penalties(-1).build(),
+                PatchPlayerRequest.builder().penalties(MathUtils.MAX_PERCENT + 1).build(),
+                PatchPlayerRequest.builder().squadNumber(-1).build(),
+                PatchPlayerRequest.builder().birthYear(-1).build(),
+                PatchPlayerRequest.builder().countryCode("").build(),
+                PatchPlayerRequest.builder().countryCode(LONG_COUNTRY_CODE).build(),
         };
 
-        for (var request: badRequests) {
+        for (var request : badRequests) {
             mockMvc.perform(utils.patchJSON(PLAYER_PATH, request))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void patchPlayerDoesNotAcceptInvalidClubIds() throws Exception {
-        String clubId = validRegisterRequest.getClubId();
-        given(clubsRepository.findById(clubId))
-            .willReturn(Optional.empty());
-        given(playersRepository.findById(PLAYER_ID))
+        final String clubId = validRegisterRequest.getClubId();
+        BDDMockito.given(clubsRepository.findById(clubId))
+                .willReturn(Optional.empty());
+        BDDMockito.given(playersRepository.findById(PLAYER_ID))
                 .willReturn(Optional.ofNullable(Player.builder().build()));
 
         mockMvc.perform(utils.patchJSON(PLAYER_PATH,
-                PatchPlayerRequest.builder().clubId("bad id").build()))
-                .andExpect(status().isBadRequest());
+                        PatchPlayerRequest.builder().clubId("bad id").build()))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void patchPlayerRequestSucceeds() throws Exception {
-        Player player = Player.builder().id(PLAYER_ID).build();
-        Player updated = Player.builder().id(PLAYER_ID)
+        final Player player = Player.builder().id(PLAYER_ID).build();
+        final Player updated = Player.builder().id(PLAYER_ID)
                 .fullName(validPatchRequest.getFullName())
                 .build();
 
-        given(playersRepository.findById(PLAYER_ID)).willReturn(Optional.ofNullable(player));
-        given(mapper.toPlayer(validPatchRequest, player)).willReturn(updated);
+        BDDMockito.given(playersRepository.findById(PLAYER_ID)).willReturn(Optional.ofNullable(player));
+        BDDMockito.given(mapper.toPlayer(validPatchRequest, player)).willReturn(updated);
 
         mockMvc.perform(utils.patchJSON(PLAYER_PATH, validPatchRequest))
-                .andExpect(status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(playersRepository, times(1)).save(updated);
+        Mockito.verify(playersRepository, Mockito.times(1)).save(updated);
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void patchPlayerRejectsUnknownPlayers() throws Exception {
-        given(playersRepository.findById(PLAYER_ID)).willReturn(Optional.empty());
+        BDDMockito.given(playersRepository.findById(PLAYER_ID)).willReturn(Optional.empty());
         mockMvc.perform(utils.patchJSON(PLAYER_PATH, validPatchRequest))
-                .andExpect(status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
     @WithMockUser
     void deletePlayerEnforcesPermission() throws Exception {
-        mockMvc.perform(utils.delete(PLAYER_PATH)).andExpect(status().isForbidden());
+        mockMvc.perform(utils.delete(PLAYER_PATH))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void deletePlayerSucceeds() throws Exception {
-        given(playersRepository.findById(PLAYER_ID))
-            .willReturn(Optional.ofNullable(Player.builder().build()));
+        BDDMockito.given(playersRepository.findById(PLAYER_ID))
+                .willReturn(Optional.ofNullable(Player.builder().build()));
 
-        mockMvc.perform(utils.delete(PLAYER_PATH)).andExpect(status().isOk());
-        verify(playersRepository, times(1)).deleteById(PLAYER_ID);
+        mockMvc.perform(utils.delete(PLAYER_PATH))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        Mockito.verify(playersRepository, Mockito.times(1)).deleteById(PLAYER_ID);
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_PLAYERS })
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void deletePlayerRejectsUnknownPlayers() throws Exception {
-        given(playersRepository.findById(PLAYER_ID)).willReturn(Optional.empty());
-        mockMvc.perform(utils.delete(PLAYER_PATH)).andExpect(status().isNotFound());
+        BDDMockito.given(playersRepository.findById(PLAYER_ID)).willReturn(Optional.empty());
+        mockMvc.perform(utils.delete(PLAYER_PATH))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
 }

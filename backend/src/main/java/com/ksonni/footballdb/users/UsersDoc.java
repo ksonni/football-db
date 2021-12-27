@@ -14,48 +14,57 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Tag(name = "Auth", description = "User registration and auth")
-@interface AuthControllerDoc {}
+@interface AuthControllerDoc {
+}
 
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(summary = "Register a new user account")
-@interface RegisterUserDoc {}
+@interface RegisterUserDoc {
+}
 
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(summary = "Login to start a new session")
-@interface LoginDoc {}
+@interface LoginDoc {
+}
 
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(summary = "Logout")
-@interface LogoutDoc {}
+@interface LogoutDoc {
+}
 
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(summary = "Fetch details about the logged in user")
-@interface MeDoc {}
+@interface MeDoc {
+}
 
 @Retention(RetentionPolicy.RUNTIME)
 @Tag(name = "Users", description = "Search for and manage users")
-@interface UsersControllerDoc {}
+@interface UsersControllerDoc {
+}
 
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
-    summary = "Fetch users with search and sort queries",
-    description = DocUtils.PERMISSIONS + Permission.Code.MANAGE_USERS +
-            "\n\n" + DocUtils.STANDARD_QUERY_DOC,
-    parameters = {
-        @Parameter(in = ParameterIn.QUERY, name = "id",
-            schema = @Schema(implementation = String.class)),
-        @Parameter(in = ParameterIn.QUERY, name = "emailId",
-            schema = @Schema(implementation = String.class)),
-        @Parameter(in = ParameterIn.QUERY, name = "in:emailId",
-            schema = @Schema(implementation = String.class)),
-        @Parameter(in = ParameterIn.QUERY, name = "or:in:emailId",
-            schema = @Schema(implementation = String.class)),
-        @Parameter(in = ParameterIn.QUERY, name = "role",
-            schema = @Schema(implementation = Role.class)),
-        @Parameter(in = ParameterIn.QUERY, name = "limit", description = "Max number of results per page",
-            schema = @Schema(implementation = Integer.class)),
-        @Parameter(in = ParameterIn.QUERY, name = "sort", description = "Comma separated list of fields to sort",
-            schema = @Schema(implementation = String.class)),
-    }
+        summary = "Fetch users with search and sort queries",
+        description = DocUtils.PERMISSIONS + Permission.Code.MANAGE_USERS
+                + DocUtils.LINE_SEPARATOR + DocUtils.STANDARD_QUERY_DOC,
+        parameters = {
+                @Parameter(in = ParameterIn.QUERY, name = "id",
+                        schema = @Schema(implementation = String.class)),
+                @Parameter(in = ParameterIn.QUERY, name = "emailId",
+                        schema = @Schema(implementation = String.class)),
+                @Parameter(in = ParameterIn.QUERY, name = "in:emailId",
+                        schema = @Schema(implementation = String.class)),
+                @Parameter(in = ParameterIn.QUERY, name = "or:in:emailId",
+                        schema = @Schema(implementation = String.class)),
+                @Parameter(in = ParameterIn.QUERY, name = "role",
+                        schema = @Schema(implementation = Role.class)),
+                @Parameter(in = ParameterIn.QUERY, name = "limit",
+                        description = "Max number of results per page",
+                        schema = @Schema(implementation = Integer.class)),
+                @Parameter(in = ParameterIn.QUERY, name = "sort",
+                        description = "Comma separated list of fields to sort",
+                        schema = @Schema(implementation = String.class)),
+        }
 )
-@interface EnumerateUsersDoc {}
+@interface EnumerateUsersDoc {
+}
