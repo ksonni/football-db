@@ -12,6 +12,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -20,7 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
     jsr250Enabled = true,
     prePostEnabled = true
 )
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
     private final UserDetailsService userDetailsService;
 
@@ -48,6 +53,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        List<RoutesConfig.UnauthenticatedRoute> corsRoutes = RoutesConfig.UNAUTHENTICATED_ROUTES
+                .stream().filter(route -> route.isCrossOrigin())
+                .collect(Collectors.toList());
+
+        for (var route: corsRoutes) {
+            registry.addMapping(route.getPattern()).allowedMethods(route.getMethod().name());
+        }
     }
 
     private HttpSecurity configureUnauthenticatedRoutes(HttpSecurity http) throws Exception {
