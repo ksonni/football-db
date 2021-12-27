@@ -13,12 +13,17 @@ import com.ksonni.footballdb.users.services.UserQueryParser;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 
 @Configuration
+@RequiredArgsConstructor
 public class AppConfig {
+
+    private final BuildProperties buildProperties;
 
     @Bean
     public QueryParser<Club> clubsQueryParser() {
@@ -54,7 +59,9 @@ public class AppConfig {
     public OpenAPI openAPIConfig() {
         return new OpenAPI()
             .components(new Components())
-            .info(new Info().title("Football DB API"));
+            .info(new Info()
+                .title("Football DB API")
+                .version(buildProperties.getVersion()));
     }
 
 }

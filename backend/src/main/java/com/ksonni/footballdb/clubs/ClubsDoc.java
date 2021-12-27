@@ -5,6 +5,7 @@ import com.ksonni.footballdb.utils.DocUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.lang.annotation.Retention;
@@ -23,16 +24,26 @@ import java.lang.annotation.RetentionPolicy;
     summary = "Fetch clubs with search and sort queries",
     description = DocUtils.NO_PERMISSIONS + DocUtils.STANDARD_QUERY_DOC,
     parameters = {
-        @Parameter(in = ParameterIn.QUERY, name = "id"),
-        @Parameter(in = ParameterIn.QUERY, name = "name"),
-        @Parameter(in = ParameterIn.QUERY, name = "in:name"),
-        @Parameter(in = ParameterIn.QUERY, name = "overallRating"),
-        @Parameter(in = ParameterIn.QUERY, name = "lt:overallRating"),
-        @Parameter(in = ParameterIn.QUERY, name = "gt:overallRating"),
-        @Parameter(in = ParameterIn.QUERY, name = "gte:overallRating"),
-        @Parameter(in = ParameterIn.QUERY, name = "lte:overallRating"),
-        @Parameter(in = ParameterIn.QUERY, name = "limit", description = "Max number of results per page"),
-        @Parameter(in = ParameterIn.QUERY, name = "sort", description = "Comma separated list of fields to sort"),
+        @Parameter(in = ParameterIn.QUERY, name = "id",
+            schema = @Schema(implementation = String.class)),
+        @Parameter(in = ParameterIn.QUERY, name = "name",
+            schema = @Schema(implementation = String.class)),
+        @Parameter(in = ParameterIn.QUERY, name = "in:name",
+            schema = @Schema(implementation = String.class)),
+        @Parameter(in = ParameterIn.QUERY, name = "overallRating",
+            schema = @Schema(implementation = Integer.class)),
+        @Parameter(in = ParameterIn.QUERY, name = "lt:overallRating",
+            schema = @Schema(implementation = Integer.class)),
+        @Parameter(in = ParameterIn.QUERY, name = "gt:overallRating",
+            schema = @Schema(implementation = Integer.class)),
+        @Parameter(in = ParameterIn.QUERY, name = "gte:overallRating",
+            schema = @Schema(implementation = Integer.class)),
+        @Parameter(in = ParameterIn.QUERY, name = "lte:overallRating",
+            schema = @Schema(implementation = Integer.class)),
+        @Parameter(in = ParameterIn.QUERY, name = "limit", description = "Max number of results per page",
+            schema = @Schema(implementation = Integer.class)),
+        @Parameter(in = ParameterIn.QUERY, name = "sort", description = "Comma separated list of fields to sort",
+            schema = @Schema(implementation = String.class)),
     }
 )
 @interface EnumerateClubsDoc {}
