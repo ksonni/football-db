@@ -12,15 +12,37 @@ import lombok.RequiredArgsConstructor;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
+/**
+ * Working rate of a player in a given area of the game.
+ */
 @Getter
 @RequiredArgsConstructor
 public enum WorkRate implements EnumUtils.ValueEnum {
-    LOW(1), MEDIUM(2), HIGH(3);
+    /**
+     * Low working rate.
+     */
+    LOW(1),
+
+    /**
+     * Medium working rate.
+     */
+    MEDIUM(2),
+
+    /**
+     * High working rate.
+     */
+    HIGH(3);
 
     private final Integer value;
 
+    /**
+     * Parses an integer to WorkRate.
+     *
+     * @param rate int to parse
+     * @return parsed WorkRate
+     */
     @JsonCreator
-    public static WorkRate of (Integer rate) {
+    public static WorkRate of(final Integer rate) {
         return (WorkRate) EnumUtils.parseEnum(WorkRate.values(), rate);
     }
 
@@ -30,12 +52,20 @@ public enum WorkRate implements EnumUtils.ValueEnum {
     }
 
     public static class WorkRateFilterQueryComponent extends EnumFilterQueryComponent<Player, WorkRate> {
-        public WorkRateFilterQueryComponent(FilterQueryKey key, String value) throws InvalidQueryValueException {
+        /**
+         * Parsed QueryComponent that can be used to filter players properties by WorkRate.
+         *
+         * @param key   parsed FilterQueryKey
+         * @param value string value of the WorkRate enum
+         * @throws InvalidQueryValueException if enum parsing fails
+         */
+        public WorkRateFilterQueryComponent(final FilterQueryKey key, final String value)
+                throws InvalidQueryValueException {
             super(key, value);
         }
 
         @Override
-        public WorkRate parseEnum(String value) throws IllegalArgumentException {
+        public WorkRate parseEnum(final String value) throws IllegalArgumentException {
             try {
                 return WorkRate.of(Integer.parseInt(value));
             } catch (NumberFormatException e) {
@@ -47,7 +77,7 @@ public enum WorkRate implements EnumUtils.ValueEnum {
     @Converter(autoApply = true)
     public static class WorkRateConverter implements AttributeConverter<WorkRate, Integer> {
         @Override
-        public Integer convertToDatabaseColumn(WorkRate rate) {
+        public Integer convertToDatabaseColumn(final WorkRate rate) {
             if (rate == null) {
                 return null;
             }
@@ -55,7 +85,7 @@ public enum WorkRate implements EnumUtils.ValueEnum {
         }
 
         @Override
-        public WorkRate convertToEntityAttribute(Integer rate) {
+        public WorkRate convertToEntityAttribute(final Integer rate) {
             return WorkRate.of(rate);
         }
     }

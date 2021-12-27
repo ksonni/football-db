@@ -6,43 +6,102 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+/**
+ * Helpers to make using Mock MVC easier.
+ */
 public class MockMvcUtils {
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    public MockHttpServletRequestBuilder get(String path) {
+    /**
+     * Mock GET request with https.
+     *
+     * @param path path to send request
+     * @return mock
+     */
+    public MockHttpServletRequestBuilder get(final String path) {
         return MockMvcRequestBuilders.get(path).secure(true);
     }
 
-    public MockHttpServletRequestBuilder post(String path) {
+    /**
+     * Mock POST request with https.
+     *
+     * @param path path to send request
+     * @return mock
+     */
+    public MockHttpServletRequestBuilder post(final String path) {
         return MockMvcRequestBuilders.post(path).secure(true);
     }
 
-    public MockHttpServletRequestBuilder delete(String path) {
+    /**
+     * Mock DELETE request with https.
+     *
+     * @param path path to send request
+     * @return mock
+     */
+    public MockHttpServletRequestBuilder delete(final String path) {
         return MockMvcRequestBuilders.delete(path).secure(true);
     }
 
-    public MockHttpServletRequestBuilder put(String path) {
+    /**
+     * Mock PUT request with https.
+     *
+     * @param path path to send request
+     * @return mock
+     */
+    public MockHttpServletRequestBuilder put(final String path) {
         return MockMvcRequestBuilders.put(path).secure(true);
     }
 
-    public MockHttpServletRequestBuilder patch(String path) {
+    /**
+     * Mock PATCH request with https.
+     *
+     * @param path path to send request
+     * @return mock
+     */
+    public MockHttpServletRequestBuilder patch(final String path) {
         return MockMvcRequestBuilders.patch(path).secure(true);
     }
 
-    public MockHttpServletRequestBuilder postJSON(String path, Object object) throws JsonProcessingException {
+    /**
+     * Mock POST request with https.
+     *
+     * @param path   path to send request
+     * @param object any JSON serializable object to send with the request
+     * @return mock
+     */
+    public MockHttpServletRequestBuilder postJSON(final String path, final Object object)
+            throws JsonProcessingException {
         return setJSONContent(post(path), object);
     }
 
-    public MockHttpServletRequestBuilder putJSON(String path, Object object) throws JsonProcessingException {
+    /**
+     * Mock PUT request with https.
+     *
+     * @param path   path to send request
+     * @param object any JSON serializable object to send with the request
+     * @return mock
+     */
+    public MockHttpServletRequestBuilder putJSON(final String path, final Object object)
+            throws JsonProcessingException {
         return setJSONContent(put(path), object);
     }
 
-    public MockHttpServletRequestBuilder patchJSON(String path, Object object) throws JsonProcessingException {
+    /**
+     * Mock PATCH request with https.
+     *
+     * @param path   path to send request
+     * @param object any JSON serializable object to send with the request
+     * @return mock
+     */
+    public MockHttpServletRequestBuilder patchJSON(final String path, final Object object)
+            throws JsonProcessingException {
         return setJSONContent(patch(path), object);
     }
 
-    private MockHttpServletRequestBuilder setJSONContent(MockHttpServletRequestBuilder builder, Object object) throws JsonProcessingException {
+    private MockHttpServletRequestBuilder setJSONContent(final MockHttpServletRequestBuilder builder,
+                                                         final Object object)
+            throws JsonProcessingException {
         return builder.accept(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(object))
                 .contentType(MediaType.APPLICATION_JSON);

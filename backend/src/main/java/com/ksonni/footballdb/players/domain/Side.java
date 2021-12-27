@@ -11,14 +11,31 @@ import lombok.RequiredArgsConstructor;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
+/**
+ * Represents a relative direction.
+ */
 @RequiredArgsConstructor
 public enum Side implements EnumUtils.ValueEnum {
-    LEFT("LEFT"), RIGHT("RIGHT");
+    /**
+     * Left relative direction.
+     */
+    LEFT("LEFT"),
+
+    /**
+     * Right relative declaration.
+     */
+    RIGHT("RIGHT");
 
     private final String value;
 
+    /**
+     * Parses a string to a Side.
+     *
+     * @param str String side
+     * @return parsed Side
+     */
     @JsonCreator
-    public static Side of (String str) {
+    public static Side of(final String str) {
         return (Side) EnumUtils.parseEnum(Side.values(), str);
     }
 
@@ -27,14 +44,21 @@ public enum Side implements EnumUtils.ValueEnum {
         return value;
     }
 
-
     public static class SideFilterQueryComponent extends EnumFilterQueryComponent<Player, Side> {
-        public SideFilterQueryComponent(FilterQueryKey key, String value) throws InvalidQueryValueException {
+        /**
+         * Parsed QueryComponent that can be used to filter players properties by Side.
+         *
+         * @param key   parsed FilterQueryKey
+         * @param value string value of the Side enum
+         * @throws InvalidQueryValueException if enum parsing fails
+         */
+        public SideFilterQueryComponent(final FilterQueryKey key, final String value)
+                throws InvalidQueryValueException {
             super(key, value);
         }
 
         @Override
-        public Side parseEnum(String value) throws IllegalArgumentException {
+        public Side parseEnum(final String value) throws IllegalArgumentException {
             return Side.of(value);
         }
     }
@@ -42,7 +66,7 @@ public enum Side implements EnumUtils.ValueEnum {
     @Converter(autoApply = true)
     public static class SideConverter implements AttributeConverter<Side, String> {
         @Override
-        public String convertToDatabaseColumn(Side value) {
+        public String convertToDatabaseColumn(final Side value) {
             if (value == null) {
                 return null;
             }
@@ -50,7 +74,7 @@ public enum Side implements EnumUtils.ValueEnum {
         }
 
         @Override
-        public Side convertToEntityAttribute(String code) {
+        public Side convertToEntityAttribute(final String code) {
             return Side.of(code);
         }
     }

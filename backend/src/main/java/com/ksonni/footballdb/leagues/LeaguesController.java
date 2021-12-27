@@ -17,7 +17,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.security.RolesAllowed;
@@ -36,49 +44,75 @@ public class LeaguesController {
     private final QueryParser<League> queryParser;
     private final LeaguesMapper mapper;
 
+    /**
+     * Query leagues.
+     *
+     * @param request HTTP request.
+     * @return Paginated list of leagues.
+     * @throws QueryParseException if the query is not valid
+     */
     @GetMapping
     @Transactional(readOnly = true)
     @EnumerateLeaguesDoc
-    public Page<LeagueResponse> enumerateLeagues(HttpServletRequest request) throws QueryParseException {
+    public Page<LeagueResponse> enumerateLeagues(final HttpServletRequest request) throws QueryParseException {
         return leaguesRepository.findAll(queryParser.parse(request.getQueryString()))
                 .map(mapper::toLeagueResponse);
     }
 
+    /**
+     * Register a new league.
+     *
+     * @param request league registration request
+     * @return the created league
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @RolesAllowed({ Permission.Code.MANAGE_LEAGUES })
+    @RolesAllowed({Permission.Code.MANAGE_LEAGUES})
     @Transactional
     @RegisterLeagueDoc
-    public LeagueResponse registerLeague(@Valid @RequestBody RegisterLeagueRequest request) {
-        League league = mapper.toLeague(request);
+    public LeagueResponse registerLeague(final @Valid @RequestBody RegisterLeagueRequest request) {
+        final League league = mapper.toLeague(request);
         league.setId(StringUtils.uuid());
         leaguesRepository.save(league);
         log.info("created league {}", league.getId());
         return mapper.toLeagueResponse(league);
     }
 
+    /**
+     * Partially update a league.
+     *
+     * @param id      id of the league to update
+     * @param request league update request
+     * @return success/error response
+     */
     @PatchMapping("/{id}")
-    @RolesAllowed({ Permission.Code.MANAGE_LEAGUES })
+    @RolesAllowed({Permission.Code.MANAGE_LEAGUES})
     @Transactional
     @PatchLeagueDoc
-    public LeagueResponse patchLeague(@PathVariable("id") String id, @Valid @RequestBody PatchLeagueRequest request) {
-        Optional<League> leagueOptional = leaguesRepository.findById(id);
+    public LeagueResponse patchLeague(final @PathVariable("id") String id,
+                                      final @Valid @RequestBody PatchLeagueRequest request) {
+        final Optional<League> leagueOptional = leaguesRepository.findById(id);
         if (leagueOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "League not found");
         }
 
-        League league = mapper.toLeague(request, leagueOptional.get());
+        final League league = mapper.toLeague(request, leagueOptional.get());
         leaguesRepository.save(league);
         log.info("updated league {}", league.getId());
         return mapper.toLeagueResponse(league);
     }
 
+    /**
+     * Delete a league.
+     *
+     * @param id id of the league to delete
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize(Permission.Compound.DELETE_LEAGUES)
     @Transactional
     @DeleteLeagueDoc
-    public void deleteLeague(@PathVariable("id") String id) {
-        Optional<League> leagueOptional = leaguesRepository.findById(id);
+    public void deleteLeague(final @PathVariable("id") String id) {
+        final Optional<League> leagueOptional = leaguesRepository.findById(id);
         if (leagueOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "League not found");
         }

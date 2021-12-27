@@ -12,10 +12,15 @@ import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.MockMvcUtils;
+import com.ksonni.footballdb.utils.TestStringUtils;
+import org.hamcrest.Matchers;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,46 +38,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.ksonni.footballdb.utils.TestStringUtils.longString;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(LeaguesController.class)
 class LeaguesControllerTests {
 
-    @MockBean
-    LeaguesRepository leaguesRepository;
-    @MockBean
-    QueryParser<League> queryParser;
-    @MockBean
-    UserDetailsService userDetailsService;
-    @MockBean
-    LeaguesMapper mapper;
-
-    @Autowired
-    MockMvc mockMvc;
-
-    List<League> leagues;
-    RegisterLeagueRequest validRegisterRequest;
-    PatchLeagueRequest validPatchRequest;
-
     private static final String LEAGUE_ID = "id";
-    private final String LEAGUES_PATH = RoutesConfig.Leagues.PATH + "/" + LEAGUE_ID;
-
+    private static final String LEAGUES_PATH = RoutesConfig.Leagues.PATH + "/" + LEAGUE_ID;
     private final MockMvcUtils utils = new MockMvcUtils();
-
-    @WithMockUser(roles = {
-        Permission.Code.MANAGE_LEAGUES,
-        Permission.Code.MANAGE_CLUBS,
-        Permission.Code.MANAGE_PLAYERS
-    })
-    @Retention(RetentionPolicy.RUNTIME)
-    private @interface DeletePermissions {}
+    @MockBean
+    private LeaguesRepository leaguesRepository;
+    @MockBean
+    private QueryParser<League> queryParser;
+    @MockBean
+    private UserDetailsService userDetailsService;
+    @MockBean
+    private LeaguesMapper mapper;
+    @Autowired
+    private MockMvc mockMvc;
+    private List<League> leagues;
+    private RegisterLeagueRequest validRegisterRequest;
+    private PatchLeagueRequest validPatchRequest;
 
     @BeforeEach
     void setup() {
@@ -80,14 +65,14 @@ class LeaguesControllerTests {
                 League.builder().id("id2").name("Some league 2").build()
         );
 
-        Page<League> pagedLeagues = new PageImpl<>(leagues,
+        final Page<League> pagedLeagues = new PageImpl<>(leagues,
                 PageRequest.of(0, 2), 2);
-        given(leaguesRepository.findAll(ArgumentMatchers.<Query<League>>any()))
+        BDDMockito.given(leaguesRepository.findAll(ArgumentMatchers.<Query<League>>any()))
                 .willReturn(pagedLeagues);
 
-        for (League league: leagues) {
-            given(mapper.toLeagueResponse(league)).willReturn(
-                LeagueResponse.builder().id(league.getId()).name(league.getName()).build()
+        for (League league : leagues) {
+            BDDMockito.given(mapper.toLeagueResponse(league)).willReturn(
+                    LeagueResponse.builder().id(league.getId()).name(league.getName()).build()
             );
         }
 
@@ -97,123 +82,139 @@ class LeaguesControllerTests {
 
     @AfterEach
     void tearDown() {
-        reset(leaguesRepository, queryParser, userDetailsService, mapper);
+        Mockito.reset(leaguesRepository, queryParser, userDetailsService, mapper);
     }
 
     @Test
     void enumerateLeagues() throws Exception {
         mockMvc.perform(utils.get(RoutesConfig.Leagues.PATH))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(leagues.size())))
-                .andExpect(jsonPath("$.content[0].id", is(leagues.get(0).getId())))
-                .andExpect(jsonPath("$.content[1].id", is(leagues.get(1).getId())));
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(leagues.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id", Is.is(leagues.get(0).getId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].id", Is.is(leagues.get(1).getId())));
     }
 
     @Test
     void enumerateLeaguesInvalidQuery() throws Exception {
-        given(queryParser.parse(anyString())).willThrow(QueryParseException.class);
+        BDDMockito.given(queryParser.parse(ArgumentMatchers.anyString()))
+                .willThrow(QueryParseException.class);
         mockMvc.perform(utils.get(RoutesConfig.Leagues.PATH + "?badquery:"))
-                .andExpect(status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     @WithMockUser
     void registerLeagueEnforcesPermission() throws Exception {
         mockMvc.perform(utils.postJSON(RoutesConfig.Leagues.PATH, validRegisterRequest))
-                .andExpect(status().isForbidden());
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_LEAGUES })
+    @WithMockUser(roles = {Permission.Code.MANAGE_LEAGUES})
     void registerLeagueValidatesData() throws Exception {
-        RegisterLeagueRequest[] badRequests = {
-            RegisterLeagueRequest.builder().name("").build(),
-            RegisterLeagueRequest.builder().name(longString()).build(),
+        final RegisterLeagueRequest[] badRequests = {
+                RegisterLeagueRequest.builder().name("").build(),
+                RegisterLeagueRequest.builder()
+                        .name(TestStringUtils.longString()).build(),
         };
 
-        for (var request: badRequests) {
+        for (var request : badRequests) {
             mockMvc.perform(utils.postJSON(RoutesConfig.Leagues.PATH, request))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_LEAGUES })
+    @WithMockUser(roles = {Permission.Code.MANAGE_LEAGUES})
     void registerLeagueSucceeds() throws Exception {
-        given(mapper.toLeague(validRegisterRequest)).willReturn(
-            League.builder().name(validRegisterRequest.getName()).build()
+        BDDMockito.given(mapper.toLeague(validRegisterRequest)).willReturn(
+                League.builder().name(validRegisterRequest.getName()).build()
         );
         mockMvc.perform(utils.postJSON(RoutesConfig.Leagues.PATH, validRegisterRequest))
-                .andExpect(status().isCreated());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        verify(leaguesRepository, times(1)).save(any(League.class));
+        Mockito.verify(leaguesRepository, Mockito.times(1))
+                .save(Mockito.any(League.class));
     }
 
     @Test
     @WithMockUser
     void patchLeagueEnforcesPermission() throws Exception {
         mockMvc.perform(utils.patchJSON(LEAGUES_PATH, validPatchRequest))
-                .andExpect(status().isForbidden());
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_LEAGUES })
+    @WithMockUser(roles = {Permission.Code.MANAGE_LEAGUES})
     void patchLeagueValidatesData() throws Exception {
-        PatchLeagueRequest[] badRequests = {
-            PatchLeagueRequest.builder().name(longString()).build(),
+        final PatchLeagueRequest[] badRequests = {
+                PatchLeagueRequest.builder()
+                        .name(TestStringUtils.longString()).build(),
         };
 
-        for (var request: badRequests) {
+        for (var request : badRequests) {
             mockMvc.perform(utils.patchJSON(LEAGUES_PATH, request))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_LEAGUES })
+    @WithMockUser(roles = {Permission.Code.MANAGE_LEAGUES})
     void patchLeagueRequestSucceeds() throws Exception {
-        League league = League.builder().id(LEAGUE_ID).build();
-        League updated = League.builder().id(LEAGUE_ID)
+        final League league = League.builder().id(LEAGUE_ID).build();
+        final League updated = League.builder().id(LEAGUE_ID)
                 .name(validPatchRequest.getName()).build();
 
-        given(leaguesRepository.findById(LEAGUE_ID)).willReturn(Optional.ofNullable(league));
-        given(mapper.toLeague(validPatchRequest, league)).willReturn(updated);
+        BDDMockito.given(leaguesRepository.findById(LEAGUE_ID)).willReturn(Optional.ofNullable(league));
+        BDDMockito.given(mapper.toLeague(validPatchRequest, league)).willReturn(updated);
 
         mockMvc.perform(utils.patchJSON(LEAGUES_PATH, validPatchRequest))
-                .andExpect(status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(leaguesRepository, times(1)).save(updated);
+        Mockito.verify(leaguesRepository, Mockito.times(1)).save(updated);
     }
 
     @Test
-    @WithMockUser(roles = { Permission.Code.MANAGE_LEAGUES })
+    @WithMockUser(roles = {Permission.Code.MANAGE_LEAGUES})
     void patchLeagueRejectsUnknownLeagues() throws Exception {
-        given(leaguesRepository.findById(LEAGUE_ID)).willReturn(Optional.empty());
+        BDDMockito.given(leaguesRepository.findById(LEAGUE_ID)).willReturn(Optional.empty());
         mockMvc.perform(utils.patchJSON(LEAGUES_PATH, validPatchRequest))
-                .andExpect(status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
     @WithMockUser
     void deleteLeagueEnforcesPermission() throws Exception {
-        mockMvc.perform(utils.delete(LEAGUES_PATH)).andExpect(status().isForbidden());
+        mockMvc.perform(utils.delete(LEAGUES_PATH))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test
     @DeletePermissions
     void deleteLeagueSucceeds() throws Exception {
-        given(leaguesRepository.findById(LEAGUE_ID))
+        BDDMockito.given(leaguesRepository.findById(LEAGUE_ID))
                 .willReturn(Optional.ofNullable(League.builder().build()));
-        mockMvc.perform(utils.delete(LEAGUES_PATH)).andExpect(status().isOk());
-        verify(leaguesRepository, times(1)).deleteById(LEAGUE_ID);
+        mockMvc.perform(utils.delete(LEAGUES_PATH))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        Mockito.verify(leaguesRepository, Mockito.times(1)).deleteById(LEAGUE_ID);
     }
 
     @Test
     @DeletePermissions
     void deleteLeagueRejectsUnknownLeagues() throws Exception {
-        given(leaguesRepository.findById(LEAGUE_ID))
+        BDDMockito.given(leaguesRepository.findById(LEAGUE_ID))
                 .willReturn(Optional.empty());
-        mockMvc.perform(utils.delete(LEAGUES_PATH)).andExpect(status().isNotFound());
+        mockMvc.perform(utils.delete(LEAGUES_PATH))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @WithMockUser(roles = {
+            Permission.Code.MANAGE_LEAGUES,
+            Permission.Code.MANAGE_CLUBS,
+            Permission.Code.MANAGE_PLAYERS
+    })
+    @Retention(RetentionPolicy.RUNTIME)
+    private @interface DeletePermissions {
     }
 
 }

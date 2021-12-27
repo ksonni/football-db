@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @EqualsAndHashCode
 @RequiredArgsConstructor
+/**
+ * Represents URL query component used to lookup strings.
+ */
 public class StringFilterQueryComponent<T> implements FilterQueryComponent<T> {
 
     private final FilterQueryKey key;

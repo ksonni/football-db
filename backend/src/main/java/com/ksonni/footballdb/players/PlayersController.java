@@ -9,6 +9,7 @@ import com.ksonni.footballdb.players.dto.PlayerResponse;
 import com.ksonni.footballdb.players.dto.RegisterPlayerRequest;
 import com.ksonni.footballdb.players.services.PlayersMapper;
 import com.ksonni.footballdb.players.services.PlayersRepository;
+import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
@@ -18,7 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.security.RolesAllowed;
@@ -38,59 +47,85 @@ public class PlayersController {
     private final QueryParser<Player> queryParser;
     private final PlayersMapper mapper;
 
+    /**
+     * Query players.
+     *
+     * @param request HTTP request
+     * @return Paginated list of players
+     * @throws QueryParseException if the query is not valid
+     */
     @GetMapping
     @Transactional(readOnly = true)
     @EnumeratePlayersDoc
-    public Page<PlayerResponse> enumeratePlayers(HttpServletRequest request) throws QueryParseException {
-        return playersRepository.findAll(queryParser.parse(request.getQueryString()))
-                .map(mapper::toPlayerResponse);
+    public Page<PlayerResponse> enumeratePlayers(final HttpServletRequest request) throws QueryParseException {
+        final Query<Player> query = queryParser.parse(request.getQueryString());
+        return playersRepository.findAll(query).map(mapper::toPlayerResponse);
     }
 
+    /**
+     * Register a new player.
+     *
+     * @param request player registration request
+     * @return the created player
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @RolesAllowed({ Permission.Code.MANAGE_PLAYERS })
+    @RolesAllowed({Permission.Code.MANAGE_PLAYERS})
     @Transactional
     @RegisterPlayerDoc
-    public PlayerResponse registerPlayer(@Valid @RequestBody RegisterPlayerRequest request) {
-        Optional<Club> club = clubsRepository.findById(request.getClubId());
+    public PlayerResponse registerPlayer(final @Valid @RequestBody RegisterPlayerRequest request) {
+        final Optional<Club> club = clubsRepository.findById(request.getClubId());
         if (club.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid club ID");
         }
 
-        Player player = mapper.toPlayer(request);
+        final Player player = mapper.toPlayer(request);
         player.setId(StringUtils.uuid());
         playersRepository.save(player);
         log.info("created player {}", player.getId());
         return mapper.toPlayerResponse(player);
     }
 
+    /**
+     * Partially update a player.
+     *
+     * @param id      id of the player to update
+     * @param request player update request
+     * @return success/error response
+     */
     @PatchMapping("/{id}")
-    @RolesAllowed({ Permission.Code.MANAGE_PLAYERS })
+    @RolesAllowed({Permission.Code.MANAGE_PLAYERS})
     @Transactional
     @PatchPlayerDoc
-    public PlayerResponse patchPlayer(@PathVariable("id") String id, @Valid @RequestBody PatchPlayerRequest request) {
-        Optional<Player> playerOptional = playersRepository.findById(id);
+    public PlayerResponse patchPlayer(final @PathVariable("id") String id,
+                                      final @Valid @RequestBody PatchPlayerRequest request) {
+        final Optional<Player> playerOptional = playersRepository.findById(id);
         if (playerOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player not found");
         }
 
-        if (request.getClubId() != null &&
-                clubsRepository.findById(request.getClubId()).isEmpty()) {
+        if (request.getClubId() != null
+                && clubsRepository.findById(request.getClubId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Club ID");
         }
 
-        Player player = mapper.toPlayer(request, playerOptional.get());
+        final Player player = mapper.toPlayer(request, playerOptional.get());
         playersRepository.save(player);
         log.info("updated player {}", player.getId());
         return mapper.toPlayerResponse(player);
     }
 
+    /**
+     * Delete a player.
+     *
+     * @param id id of the player to delete.
+     */
     @DeleteMapping("/{id}")
-    @RolesAllowed({ Permission.Code.MANAGE_PLAYERS })
+    @RolesAllowed({Permission.Code.MANAGE_PLAYERS})
     @Transactional
     @DeletePlayerDoc
-    public void deleteClub(@PathVariable("id") String id) {
-        Optional<Player> playerOptional = playersRepository.findById(id);
+    public void deleteClub(final @PathVariable("id") String id) {
+        final Optional<Player> playerOptional = playersRepository.findById(id);
         if (playerOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Player not found");
         }

@@ -1,6 +1,7 @@
 package com.ksonni.footballdb.users;
 
 import com.ksonni.footballdb.config.RoutesConfig;
+import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
@@ -28,12 +29,20 @@ public class UsersController {
     private final UsersMapper usersMapper;
     private final QueryParser<User> queryParser;
 
+    /**
+     * Query users.
+     *
+     * @param request HTTP request
+     * @return Paginated list of users
+     * @throws QueryParseException If the query is not valid
+     */
     @GetMapping
-    @RolesAllowed({ Permission.Code.VIEW_USERS })
+    @RolesAllowed({Permission.Code.VIEW_USERS})
     @Transactional(readOnly = true)
     @EnumerateUsersDoc
-    public Page<UserResponse> enumerateUsers(HttpServletRequest request) throws QueryParseException {
-        Page<User> page = usersRepository.findAll(queryParser.parse(request.getQueryString()));
+    public Page<UserResponse> enumerateUsers(final HttpServletRequest request) throws QueryParseException {
+        final Query<User> query = queryParser.parse(request.getQueryString());
+        final Page<User> page = usersRepository.findAll(query);
         return page.map(usersMapper::toUserResponse);
     }
 

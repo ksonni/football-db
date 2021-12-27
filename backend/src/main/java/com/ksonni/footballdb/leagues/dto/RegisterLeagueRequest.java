@@ -1,6 +1,7 @@
 package com.ksonni.footballdb.leagues.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.ksonni.footballdb.utils.StringUtils;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -12,12 +13,17 @@ import javax.validation.constraints.NotBlank;
 public class RegisterLeagueRequest {
 
     @NotBlank
-    @Length(max = 40)
+    @Length(max = StringUtils.STRING_MAX_LEN)
     private String name;
 
-    // Jackson fails to deserialize single property objects without this
+    /**
+     * Creates a RegisterLeagueRequest.
+     *
+     * @param name name of the league
+     */
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public RegisterLeagueRequest(String name) {
+    public RegisterLeagueRequest(final String name) {
         this.name = name;
     }
+
 }

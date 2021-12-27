@@ -12,7 +12,7 @@ public class DefaultAuthService implements AuthService {
     }
 
     @Override
-    public void setSessionAuth(Authentication auth) {
+    public void setSessionAuth(final Authentication auth) {
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 

@@ -12,12 +12,15 @@ import javax.validation.constraints.Size;
 @Builder
 public class RegisterUserRequest {
 
+    private static final int MAX_EMAIL_LEN = 60;
+    private static final int MIN_PASSWORD_LEN = 10;
+
     @Email
-    @Size(max = 60)
+    @Size(max = MAX_EMAIL_LEN)
     @NotBlank
     private String emailId;
 
-    @Size(min = 10)
+    @Size(min = MIN_PASSWORD_LEN)
     @Pattern(message = "Password must contain at least 1 number", regexp = ".*[0-9]+.*")
     @NotBlank
     private String password;

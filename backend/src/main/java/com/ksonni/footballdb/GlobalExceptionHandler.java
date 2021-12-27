@@ -3,7 +3,6 @@ package com.ksonni.footballdb;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.validation.ErrorResponse;
 import com.ksonni.footballdb.validation.FieldError;
-import com.ksonni.footballdb.validation.FieldValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,28 +16,33 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Maps query parsing exceptions to appropriate responses.
+     *
+     * @param e Query parsing exception
+     * @return Error response
+     */
     @ResponseBody
     @ExceptionHandler(QueryParseException.class)
-    public ResponseEntity<ErrorResponse> handleQueryParseErrors(QueryParseException e) {
-        var response = new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+    public ResponseEntity<ErrorResponse> handleQueryParseErrors(final QueryParseException e) {
+        final var response = new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
+    /**
+     * Intercepts request validation exceptions to provide a cleaner response.
+     *
+     * @param ex Validation exception
+     * @return Error response
+     */
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
-        List<FieldError> errors = ex.getFieldErrors().stream()
+    public ResponseEntity<ErrorResponse> handleValidationErrors(final MethodArgumentNotValidException ex) {
+        final List<FieldError> errors = ex.getFieldErrors().stream()
                 .map(e -> new FieldError(e.getField(), e.getDefaultMessage()))
                 .collect(Collectors.toList());
 
-        var response = new ErrorResponse(HttpStatus.BAD_REQUEST, null, errors);
-        return new ResponseEntity<>(response, response.getHttpStatus());
-    }
-
-    @ResponseBody
-    @ExceptionHandler(FieldValidationException.class)
-    public ResponseEntity<ErrorResponse> handleValidationErrors(FieldValidationException ex) {
-        var response = new ErrorResponse(HttpStatus.BAD_REQUEST, null, ex.getErrors());
+        final var response = new ErrorResponse(HttpStatus.BAD_REQUEST, null, errors);
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 

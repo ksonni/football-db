@@ -5,10 +5,23 @@ import org.springframework.security.core.Authentication;
 
 public interface AuthService {
 
+    /**
+     * Get currently authenticated user.
+     *
+     * @return User
+     */
     User getAuthenticatedUser();
 
+    /**
+     * Initialize an auth session.
+     *
+     * @param auth Result of authentication process
+     */
     void setSessionAuth(Authentication auth);
 
+    /**
+     * Clear the user auth session.
+     */
     void clearSessionAuth();
 
 }

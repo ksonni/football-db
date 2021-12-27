@@ -13,13 +13,35 @@ import org.mapstruct.factory.Mappers;
 @Mapper(config = MapStructConfig.class)
 public interface LeaguesMapper {
 
+    /**
+     * Generated LeaguesMapper instance.
+     */
     LeaguesMapper INSTANCE = Mappers.getMapper(LeaguesMapper.class);
 
+    /**
+     * Maps League to LeagueResponse DTO.
+     *
+     * @param league League
+     * @return Mapped LeagueResponse
+     */
     LeagueResponse toLeagueResponse(League league);
 
+    /**
+     * Maps RegisterLeagueRequest DTO to League.
+     *
+     * @param request RegisterLeagueRequest
+     * @return Mapped player
+     */
     @Mapping(target = "id", ignore = true)
     League toLeague(RegisterLeagueRequest request);
 
+    /**
+     * Maps a PatchLeagueRequest DTO to update an existing League.
+     *
+     * @param request PatchLeagueRequest
+     * @param league  the existing League
+     * @return updated League
+     */
     @Mapping(target = "id", ignore = true)
     League toLeague(PatchLeagueRequest request, @MappingTarget League league);
 

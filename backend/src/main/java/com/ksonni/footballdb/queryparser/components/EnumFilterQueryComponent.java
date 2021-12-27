@@ -14,7 +14,14 @@ public abstract class EnumFilterQueryComponent<T, U extends Enum<?>> implements 
     private final FilterQueryKey key;
     private final Comparable<?> value;
 
-    public EnumFilterQueryComponent(FilterQueryKey key, String value) throws InvalidQueryValueException {
+    /**
+     * Parses a URL query component used to lookup enums.
+     *
+     * @param key   Parsed key of a URL query
+     * @param value String value of a URL query
+     * @throws InvalidQueryValueException if the value could not be parsed as the desired enum
+     */
+    public EnumFilterQueryComponent(final FilterQueryKey key, final String value) throws InvalidQueryValueException {
         this.key = key;
         if (key.getComparison() == Comparison.CONTAINS) {
             this.value = value;
@@ -23,14 +30,21 @@ public abstract class EnumFilterQueryComponent<T, U extends Enum<?>> implements 
         }
     }
 
-    private U tryParseEnum(String value) throws InvalidQueryValueException {
+    private U tryParseEnum(final String val) throws InvalidQueryValueException {
         try {
-            return parseEnum(value);
+            return parseEnum(val);
         } catch (IllegalArgumentException e) {
-            throw new InvalidQueryValueException(key.getField(), value);
+            throw new InvalidQueryValueException(key.getField(), val);
         }
     }
 
-    public abstract U parseEnum(String value) throws IllegalArgumentException;
+    /**
+     * Parses a string value to the desired enum.
+     *
+     * @param val String value
+     * @return The parsed enum
+     * @throws IllegalArgumentException if the string could not be parsed to the desired enum
+     */
+    public abstract U parseEnum(String val) throws IllegalArgumentException;
 
 }

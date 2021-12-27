@@ -6,8 +6,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class FootballDbApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FootballDbApplication.class, args);
-	}
+    protected FootballDbApplication() {
+    }
+
+    /**
+     * Spring boot main.
+     *
+     * @param args Program arguments
+     */
+    public static void main(final String[] args) {
+        SpringApplication.run(FootballDbApplication.class, args);
+    }
 
 }

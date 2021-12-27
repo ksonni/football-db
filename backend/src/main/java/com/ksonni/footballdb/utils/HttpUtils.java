@@ -5,11 +5,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class HttpUtils {
+public final class HttpUtils {
+
+    private HttpUtils() {
+    }
 
     public static HttpServletRequest getCurrentRequest() {
-        return ((ServletRequestAttributes)
-                RequestContextHolder.getRequestAttributes()).getRequest();
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     }
 
 }

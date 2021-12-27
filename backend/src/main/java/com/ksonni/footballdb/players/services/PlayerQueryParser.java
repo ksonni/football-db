@@ -10,13 +10,16 @@ import java.lang.reflect.Field;
 
 public class PlayerQueryParser extends DefaultQueryParser<Player> {
 
-    public PlayerQueryParser(Class<Player> objectType) {
-        super(objectType);
+    /**
+     * Constructs Query objects to search for players.
+     */
+    public PlayerQueryParser() {
+        super(Player.class);
     }
 
     @Override
-    public FilterQueryComponentSupplier<Player> getQueryComponentSupplier(Field field) {
-        var type = field.getType();
+    public FilterQueryComponentSupplier<Player> getQueryComponentSupplier(final Field field) {
+        final var type = field.getType();
 
         if (type.isAssignableFrom(Side.class)) {
             return (key, value) -> new Side.SideFilterQueryComponent(key, value);
@@ -26,5 +29,5 @@ public class PlayerQueryParser extends DefaultQueryParser<Player> {
 
         return super.getQueryComponentSupplier(field);
     }
-    
+
 }

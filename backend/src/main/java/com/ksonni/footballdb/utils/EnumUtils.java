@@ -2,13 +2,21 @@ package com.ksonni.footballdb.utils;
 
 import java.util.stream.Stream;
 
-public class EnumUtils {
+public final class EnumUtils {
 
-    public interface ValueEnum {
-        Comparable getValue();
+    private EnumUtils() {
     }
 
-    public static ValueEnum parseEnum(ValueEnum[] values, Comparable value) throws IllegalArgumentException {
+    /**
+     * Constructs an enum by parsing a Comparable.
+     *
+     * @param values List of values the enum can assume
+     * @param value  The value to parse
+     * @return The parsed enum
+     * @throws IllegalArgumentException Thrown if the comparable is not assignable to the enum
+     */
+    public static ValueEnum parseEnum(final ValueEnum[] values, final Comparable value)
+            throws IllegalArgumentException {
         if (value == null) {
             return null;
         }
@@ -16,6 +24,17 @@ public class EnumUtils {
                 .filter(c -> c.getValue().equals(value))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public interface ValueEnum {
+
+        /**
+         * Gets the Comparable value for an enum.
+         *
+         * @return Comparable value for the enum.
+         */
+        Comparable getValue();
+
     }
 
 }

@@ -25,7 +25,14 @@ public class ErrorResponse {
     @JsonIgnore
     private HttpStatus httpStatus;
 
-    public ErrorResponse(HttpStatus httpStatus, String message, List<FieldError> errors) {
+    /**
+     * Structure to report field validation errors.
+     *
+     * @param httpStatus Http status to respond with
+     * @param message    Summary of the error
+     * @param errors     Field level errors
+     */
+    public ErrorResponse(final HttpStatus httpStatus, final String message, final List<FieldError> errors) {
         this.httpStatus = httpStatus;
         this.message = message;
         this.errors = errors;
@@ -37,9 +44,8 @@ public class ErrorResponse {
     }
 
     private String getRequestPath() {
-        HttpServletRequest request = HttpUtils.getCurrentRequest();
-        String path = request.getRequestURI().substring(request.getContextPath().length());
-        return path;
+        final HttpServletRequest request = HttpUtils.getCurrentRequest();
+        return request.getRequestURI().substring(request.getContextPath().length());
     }
 
 }

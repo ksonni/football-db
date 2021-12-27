@@ -17,11 +17,18 @@ public class DateFilterQueryComponent<T> implements FilterQueryComponent<T> {
     private final FilterQueryKey key;
     private final ZonedDateTime value;
 
-    public DateFilterQueryComponent(FilterQueryKey key, String value) throws InvalidQueryValueException {
+    /**
+     * Parses a URL query component used to lookup datetimes.
+     *
+     * @param key   Parsed key of a URL query
+     * @param value String value of a URL query
+     * @throws InvalidQueryValueException if the value could not be parsed as a datetime
+     */
+    public DateFilterQueryComponent(final FilterQueryKey key, final String value) throws InvalidQueryValueException {
         this.key = key;
         try {
             this.value = ZonedDateTime.parse(value, DateTimeFormatter.ISO_ZONED_DATE_TIME);
-        } catch(DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             throw new InvalidQueryValueException(key.getField(), value);
         }
     }

@@ -22,15 +22,18 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 @AllArgsConstructor
 @EnableGlobalMethodSecurity(
-    jsr250Enabled = true,
-    prePostEnabled = true
+        jsr250Enabled = true,
+        prePostEnabled = true
 )
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+
+    private static final int HTTP_PORT = 80;
+    private static final int HTTPS_PORT = 443;
 
     private final UserDetailsService userDetailsService;
 
     @Override
-    protected void configure(HttpSecurity security) throws Exception {
+    protected void configure(final HttpSecurity security) throws Exception {
         HttpSecurity http = security;
         http = requireHttps(http);
         http = http.cors().and();
@@ -44,6 +47,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
         auth.userDetailsService(userDetailsService).passwordEncoder(encoder());
     }
 
+    /**
+     * Configures the PasswordEncoder to use for authentication and registration.
+     *
+     * @return PasswordEncoder
+     */
     @Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
@@ -56,30 +64,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
     }
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        List<RoutesConfig.UnauthenticatedRoute> corsRoutes = RoutesConfig.UNAUTHENTICATED_ROUTES
-                .stream().filter(route -> route.isCrossOrigin())
-                .collect(Collectors.toList());
+    public void addCorsMappings(final CorsRegistry registry) {
+        final List<RoutesConfig.UnauthenticatedRoute> corsRoutes = RoutesConfig.UNAUTHENTICATED_ROUTES
+                .stream().filter(route -> route.isCrossOrigin()).collect(Collectors.toList());
 
-        for (var route: corsRoutes) {
+        for (var route : corsRoutes) {
             registry.addMapping(route.getPattern()).allowedMethods(route.getMethod().name());
         }
     }
 
-    private HttpSecurity configureUnauthenticatedRoutes(HttpSecurity http) throws Exception {
+    private HttpSecurity configureUnauthenticatedRoutes(final HttpSecurity http) throws Exception {
         var auth = http.authorizeRequests();
-        for (var route: RoutesConfig.UNAUTHENTICATED_ROUTES) {
+        for (var route : RoutesConfig.UNAUTHENTICATED_ROUTES) {
             auth = auth.antMatchers(route.getMethod(), route.getPattern()).permitAll();
         }
         return auth.and();
     }
 
-    private HttpSecurity enableAuthentication(HttpSecurity http) throws Exception {
+    private HttpSecurity enableAuthentication(final HttpSecurity http) throws Exception {
         return http.authorizeRequests().anyRequest().authenticated().and();
     }
 
-    private HttpSecurity requireHttps(HttpSecurity http) throws Exception {
-        return http.portMapper().http(80).mapsTo(443).and()
+    private HttpSecurity requireHttps(final HttpSecurity http) throws Exception {
+        return http.portMapper().http(HTTP_PORT).mapsTo(HTTPS_PORT).and()
                 .requiresChannel().anyRequest().requiresSecure().and();
     }
 

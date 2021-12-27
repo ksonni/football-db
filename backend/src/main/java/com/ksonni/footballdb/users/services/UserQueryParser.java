@@ -9,16 +9,19 @@ import java.lang.reflect.Field;
 
 public class UserQueryParser extends DefaultQueryParser<User> {
 
-    public UserQueryParser(Class<User> objectType) {
-        super(objectType);
+    /**
+     * Constructs Query objects to search for users.
+     */
+    public UserQueryParser() {
+        super(User.class);
     }
 
     @Override
-    public FilterQueryComponentSupplier<User> getQueryComponentSupplier(Field field) {
-        var type = field.getType();
+    public FilterQueryComponentSupplier<User> getQueryComponentSupplier(final Field field) {
+        final var type = field.getType();
 
         if (type.isAssignableFrom(Role.class)) {
-            return (key, value) -> new Role.RoleFilterQueryComponent(key, value);
+            return Role.RoleFilterQueryComponent::new;
         }
 
         return super.getQueryComponentSupplier(field);

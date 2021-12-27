@@ -18,10 +18,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.UUID;
 
@@ -38,19 +42,24 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final AuthService authService;
 
+    /**
+     * Sign up a new user.
+     *
+     * @param request Register request DTO
+     */
     @PostMapping(value = RoutesConfig.Auth.REGISTER)
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     @RegisterUserDoc
-    public void registerUser(@Valid @RequestBody RegisterUserRequest request) {
-        User user = mapper.toUser(request);
+    public void registerUser(final @Valid @RequestBody RegisterUserRequest request) {
+        final User user = mapper.toUser(request);
 
         if (usersRepository.findByEmailId(user.getEmailId()) != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email address already in use");
         }
 
-        boolean isFirstUser = usersRepository.findFirstByOrderByEmailIdAsc() == null;
-        String password = passwordEncoder.encode(request.getPassword());
+        final boolean isFirstUser = usersRepository.findFirstByOrderByEmailIdAsc() == null;
+        final String password = passwordEncoder.encode(request.getPassword());
 
         user.setPassword(password);
         user.setId(UUID.randomUUID().toString());
@@ -60,13 +69,18 @@ public class AuthController {
         log.info("created user {} with role {}", user.getEmailId(), user.getRole());
     }
 
+    /**
+     * Login user.
+     *
+     * @param request Login user DTO
+     */
     @PostMapping(value = RoutesConfig.Auth.LOGIN)
     @Transactional(readOnly = true)
     @LoginDoc
-    public void loginUser(@Valid @RequestBody LoginRequest request) {
-        var token = new UsernamePasswordAuthenticationToken(request.getEmailId(), request.getPassword());
+    public void loginUser(final @Valid @RequestBody LoginRequest request) {
+        final var token = new UsernamePasswordAuthenticationToken(request.getEmailId(), request.getPassword());
 
-        Authentication auth;
+        final Authentication auth;
         try {
             auth = authenticationManager.authenticate(token);
         } catch (BadCredentialsException e) {
@@ -77,18 +91,26 @@ public class AuthController {
         log.info("logged in");
     }
 
+    /**
+     * Logout current user.
+     */
     @PostMapping(value = RoutesConfig.Auth.LOGOUT)
     @LogoutDoc
-    public void logoutUser(HttpServletRequest request) {
+    public void logoutUser() {
         log.info("logging out");
         authService.clearSessionAuth();
     }
 
+    /**
+     * Get details about the current user.
+     *
+     * @return user details
+     */
     @GetMapping(value = RoutesConfig.Auth.ME)
     @Transactional(readOnly = true)
     @MeDoc
     public UserResponse getMe() {
-        User user = authService.getAuthenticatedUser();
+        final User user = authService.getAuthenticatedUser();
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
