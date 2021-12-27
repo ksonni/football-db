@@ -1,7 +1,7 @@
 package com.ksonni.footballdb.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
@@ -10,10 +10,17 @@ import java.util.List;
 public class RoutesConfig {
 
     @Getter
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     static class UnauthenticatedRoute {
         private final HttpMethod method;
         private final String pattern;
+
+        private boolean crossOrigin;
+
+        UnauthenticatedRoute crossOrigin(boolean crossOrigin) {
+            this.crossOrigin = crossOrigin;
+            return this;
+        }
     }
 
     private static final String API_BASE_PATH = "/api/v1";
@@ -69,8 +76,8 @@ public class RoutesConfig {
 
         // Docs
         new UnauthenticatedRoute(HttpMethod.GET, Docs.UI),
-        new UnauthenticatedRoute(HttpMethod.GET, Docs.JSON),
-        new UnauthenticatedRoute(HttpMethod.GET, Docs.YML)
+        new UnauthenticatedRoute(HttpMethod.GET, Docs.JSON).crossOrigin(true),
+        new UnauthenticatedRoute(HttpMethod.GET, Docs.YML).crossOrigin(true)
     );
 
 }
