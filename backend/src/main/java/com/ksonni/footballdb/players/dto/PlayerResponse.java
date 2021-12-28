@@ -1,5 +1,6 @@
 package com.ksonni.footballdb.players.dto;
 
+import com.ksonni.footballdb.players.domain.Position;
 import com.ksonni.footballdb.players.domain.Side;
 import com.ksonni.footballdb.players.domain.WorkRate;
 import lombok.Builder;
@@ -51,7 +52,7 @@ public class PlayerResponse {
 
     private Integer squadNumber;
 
-    private String position;
+    private Position position;
 
     private Integer birthYear;
 

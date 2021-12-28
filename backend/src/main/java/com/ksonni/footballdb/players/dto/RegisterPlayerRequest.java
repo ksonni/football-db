@@ -1,5 +1,6 @@
 package com.ksonni.footballdb.players.dto;
 
+import com.ksonni.footballdb.players.domain.Position;
 import com.ksonni.footballdb.players.domain.Side;
 import com.ksonni.footballdb.players.domain.WorkRate;
 import com.ksonni.footballdb.utils.StringUtils;
@@ -25,8 +26,8 @@ public class RegisterPlayerRequest extends PlayerRequest {
     @Length(min = 1, max = StringUtils.COUNTRY_CODE_MAX_LEN)
     private String countryCode;
 
-    @NotBlank
-    private String position;
+    @NotNull
+    private Position position;
 
     @NotNull
     private Side preferredFoot;
@@ -60,7 +61,7 @@ public class RegisterPlayerRequest extends PlayerRequest {
             final Integer birthYear,
             final String fullName,
             final String countryCode,
-            final String position,
+            final Position position,
             final Side preferredFoot,
             final String clubId,
             final Integer squadNumber) {

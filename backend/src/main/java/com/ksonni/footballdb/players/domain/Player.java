@@ -60,7 +60,7 @@ public class Player {
 
     private Integer squadNumber;
 
-    private String position;
+    private Position position;
 
     private Integer birthYear;
 
