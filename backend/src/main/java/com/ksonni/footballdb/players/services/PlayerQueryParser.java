@@ -1,6 +1,7 @@
 package com.ksonni.footballdb.players.services;
 
 import com.ksonni.footballdb.players.domain.Player;
+import com.ksonni.footballdb.players.domain.Position;
 import com.ksonni.footballdb.players.domain.Side;
 import com.ksonni.footballdb.players.domain.WorkRate;
 import com.ksonni.footballdb.queryparser.DefaultQueryParser;
@@ -22,9 +23,11 @@ public class PlayerQueryParser extends DefaultQueryParser<Player> {
         final var type = field.getType();
 
         if (type.isAssignableFrom(Side.class)) {
-            return (key, value) -> new Side.SideFilterQueryComponent(key, value);
+            return Side.SideFilterQueryComponent::new;
         } else if (type.isAssignableFrom(WorkRate.class)) {
-            return (key, value) -> new WorkRate.WorkRateFilterQueryComponent(key, value);
+            return WorkRate.WorkRateFilterQueryComponent::new;
+        } else if (type.isAssignableFrom(Position.class)) {
+            return Position.PositionFilterQueryComponent::new;
         }
 
         return super.getQueryComponentSupplier(field);

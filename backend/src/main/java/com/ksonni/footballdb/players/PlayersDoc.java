@@ -1,5 +1,6 @@
 package com.ksonni.footballdb.players;
 
+import com.ksonni.footballdb.players.domain.Position;
 import com.ksonni.footballdb.players.domain.Side;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.DocUtils;
@@ -52,6 +53,10 @@ import java.lang.annotation.RetentionPolicy;
                         schema = @Schema(implementation = Integer.class)),
                 @Parameter(in = ParameterIn.QUERY, name = "preferredFoot",
                         schema = @Schema(implementation = Side.class)),
+                @Parameter(in = ParameterIn.QUERY, name = "position",
+                        schema = @Schema(implementation = Position.class)),
+                @Parameter(in = ParameterIn.QUERY, name = "in:position",
+                        schema = @Schema(implementation = String.class)),
                 @Parameter(in = ParameterIn.QUERY, name = "limit", description = "Max number of results per page",
                         schema = @Schema(implementation = Integer.class)),
                 @Parameter(in = ParameterIn.QUERY, name = "sort",

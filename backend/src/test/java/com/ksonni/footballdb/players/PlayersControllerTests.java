@@ -4,6 +4,7 @@ import com.ksonni.footballdb.clubs.domain.Club;
 import com.ksonni.footballdb.clubs.services.ClubsRepository;
 import com.ksonni.footballdb.config.RoutesConfig;
 import com.ksonni.footballdb.players.domain.Player;
+import com.ksonni.footballdb.players.domain.Position;
 import com.ksonni.footballdb.players.domain.Side;
 import com.ksonni.footballdb.players.domain.WorkRate;
 import com.ksonni.footballdb.players.dto.PatchPlayerRequest;
@@ -95,7 +96,7 @@ class PlayersControllerTests {
 
         registerRequestSupplier = () -> RegisterPlayerRequest.builder()
                 .fullName("Some player").preferredFoot(Side.LEFT).clubId("id")
-                .squadNumber(RANDOM_SQUAD_NUM).position("FW").countryCode("GB");
+                .squadNumber(RANDOM_SQUAD_NUM).position(Position.CENTER_FORWARD).countryCode("GB");
         validRegisterRequest = registerRequestSupplier.get().build();
         validPatchRequest = PatchPlayerRequest.builder().fullName("Some other player").build();
     }
