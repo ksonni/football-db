@@ -7,6 +7,7 @@ import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.domain.Side;
 import com.ksonni.footballdb.players.domain.WorkRate;
 import com.ksonni.footballdb.players.dto.PatchPlayerRequest;
+import com.ksonni.footballdb.players.dto.PlayerRequest;
 import com.ksonni.footballdb.players.dto.PlayerResponse;
 import com.ksonni.footballdb.players.dto.RegisterPlayerRequest;
 import com.ksonni.footballdb.players.services.PlayersMapper;
@@ -139,14 +140,14 @@ class PlayersControllerTests {
     @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void registerPlayerValidatesData() throws Exception {
         final var base = registerRequestSupplier;
-        final RegisterPlayerRequest[] badRequests = {
+        final PlayerRequest[] badRequests = {
                 RegisterPlayerRequest.builder().build(),
                 base.get().fullName("").build(),
                 base.get().fullName(TestStringUtils.longString()).build(),
                 base.get().height(-1).build(),
-                base.get().height(Player.MAX_HEIGHT + 1).build(),
+                base.get().height(RegisterPlayerRequest.MAX_HEIGHT + 1).build(),
                 base.get().weight(-1).build(),
-                base.get().weight(Player.MAX_WEIGHT + 1).build(),
+                base.get().weight(RegisterPlayerRequest.MAX_WEIGHT + 1).build(),
                 base.get().overall(-1).build(),
                 base.get().overall(MathUtils.MAX_PERCENT + 1).build(),
                 base.get().valueEuro(-1).build(),
@@ -154,7 +155,7 @@ class PlayersControllerTests {
                 base.get().contractEndYear(-1).build(),
                 base.get().contractStartYear(-1).build(),
                 base.get().reputation(-1).build(),
-                base.get().reputation(Player.MAX_REPUTATION + 1).build(),
+                base.get().reputation(RegisterPlayerRequest.MAX_REPUTATION + 1).build(),
                 base.get().shootingTotal(-1).build(),
                 base.get().shootingTotal(MathUtils.MAX_PERCENT + 1).build(),
                 base.get().passingTotal(-1).build(),
@@ -222,9 +223,9 @@ class PlayersControllerTests {
                 PatchPlayerRequest.builder().fullName("").build(),
                 PatchPlayerRequest.builder().fullName(TestStringUtils.longString()).build(),
                 PatchPlayerRequest.builder().height(-1).build(),
-                PatchPlayerRequest.builder().height(Player.MAX_HEIGHT + 1).build(),
+                PatchPlayerRequest.builder().height(PatchPlayerRequest.MAX_HEIGHT + 1).build(),
                 PatchPlayerRequest.builder().weight(-1).build(),
-                PatchPlayerRequest.builder().weight(Player.MAX_WEIGHT + 1).build(),
+                PatchPlayerRequest.builder().weight(PatchPlayerRequest.MAX_WEIGHT + 1).build(),
                 PatchPlayerRequest.builder().overall(-1).build(),
                 PatchPlayerRequest.builder().overall(MathUtils.MAX_PERCENT + 1).build(),
                 PatchPlayerRequest.builder().valueEuro(-1).build(),
@@ -232,7 +233,7 @@ class PlayersControllerTests {
                 PatchPlayerRequest.builder().contractEndYear(-1).build(),
                 PatchPlayerRequest.builder().contractStartYear(-1).build(),
                 PatchPlayerRequest.builder().reputation(-1).build(),
-                PatchPlayerRequest.builder().reputation(Player.MAX_REPUTATION + 1).build(),
+                PatchPlayerRequest.builder().reputation(PatchPlayerRequest.MAX_REPUTATION + 1).build(),
                 PatchPlayerRequest.builder().shootingTotal(-1).build(),
                 PatchPlayerRequest.builder().shootingTotal(MathUtils.MAX_PERCENT + 1).build(),
                 PatchPlayerRequest.builder().passingTotal(-1).build(),

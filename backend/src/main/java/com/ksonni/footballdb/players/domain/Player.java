@@ -17,21 +17,6 @@ import javax.persistence.Table;
 @Table(name = "players")
 public class Player {
 
-    /**
-     * Max height of a player in cm.
-     */
-    public static final int MAX_HEIGHT = 500;
-
-    /**
-     * Max reputation.
-     */
-    public static final int MAX_REPUTATION = 10;
-
-    /**
-     * Max weight of a player in kg.
-     */
-    public static final int MAX_WEIGHT = 500;
-
     @Id
     private String id;
 

@@ -137,9 +137,9 @@ class ClubsControllerTests {
                 base.get().defenseRating(MathUtils.MAX_PERCENT + 1).build(),
                 base.get().transferBudget(-1).build(),
                 base.get().domesticPrestige(-1).build(),
-                base.get().domesticPrestige(Club.MAX_PRESTIGE + 1).build(),
+                base.get().domesticPrestige(RegisterClubRequest.MAX_PRESTIGE + 1).build(),
                 base.get().internationalPrestige(-1).build(),
-                base.get().internationalPrestige(Club.MAX_PRESTIGE + 1).build(),
+                base.get().internationalPrestige(RegisterClubRequest.MAX_PRESTIGE + 1).build(),
         };
 
         for (var request : badRequests) {
@@ -200,9 +200,9 @@ class ClubsControllerTests {
                 PatchClubRequest.builder().defenseRating(MathUtils.MAX_PERCENT + 1).build(),
                 PatchClubRequest.builder().transferBudget(-1).build(),
                 PatchClubRequest.builder().domesticPrestige(-1).build(),
-                PatchClubRequest.builder().domesticPrestige(Club.MAX_PRESTIGE + 1).build(),
+                PatchClubRequest.builder().domesticPrestige(PatchClubRequest.MAX_PRESTIGE + 1).build(),
                 PatchClubRequest.builder().internationalPrestige(-1).build(),
-                PatchClubRequest.builder().internationalPrestige(Club.MAX_PRESTIGE + 1).build(),
+                PatchClubRequest.builder().internationalPrestige(PatchClubRequest.MAX_PRESTIGE + 1).build(),
         };
 
         for (var request : badRequests) {

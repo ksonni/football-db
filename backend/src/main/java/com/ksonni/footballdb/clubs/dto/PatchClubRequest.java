@@ -1,51 +1,36 @@
 package com.ksonni.footballdb.clubs.dto;
 
-import com.ksonni.footballdb.clubs.domain.Club;
-import com.ksonni.footballdb.utils.MathUtils;
 import com.ksonni.footballdb.utils.StringUtils;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
-@Data
+@Getter
+@Setter
 @SuperBuilder
-@AllArgsConstructor
-public class PatchClubRequest {
+public class PatchClubRequest extends ClubRequest {
 
     @Length(max = StringUtils.STRING_MAX_LEN)
     private String name;
 
     private String leagueId;
 
-    @Min(0)
-    @Max(MathUtils.MAX_PERCENT)
-    private Integer overallRating;
-
-    @Min(0)
-    @Max(MathUtils.MAX_PERCENT)
-    private Integer attackRating;
-
-    @Min(0)
-    @Max(MathUtils.MAX_PERCENT)
-    private Integer midfieldRating;
-
-    @Min(0)
-    @Max(MathUtils.MAX_PERCENT)
-    private Integer defenseRating;
-
-    @Min(0)
-    private Integer transferBudget;
-
-    @Min(0)
-    @Max(Club.MAX_PRESTIGE)
-    private Integer domesticPrestige;
-
-    @Min(0)
-    @Max(Club.MAX_PRESTIGE)
-    private Integer internationalPrestige;
+    PatchClubRequest(
+            final Integer overallRating,
+            final Integer attackRating,
+            final Integer midfieldRating,
+            final Integer defenseRating,
+            final Integer transferBudget,
+            final Integer domesticPrestige,
+            final Integer internationalPrestige,
+            final String name,
+            final String leagueId
+    ) {
+        super(overallRating, attackRating, midfieldRating, defenseRating, transferBudget,
+                domesticPrestige, internationalPrestige);
+        this.name = name;
+        this.leagueId = leagueId;
+    }
 
 }
