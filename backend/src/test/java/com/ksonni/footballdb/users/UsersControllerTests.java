@@ -3,6 +3,7 @@ package com.ksonni.footballdb.users;
 import com.ksonni.footballdb.config.RoutesConfig;
 import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParser;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
@@ -10,6 +11,7 @@ import com.ksonni.footballdb.users.dto.UserResponse;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
 import com.ksonni.footballdb.utils.MockMvcUtils;
+import com.ksonni.footballdb.utils.MockUtils;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
@@ -44,6 +46,8 @@ public class UsersControllerTests {
     private UsersMapper usersMapper;
     @MockBean
     private QueryParser<User> queryParser;
+    @MockBean
+    private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;
     private List<User> users;
@@ -64,6 +68,7 @@ public class UsersControllerTests {
                 UserResponse.builder().id(user.getId()).emailId(user.getEmailId())
                         .role(user.getRole()).build()
         );
+        MockUtils.disableRateLimiting(rateLimitingService);
     }
 
     @Test
@@ -86,9 +91,18 @@ public class UsersControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
+    @Test
+    @WithMockUser(roles = {Permission.Code.VIEW_USERS})
+    void handlesRateLimitsReached() throws Exception {
+        MockUtils.mockRateLimitReached(rateLimitingService);
+        mockMvc.perform(utils.get(RoutesConfig.Users.PATH))
+                .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
+    }
+
     @AfterEach
     void tearDown() {
-        Mockito.reset(userDetailsService, usersRepository, queryParser, usersMapper);
+        Mockito.reset(userDetailsService, usersRepository, queryParser,
+                usersMapper, rateLimitingService);
     }
 
 }

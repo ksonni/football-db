@@ -127,7 +127,7 @@ public final class RoutesConfig {
         /**
          * Open API docs in JSON format.
          */
-        public static final String JSON = "/v3/api-docs";
+        public static final String JSON = "/v3/api-docs/**";
         /**
          * Open API docs in YAML format.
          */

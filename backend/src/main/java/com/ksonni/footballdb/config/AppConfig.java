@@ -6,6 +6,8 @@ import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.services.PlayerQueryParser;
 import com.ksonni.footballdb.queryparser.DefaultQueryParser;
 import com.ksonni.footballdb.queryparser.QueryParser;
+import com.ksonni.footballdb.ratelimiting.IPRateLimitingService;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.DefaultAuthService;
@@ -17,14 +19,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
+
+import java.time.Duration;
 
 /**
  * Supplies beans required by the app.
  */
 @Configuration
 @RequiredArgsConstructor
+@EnableScheduling
 public class AppConfig {
+
+    private static final int MAX_REQUESTS_PER_MIN = 60;
 
     private final BuildProperties buildProperties;
 
@@ -98,6 +106,16 @@ public class AppConfig {
         return new OpenAPI().components(new Components())
                 .info(new Info().title("Football DB API")
                         .version(buildProperties.getVersion()));
+    }
+
+    /**
+     * Returns a RateLimitingService.
+     *
+     * @return RateLimitingService
+     */
+    @Bean
+    public RateLimitingService rateLimitingService() {
+        return new IPRateLimitingService(MAX_REQUESTS_PER_MIN, Duration.ofMinutes(1));
     }
 
 }
