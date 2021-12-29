@@ -1,0 +1,31 @@
+package com.ksonni.footballdb.ratelimiting;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class RateLimitingInterceptor implements HandlerInterceptor {
+
+    private final RateLimitingService rateLimitingService;
+
+    @Override
+    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response,
+                             final Object handler) throws IOException {
+        final RateLimitingResult result = rateLimitingService.evaluateRequest(request);
+        if (!result.isAcceptable()) {
+            response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(), result.getRejectionReason());
+            return false;
+        }
+        return true;
+    }
+
+}

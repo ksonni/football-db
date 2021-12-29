@@ -1,5 +1,6 @@
 package com.ksonni.footballdb.config;
 
+import com.ksonni.footballdb.ratelimiting.RateLimitingInterceptor;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -31,6 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
     private static final int HTTPS_PORT = 443;
 
     private final UserDetailsService userDetailsService;
+    private final RateLimitingInterceptor rateLimitInterceptor;
 
     @Override
     protected void configure(final HttpSecurity security) throws Exception {
@@ -71,6 +74,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
         for (var route : corsRoutes) {
             registry.addMapping(route.getPattern()).allowedMethods(route.getMethod().name());
         }
+    }
+
+    @Override
+    public void addInterceptors(final InterceptorRegistry registry) {
+        registry.addInterceptor(rateLimitInterceptor);
     }
 
     private HttpSecurity configureUnauthenticatedRoutes(final HttpSecurity http) throws Exception {

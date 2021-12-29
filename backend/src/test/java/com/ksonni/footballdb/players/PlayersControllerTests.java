@@ -16,9 +16,11 @@ import com.ksonni.footballdb.players.services.PlayersRepository;
 import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.MathUtils;
 import com.ksonni.footballdb.utils.MockMvcUtils;
+import com.ksonni.footballdb.utils.MockUtils;
 import com.ksonni.footballdb.utils.TestStringUtils;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
@@ -63,6 +65,8 @@ class PlayersControllerTests {
     private PlayersMapper mapper;
     @MockBean
     private ClubsRepository clubsRepository;
+    @MockBean
+    private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;
     private List<Player> players;
@@ -99,12 +103,7 @@ class PlayersControllerTests {
                 .squadNumber(RANDOM_SQUAD_NUM).position(Position.CENTER_FORWARD).countryCode("GB");
         validRegisterRequest = registerRequestSupplier.get().build();
         validPatchRequest = PatchPlayerRequest.builder().fullName("Some other player").build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        Mockito.reset(playersRepository, queryParser, userDetailsService,
-                clubsRepository, mapper);
+        MockUtils.disableRateLimiting(rateLimitingService);
     }
 
     @Test
@@ -322,6 +321,19 @@ class PlayersControllerTests {
         BDDMockito.given(playersRepository.findById(PLAYER_ID)).willReturn(Optional.empty());
         mockMvc.perform(utils.delete(PLAYER_PATH))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void handlesRateLimitsReached() throws Exception {
+        MockUtils.mockRateLimitReached(rateLimitingService);
+        mockMvc.perform(utils.get(RoutesConfig.Players.PATH))
+                .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
+    }
+
+    @AfterEach
+    void tearDown() {
+        Mockito.reset(playersRepository, queryParser, userDetailsService,
+                clubsRepository, mapper, rateLimitingService);
     }
 
 }

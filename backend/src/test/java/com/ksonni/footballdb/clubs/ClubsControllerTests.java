@@ -12,9 +12,11 @@ import com.ksonni.footballdb.leagues.services.LeaguesRepository;
 import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.MathUtils;
 import com.ksonni.footballdb.utils.MockMvcUtils;
+import com.ksonni.footballdb.utils.MockUtils;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
@@ -59,6 +61,8 @@ class ClubsControllerTests {
     private QueryParser<Club> queryParser;
     @MockBean
     private UserDetailsService userDetailsService;
+    @MockBean
+    private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;
     private List<Club> clubs;
@@ -87,11 +91,7 @@ class ClubsControllerTests {
                 .leagueId("LeagueId")
                 .build();
         validPatchRequest = PatchClubRequest.builder().name("Some other club").build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        Mockito.reset(clubsRepository, queryParser, userDetailsService, leaguesRepository, mapper);
+        MockUtils.disableRateLimiting(rateLimitingService);
     }
 
     @Test
@@ -275,6 +275,19 @@ class ClubsControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
+    @Test
+    void handlesRateLimitsReached() throws Exception {
+        MockUtils.mockRateLimitReached(rateLimitingService);
+        mockMvc.perform(utils.get(RoutesConfig.Clubs.PATH))
+                .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
+    }
+
+    @AfterEach
+    void tearDown() {
+        Mockito.reset(clubsRepository, queryParser, userDetailsService, leaguesRepository,
+                mapper, rateLimitingService);
+    }
+
     @WithMockUser(roles = {
             Permission.Code.MANAGE_CLUBS,
             Permission.Code.MANAGE_PLAYERS
@@ -282,6 +295,5 @@ class ClubsControllerTests {
     @Retention(RetentionPolicy.RUNTIME)
     private @interface DeletePermissions {
     }
-
 
 }

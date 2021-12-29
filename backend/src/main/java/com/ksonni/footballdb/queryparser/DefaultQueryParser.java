@@ -29,11 +29,11 @@ public class DefaultQueryParser<T> implements QueryParser<T> {
     /**
      * Max number of results allowed per page.
      */
-    public static final int MAX_PAGE_SIZE = 1000;
+    public static final int MAX_PAGE_SIZE = 100;
     /**
      * Default number of results per page.
      */
-    public static final int DEFAULT_PAGE_SIZE = 100;
+    public static final int DEFAULT_PAGE_SIZE = 25;
 
     private static final String PAGE_SIZE_KEY = "limit";
     private static final String PAGE_KEY = "page";

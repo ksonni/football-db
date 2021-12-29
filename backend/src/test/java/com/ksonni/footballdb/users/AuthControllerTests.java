@@ -1,6 +1,7 @@
 package com.ksonni.footballdb.users;
 
 import com.ksonni.footballdb.config.RoutesConfig;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.dto.LoginRequest;
@@ -10,9 +11,11 @@ import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
 import com.ksonni.footballdb.utils.MockMvcUtils;
+import com.ksonni.footballdb.utils.MockUtils;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -56,8 +59,15 @@ class AuthControllerTests {
     private UserDetailsService userDetailsService;
     @MockBean
     private AuthService authService;
+    @MockBean
+    private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;
+
+    @BeforeEach
+    void setup() {
+        MockUtils.disableRateLimiting(rateLimitingService);
+    }
 
     @Test
     void registerUserWhenThereArePreExistingUsers() throws Exception {
@@ -158,6 +168,14 @@ class AuthControllerTests {
     }
 
     @Test
+    @WithMockUser
+    void handlesRateLimitsReached() throws Exception {
+        MockUtils.mockRateLimitReached(rateLimitingService);
+        mockMvc.perform(utils.get(RoutesConfig.Auth.ME_PATH))
+                .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
+    }
+
+    @Test
     void meRequestUnauthenticated() throws Exception {
         mockMvc.perform(utils.get(RoutesConfig.Auth.ME_PATH))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -193,7 +211,8 @@ class AuthControllerTests {
 
     @AfterEach
     void tearDown() {
-        Mockito.reset(mapper, encoder, usersRepository, userDetailsService, authService);
+        Mockito.reset(mapper, encoder, usersRepository, userDetailsService,
+                authService, rateLimitingService);
     }
 
 }

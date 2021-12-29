@@ -10,8 +10,10 @@ import com.ksonni.footballdb.leagues.services.LeaguesRepository;
 import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.MockMvcUtils;
+import com.ksonni.footballdb.utils.MockUtils;
 import com.ksonni.footballdb.utils.TestStringUtils;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
@@ -52,6 +54,8 @@ class LeaguesControllerTests {
     private UserDetailsService userDetailsService;
     @MockBean
     private LeaguesMapper mapper;
+    @MockBean
+    private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;
     private List<League> leagues;
@@ -78,11 +82,7 @@ class LeaguesControllerTests {
 
         validRegisterRequest = RegisterLeagueRequest.builder().name("League").build();
         validPatchRequest = PatchLeagueRequest.builder().name("Some other league").build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        Mockito.reset(leaguesRepository, queryParser, userDetailsService, mapper);
+        MockUtils.disableRateLimiting(rateLimitingService);
     }
 
     @Test
@@ -206,6 +206,19 @@ class LeaguesControllerTests {
                 .willReturn(Optional.empty());
         mockMvc.perform(utils.delete(LEAGUES_PATH))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void handlesRateLimitsReached() throws Exception {
+        MockUtils.mockRateLimitReached(rateLimitingService);
+        mockMvc.perform(utils.get(RoutesConfig.Leagues.PATH))
+                .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
+    }
+
+    @AfterEach
+    void tearDown() {
+        Mockito.reset(leaguesRepository, queryParser, userDetailsService,
+                mapper, rateLimitingService);
     }
 
     @WithMockUser(roles = {
