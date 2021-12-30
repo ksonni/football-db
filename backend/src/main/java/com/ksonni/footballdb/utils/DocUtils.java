@@ -56,6 +56,35 @@ public final class DocUtils {
      */
     public static final String NO_PERMISSIONS = PERMISSIONS + "none" + LINE_SEPARATOR;
 
+    /**
+     * The main title in the Swagger UI page.
+     */
+    public static final String MAIN_TITLE = "Football DB API";
+
+    /**
+     * The main description in the Swagger UI page.
+     */
+    public static final String MAIN_DESCRIPTION = "<h3>About</h3>"
+            + "<p>Football DB is an API service that allows users to search a database of nearly "
+            + "20,000 football (soccer) players from different clubs across the world using highly "
+            + "customizable search and sort queries.</p>"
+            + "<h3>Attribution</h3>"
+            + "<p>Sincere thanks to Alex for making the dataset available on Kaggle: "
+            + "<a href='https://www.kaggle.com/cashncarry/fifa-22-complete-player-dataset' "
+            + "target='_blank'>"
+            + "https://www.kaggle.com/cashncarry/fifa-22-complete-player-dataset</a>.</p>"
+            + "<h3>Licensing</h3>"
+            + "<p>The dataset was originally published by the author mentioned above under "
+            + "the <a href='https://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'>"
+            + "CC BY-NC-SA 4.0</a>"
+            + " license and usage of any data extracted from the API service "
+            + "is dictated by the same license.</p>"
+            + "<p>This service is for demonstration purposes only and commercial use is not "
+            + "permitted. Rate limiting is in place to discourage the same.</p>"
+            + "<h3>Code</h3>"
+            + "<p>The source code for this API is available on "
+            + "<a href ='https://github.com/ksonni/football-db' target='_blank'>GitHub</a>.</p>";
+
     private DocUtils() {
     }
 

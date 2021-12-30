@@ -58,8 +58,9 @@ public class ClubsController {
     @Transactional(readOnly = true)
     @EnumerateClubsDoc
     public Page<ClubResponse> enumerateClubs(final HttpServletRequest request) throws QueryParseException {
-        return clubsRepository.findAll(queryParser.parse(request.getQueryString()))
-                .map(mapper::toClubResponse);
+        final String query = request.getQueryString();
+        log.info("Processing query: {}", query);
+        return clubsRepository.findAll(queryParser.parse(query)).map(mapper::toClubResponse);
     }
 
     /**

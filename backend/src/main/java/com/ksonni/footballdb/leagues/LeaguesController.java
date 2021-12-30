@@ -55,8 +55,9 @@ public class LeaguesController {
     @Transactional(readOnly = true)
     @EnumerateLeaguesDoc
     public Page<LeagueResponse> enumerateLeagues(final HttpServletRequest request) throws QueryParseException {
-        return leaguesRepository.findAll(queryParser.parse(request.getQueryString()))
-                .map(mapper::toLeagueResponse);
+        final String query = request.getQueryString();
+        log.info("Processing query: {}", query);
+        return leaguesRepository.findAll(queryParser.parse(query)).map(mapper::toLeagueResponse);
     }
 
     /**
