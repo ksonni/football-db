@@ -9,7 +9,6 @@ import com.ksonni.footballdb.players.dto.PlayerResponse;
 import com.ksonni.footballdb.players.dto.RegisterPlayerRequest;
 import com.ksonni.footballdb.players.services.PlayersMapper;
 import com.ksonni.footballdb.players.services.PlayersRepository;
-import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
@@ -58,8 +57,9 @@ public class PlayersController {
     @Transactional(readOnly = true)
     @EnumeratePlayersDoc
     public Page<PlayerResponse> enumeratePlayers(final HttpServletRequest request) throws QueryParseException {
-        final Query<Player> query = queryParser.parse(request.getQueryString());
-        return playersRepository.findAll(query).map(mapper::toPlayerResponse);
+        final String query = request.getQueryString();
+        log.info("Processing query: {}", query);
+        return playersRepository.findAll(queryParser.parse(query)).map(mapper::toPlayerResponse);
     }
 
     /**

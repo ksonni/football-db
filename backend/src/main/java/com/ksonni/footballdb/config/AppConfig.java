@@ -12,6 +12,7 @@ import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.DefaultAuthService;
 import com.ksonni.footballdb.users.services.UserQueryParser;
+import com.ksonni.footballdb.utils.DocUtils;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -103,9 +104,13 @@ public class AppConfig {
      */
     @Bean
     public OpenAPI openAPIConfig() {
-        return new OpenAPI().components(new Components())
-                .info(new Info().title("Football DB API")
-                        .version(buildProperties.getVersion()));
+        final Components components = new Components();
+
+        final Info info = new Info().title(DocUtils.MAIN_TITLE)
+                .description(DocUtils.MAIN_DESCRIPTION)
+                .version(buildProperties.getVersion());
+
+        return new OpenAPI().components(components).info(info);
     }
 
     /**
