@@ -1,6 +1,7 @@
 package com.ksonni.footballdb.config;
 
 import com.ksonni.footballdb.clubs.domain.Club;
+import com.ksonni.footballdb.files.domain.FileRegistration;
 import com.ksonni.footballdb.leagues.domain.League;
 import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.services.PlayerQueryParser;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,12 +35,13 @@ import java.time.Duration;
 @EnableScheduling
 public class AppConfig {
 
-    private static final int MAX_REQUESTS_PER_MIN = 60;
-
     private final BuildProperties buildProperties;
 
+    @Value("${app.max-requests-per-min}")
+    private Integer maxRequestsPerMin;
+
     /**
-     * Supplies a QueryParser for Clubs.
+     * Supplies a QueryParser for clubs.
      *
      * @return QueryParser
      */
@@ -48,7 +51,7 @@ public class AppConfig {
     }
 
     /**
-     * Supplies a QueryParser for Players.
+     * Supplies a QueryParser for players.
      *
      * @return QueryParser
      */
@@ -58,7 +61,7 @@ public class AppConfig {
     }
 
     /**
-     * Supplies a QueryParser for Leagues.
+     * Supplies a QueryParser for leagues.
      *
      * @return QueryParser
      */
@@ -68,13 +71,23 @@ public class AppConfig {
     }
 
     /**
-     * Supplies a QueryParser for Users.
+     * Supplies a QueryParser for users.
      *
      * @return QueryParser
      */
     @Bean
     public QueryParser<User> usersQueryParser() {
         return new UserQueryParser();
+    }
+
+    /**
+     * Supplies a QueryParser for files.
+     *
+     * @return QueryParser
+     */
+    @Bean
+    public QueryParser<FileRegistration> filesQueryParser() {
+        return new DefaultQueryParser<>(FileRegistration.class);
     }
 
     /**
@@ -120,7 +133,7 @@ public class AppConfig {
      */
     @Bean
     public RateLimitingService rateLimitingService() {
-        return new IPRateLimitingService(MAX_REQUESTS_PER_MIN, Duration.ofMinutes(1));
+        return new IPRateLimitingService(maxRequestsPerMin, Duration.ofMinutes(1));
     }
 
 }

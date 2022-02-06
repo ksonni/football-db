@@ -55,6 +55,7 @@ class PlayersControllerTests {
     private static final String LONG_COUNTRY_CODE = TestStringUtils.repeatedSequence("X", 5);
 
     private final MockMvcUtils utils = new MockMvcUtils();
+
     @MockBean
     private PlayersRepository playersRepository;
     @MockBean
@@ -69,6 +70,7 @@ class PlayersControllerTests {
     private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;
+
     private List<Player> players;
     private Supplier<RegisterPlayerRequest.RegisterPlayerRequestBuilder> registerRequestSupplier;
     private RegisterPlayerRequest validRegisterRequest;

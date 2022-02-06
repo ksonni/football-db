@@ -26,7 +26,10 @@ services:
       - "80:8080"
       - "443:8080"
       - "8000:8000"
+    volumes:
+      - backend-volume:/data
     depends_on:
       - db
 volumes:
   db-volume:
+  backend-volume:

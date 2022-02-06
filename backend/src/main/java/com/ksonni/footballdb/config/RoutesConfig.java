@@ -26,7 +26,10 @@ public final class RoutesConfig {
             // Docs
             new UnauthenticatedRoute(HttpMethod.GET, Docs.UI),
             new UnauthenticatedRoute(HttpMethod.GET, Docs.JSON).crossOrigin(true),
-            new UnauthenticatedRoute(HttpMethod.GET, Docs.YML).crossOrigin(true)
+            new UnauthenticatedRoute(HttpMethod.GET, Docs.YML).crossOrigin(true),
+
+            // Files
+            new UnauthenticatedRoute(HttpMethod.GET, Files.PATH + "/**")
     );
 
     private static final String API_BASE_PATH = "/api/v1";
@@ -117,6 +120,13 @@ public final class RoutesConfig {
          * Users base path.
          */
         public static final String PATH = API_BASE_PATH + "/users";
+    }
+
+    public static class Files {
+        /**
+         * File upload/retrieval base path.
+         */
+        public static final String PATH = API_BASE_PATH + "/files";
     }
 
     public static class Docs {
