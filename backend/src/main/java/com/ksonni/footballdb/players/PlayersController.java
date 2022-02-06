@@ -59,7 +59,8 @@ public class PlayersController {
     public Page<PlayerResponse> enumeratePlayers(final HttpServletRequest request) throws QueryParseException {
         final String query = request.getQueryString();
         log.info("Processing query: {}", query);
-        return playersRepository.findAll(queryParser.parse(query)).map(mapper::toPlayerResponse);
+        return playersRepository.findAll(queryParser.parse(query))
+                .map(mapper::toPlayerResponse);
     }
 
     /**

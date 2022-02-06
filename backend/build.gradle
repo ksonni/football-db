@@ -14,22 +14,23 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.6.1'
-    implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.1'
-    implementation 'org.springframework.boot:spring-boot-starter-security:2.6.1'
-    implementation 'org.springframework.boot:spring-boot-starter-web:2.6.1'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.6.3'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.3'
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.6.3'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.6.3'
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
     implementation 'org.projectlombok:lombok:1.18.22'
-    implementation 'org.liquibase:liquibase-core:4.6.2'
+    implementation 'org.liquibase:liquibase-core:4.7.1'
     implementation 'org.mapstruct:mapstruct:1.4.2.Final'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.2'
-    implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.0.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
+    implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.1.0'
+    implementation 'org.apache.tika:tika-core:2.2.1'
 
     runtimeOnly 'mysql:mysql-connector-java:8.0.26'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.1'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.3'
     testImplementation 'org.springframework.security:spring-security-test:5.5.1'
-    testImplementation 'org.mockito:mockito-core:4.2.0'
+    testImplementation 'org.mockito:mockito-core:4.3.1'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'

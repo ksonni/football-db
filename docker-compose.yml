@@ -23,6 +23,9 @@ services:
     ports:
       - "80:8080"
       - "443:8080"
+    volumes:
+      - backend-volume:/data
     restart: on-failure
 volumes:
   db-volume:
+  backend-volume:

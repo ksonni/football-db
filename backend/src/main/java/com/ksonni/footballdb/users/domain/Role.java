@@ -71,7 +71,8 @@ public enum Role implements EnumUtils.ValueEnum {
                         Permission.MANAGE_USERS,
                         Permission.MANAGE_CLUBS,
                         Permission.MANAGE_PLAYERS,
-                        Permission.MANAGE_LEAGUES
+                        Permission.MANAGE_LEAGUES,
+                        Permission.MANAGE_FILES
                 );
             default:
                 return Arrays.asList();

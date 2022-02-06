@@ -22,7 +22,8 @@ CREATE TABLE `clubs` (
   `international_prestige` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_teams_leagues_idx` (`league_id`),
-  CONSTRAINT `fk_teams_leagues` FOREIGN KEY (`league_id`) REFERENCES `leagues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_teams_leagues` FOREIGN KEY (`league_id`)
+  REFERENCES `leagues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 --rollback DROP TABLE clubs;
 
@@ -55,7 +56,8 @@ CREATE TABLE `players` (
   `image` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_players_teams_idx` (`club_id`),
-  CONSTRAINT `fk_players_teams` FOREIGN KEY (`club_id`) REFERENCES `clubs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_players_teams` FOREIGN KEY (`club_id`)
+  REFERENCES `clubs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 --rollback DROP TABLE players;
 
@@ -72,3 +74,18 @@ CREATE TABLE `users` (
 --changeset root:release-0.0.1-c5
 ALTER TABLE `users` ADD COLUMN `role` VARCHAR(40) NULL AFTER `password`;
 --rollback ALTER TABLE `users` DROP COLUMN `role`;
+
+--changeset root:release-0.0.1-c6
+CREATE TABLE `files` (
+  `id` VARCHAR(36) NOT NULL,
+  `name` VARCHAR(60) NOT NULL,
+  `mime_type` VARCHAR(20) NOT NULL,
+  `size_bytes` BIGINT NOT NULL,
+  `created` DATETIME NOT NULL,
+  `created_by` VARCHAR(36) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_files_users_idx` (`created_by` ASC) VISIBLE,
+  CONSTRAINT `fk_files_users` FOREIGN KEY (`created_by`)
+  REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+--rollback DROP TABLE files;

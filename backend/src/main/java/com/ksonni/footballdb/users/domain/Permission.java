@@ -31,7 +31,12 @@ public enum Permission implements EnumUtils.ValueEnum, GrantedAuthority {
     /**
      * Permission to manage clubs.
      */
-    MANAGE_CLUBS(Code.MANAGE_CLUBS);
+    MANAGE_CLUBS(Code.MANAGE_CLUBS),
+
+    /**
+     * Permission to manage files.
+     */
+    MANAGE_FILES(Code.MANAGE_FILES);
 
     private final String value;
 
@@ -84,6 +89,11 @@ public enum Permission implements EnumUtils.ValueEnum, GrantedAuthority {
          * MANAGE_CLUBS permission String value.
          */
         public static final String MANAGE_CLUBS = "MANAGE_CLUBS";
+
+        /**
+         * MANAGE_FILES permission String value.
+         */
+        public static final String MANAGE_FILES = "MANAGE_FILES";
     }
 
     /**
