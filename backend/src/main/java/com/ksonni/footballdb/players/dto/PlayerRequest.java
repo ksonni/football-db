@@ -2,9 +2,11 @@ package com.ksonni.footballdb.players.dto;
 
 import com.ksonni.footballdb.players.domain.WorkRate;
 import com.ksonni.footballdb.utils.MathUtils;
+import com.ksonni.footballdb.utils.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -87,5 +89,8 @@ public abstract class PlayerRequest {
 
     @Min(0)
     private Integer birthYear;
+
+    @Length(max = StringUtils.STRING_MAX_LEN)
+    private String image;
 
 }

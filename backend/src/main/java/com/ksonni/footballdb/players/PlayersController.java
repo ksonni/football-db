@@ -1,8 +1,8 @@
 package com.ksonni.footballdb.players;
 
-import com.ksonni.footballdb.clubs.domain.Club;
 import com.ksonni.footballdb.clubs.services.ClubsRepository;
 import com.ksonni.footballdb.config.RoutesConfig;
+import com.ksonni.footballdb.files.services.FilesRepository;
 import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.dto.PatchPlayerRequest;
 import com.ksonni.footballdb.players.dto.PlayerResponse;
@@ -42,6 +42,7 @@ import java.util.Optional;
 public class PlayersController {
 
     private final ClubsRepository clubsRepository;
+    private final FilesRepository filesRepository;
     private final PlayersRepository playersRepository;
     private final QueryParser<Player> queryParser;
     private final PlayersMapper mapper;
@@ -75,9 +76,12 @@ public class PlayersController {
     @Transactional
     @RegisterPlayerDoc
     public PlayerResponse registerPlayer(final @Valid @RequestBody RegisterPlayerRequest request) {
-        final Optional<Club> club = clubsRepository.findById(request.getClubId());
-        if (club.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid club ID");
+        clubsRepository.findById(request.getClubId()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid club ID"));
+
+        if (request.getImage() != null) {
+            filesRepository.findById(request.getImage()).orElseThrow(() ->
+                    new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file ID for image field"));
         }
 
         final Player player = mapper.toPlayer(request);
@@ -108,6 +112,10 @@ public class PlayersController {
         if (request.getClubId() != null
                 && clubsRepository.findById(request.getClubId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Club ID");
+        }
+        if (request.getImage() != null) {
+            filesRepository.findById(request.getImage()).orElseThrow(() ->
+                    new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file ID for image field"));
         }
 
         final Player player = mapper.toPlayer(request, playerOptional.get());

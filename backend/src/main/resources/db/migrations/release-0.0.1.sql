@@ -89,3 +89,15 @@ CREATE TABLE `files` (
   REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 --rollback DROP TABLE files;
+
+--changeset root:release-0.0.1-c7
+ALTER TABLE `players` CHANGE COLUMN `image` `image` VARCHAR(36) NULL DEFAULT NULL;
+--rollback ALTER TABLE `players` CHANGE COLUMN `image` `image` VARCHAR(255) NULL DEFAULT NULL;
+
+--changeset root:release-0.0.1-c8
+ALTER TABLE `players`
+ADD CONSTRAINT `fk_players_files`
+FOREIGN KEY (`image`) REFERENCES `files`(`id`)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+--rollback ALTER TABLE `players` DROP FOREIGN KEY `fk_players_files`;

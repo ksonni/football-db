@@ -11,7 +11,7 @@ import com.ksonni.footballdb.users.dto.UserResponse;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
 import com.ksonni.footballdb.utils.MockMvcUtils;
-import com.ksonni.footballdb.utils.MockUtils;
+import com.ksonni.footballdb.utils.TestUtils;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
@@ -23,9 +23,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,16 +56,13 @@ public class UsersControllerTests {
                 .role(Role.USER).build();
         users = Arrays.asList(user);
 
-        final Page<User> pagedUsers = new PageImpl<>(users,
-                PageRequest.of(0, users.size()), users.size());
-
         BDDMockito.given(usersRepository.findAll(ArgumentMatchers.<Query<User>>any()))
-                .willReturn(pagedUsers);
+                .willReturn(TestUtils.buildPage(users));
         BDDMockito.given(usersMapper.toUserResponse(user)).willReturn(
                 UserResponse.builder().id(user.getId()).emailId(user.getEmailId())
                         .role(user.getRole()).build()
         );
-        MockUtils.disableRateLimiting(rateLimitingService);
+        TestUtils.disableRateLimiting(rateLimitingService);
     }
 
     @Test
@@ -94,7 +88,7 @@ public class UsersControllerTests {
     @Test
     @WithMockUser(roles = {Permission.Code.VIEW_USERS})
     void handlesRateLimitsReached() throws Exception {
-        MockUtils.mockRateLimitReached(rateLimitingService);
+        TestUtils.mockRateLimitReached(rateLimitingService);
         mockMvc.perform(utils.get(RoutesConfig.Users.PATH))
                 .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
     }
