@@ -64,10 +64,11 @@ public class RegisterPlayerRequest extends PlayerRequest {
             final Position position,
             final Side preferredFoot,
             final String clubId,
-            final Integer squadNumber) {
+            final Integer squadNumber,
+            final String image) {
         super(height, weight, overall, valueEuro, wageEuro, contractEndYear, contractStartYear, reputation,
                 attackingWorkRate, defensiveWorkRate, shootingTotal, passingTotal, dribblingTotal, defendingTotal,
-                headingAccuracy, penalties, birthYear);
+                headingAccuracy, penalties, birthYear, image);
         this.fullName = fullName;
         this.countryCode = countryCode;
         this.position = position;

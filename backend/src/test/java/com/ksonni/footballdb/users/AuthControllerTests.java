@@ -11,7 +11,7 @@ import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
 import com.ksonni.footballdb.utils.MockMvcUtils;
-import com.ksonni.footballdb.utils.MockUtils;
+import com.ksonni.footballdb.utils.TestUtils;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -66,7 +66,7 @@ class AuthControllerTests {
 
     @BeforeEach
     void setup() {
-        MockUtils.disableRateLimiting(rateLimitingService);
+        TestUtils.disableRateLimiting(rateLimitingService);
     }
 
     @Test
@@ -170,7 +170,7 @@ class AuthControllerTests {
     @Test
     @WithMockUser
     void handlesRateLimitsReached() throws Exception {
-        MockUtils.mockRateLimitReached(rateLimitingService);
+        TestUtils.mockRateLimitReached(rateLimitingService);
         mockMvc.perform(utils.get(RoutesConfig.Auth.ME_PATH))
                 .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
     }

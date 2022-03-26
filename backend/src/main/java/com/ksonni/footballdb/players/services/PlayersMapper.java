@@ -27,7 +27,6 @@ public interface PlayersMapper {
      * @return Mapped player
      */
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "image", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
     Player toPlayer(RegisterPlayerRequest request);
 
@@ -39,7 +38,6 @@ public interface PlayersMapper {
      * @return updated Player
      */
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "image", ignore = true)
     Player toPlayer(PatchPlayerRequest request, @MappingTarget Player player);
 
     /**

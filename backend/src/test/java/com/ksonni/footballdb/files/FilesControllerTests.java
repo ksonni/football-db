@@ -11,7 +11,7 @@ import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.utils.MockMvcUtils;
-import com.ksonni.footballdb.utils.MockUtils;
+import com.ksonni.footballdb.utils.TestUtils;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
@@ -24,8 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -75,8 +73,7 @@ public class FilesControllerTests {
                         .createdBy(USER_ID).mimeType("image/png").sizeBytes(RANDOM_FILE_SIZE).build()
         );
 
-        final Page<FileRegistration> pagedFiles = new PageImpl<>(files,
-                PageRequest.of(0, files.size()), files.size());
+        final Page<FileRegistration> pagedFiles = TestUtils.buildPage(files);
         BDDMockito.given(filesService.queryFiles(ArgumentMatchers.any()))
                 .willReturn(pagedFiles);
 
@@ -89,7 +86,7 @@ public class FilesControllerTests {
             );
         }
 
-        MockUtils.disableRateLimiting(rateLimitingService);
+        TestUtils.disableRateLimiting(rateLimitingService);
     }
 
     @Test

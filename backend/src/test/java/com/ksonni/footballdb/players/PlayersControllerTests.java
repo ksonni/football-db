@@ -3,6 +3,8 @@ package com.ksonni.footballdb.players;
 import com.ksonni.footballdb.clubs.domain.Club;
 import com.ksonni.footballdb.clubs.services.ClubsRepository;
 import com.ksonni.footballdb.config.RoutesConfig;
+import com.ksonni.footballdb.files.domain.FileRegistration;
+import com.ksonni.footballdb.files.services.FilesRepository;
 import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.domain.Position;
 import com.ksonni.footballdb.players.domain.Side;
@@ -20,8 +22,8 @@ import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.MathUtils;
 import com.ksonni.footballdb.utils.MockMvcUtils;
-import com.ksonni.footballdb.utils.MockUtils;
 import com.ksonni.footballdb.utils.TestStringUtils;
+import com.ksonni.footballdb.utils.TestUtils;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
@@ -67,6 +69,8 @@ class PlayersControllerTests {
     @MockBean
     private ClubsRepository clubsRepository;
     @MockBean
+    private FilesRepository filesRepository;
+    @MockBean
     private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;
@@ -102,10 +106,11 @@ class PlayersControllerTests {
 
         registerRequestSupplier = () -> RegisterPlayerRequest.builder()
                 .fullName("Some player").preferredFoot(Side.LEFT).clubId("id")
-                .squadNumber(RANDOM_SQUAD_NUM).position(Position.CENTER_FORWARD).countryCode("GB");
+                .squadNumber(RANDOM_SQUAD_NUM).position(Position.CENTER_FORWARD).countryCode("GB")
+                .image("aaaa-bbbb-cccc-dddd");
         validRegisterRequest = registerRequestSupplier.get().build();
         validPatchRequest = PatchPlayerRequest.builder().fullName("Some other player").build();
-        MockUtils.disableRateLimiting(rateLimitingService);
+        TestUtils.disableRateLimiting(rateLimitingService);
     }
 
     @Test
@@ -174,6 +179,7 @@ class PlayersControllerTests {
                 base.get().birthYear(-1).build(),
                 base.get().countryCode("").build(),
                 base.get().countryCode(LONG_COUNTRY_CODE).build(),
+                base.get().image(TestStringUtils.longString()).build(),
         };
 
         for (var request : badRequests) {
@@ -194,12 +200,27 @@ class PlayersControllerTests {
 
     @Test
     @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
+    void registerPlayerDoesNotAcceptInvalidImages() throws Exception {
+        final String imageId = validRegisterRequest.getImage();
+        BDDMockito.given(clubsRepository.findById(imageId)).willReturn(Optional.empty());
+
+        mockMvc.perform(utils.postJSON(RoutesConfig.Players.PATH, validRegisterRequest))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void registerPlayerSucceeds() throws Exception {
         final String clubId = validRegisterRequest.getClubId();
         final Optional<Club> clubOptional = Optional.ofNullable(
                 Club.builder().id(clubId).build());
 
+        final String imageId = validRegisterRequest.getImage();
+        final Optional<FileRegistration> fileRegistration = Optional.ofNullable(
+                FileRegistration.builder().id(imageId).build());
+
         BDDMockito.given(clubsRepository.findById(clubId)).willReturn(clubOptional);
+        BDDMockito.given(filesRepository.findById(imageId)).willReturn(fileRegistration);
 
         BDDMockito.given(mapper.toPlayer(validRegisterRequest))
                 .willReturn(Player.builder().id(PLAYER_ID).build());
@@ -252,6 +273,7 @@ class PlayersControllerTests {
                 PatchPlayerRequest.builder().birthYear(-1).build(),
                 PatchPlayerRequest.builder().countryCode("").build(),
                 PatchPlayerRequest.builder().countryCode(LONG_COUNTRY_CODE).build(),
+                PatchPlayerRequest.builder().image(TestStringUtils.longString()).build(),
         };
 
         for (var request : badRequests) {
@@ -270,7 +292,21 @@ class PlayersControllerTests {
                 .willReturn(Optional.ofNullable(Player.builder().build()));
 
         mockMvc.perform(utils.patchJSON(PLAYER_PATH,
-                        PatchPlayerRequest.builder().clubId("bad id").build()))
+                        PatchPlayerRequest.builder().clubId(clubId).build()))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
+    void patchPlayerDoesNotAcceptInvalidImages() throws Exception {
+        final String imageId = validRegisterRequest.getImage();
+        BDDMockito.given(filesRepository.findById(imageId))
+                .willReturn(Optional.empty());
+        BDDMockito.given(playersRepository.findById(PLAYER_ID))
+                .willReturn(Optional.ofNullable(Player.builder().build()));
+
+        mockMvc.perform(utils.patchJSON(PLAYER_PATH,
+                        PatchPlayerRequest.builder().image(imageId).build()))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
@@ -327,7 +363,7 @@ class PlayersControllerTests {
 
     @Test
     void handlesRateLimitsReached() throws Exception {
-        MockUtils.mockRateLimitReached(rateLimitingService);
+        TestUtils.mockRateLimitReached(rateLimitingService);
         mockMvc.perform(utils.get(RoutesConfig.Players.PATH))
                 .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
     }
@@ -335,7 +371,7 @@ class PlayersControllerTests {
     @AfterEach
     void tearDown() {
         Mockito.reset(playersRepository, queryParser, userDetailsService,
-                clubsRepository, mapper, rateLimitingService);
+                clubsRepository, mapper, rateLimitingService, filesRepository);
     }
 
 }
