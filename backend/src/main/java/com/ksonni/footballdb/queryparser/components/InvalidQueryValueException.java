@@ -11,7 +11,7 @@ public class InvalidQueryValueException extends QueryParseException {
      * @param value The value that couldn't be parsed
      */
     public InvalidQueryValueException(final String key, final String value) {
-        super(String.format("Invalid query value \"%s\" for key \"%s\"", value, key));
+        super(String.format("Invalid query value '%s' for key '%s'", value, key));
     }
 
 }

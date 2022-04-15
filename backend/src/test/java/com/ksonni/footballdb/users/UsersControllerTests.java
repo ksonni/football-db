@@ -4,6 +4,7 @@ import com.ksonni.footballdb.config.RoutesConfig;
 import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.ratelimiting.RateLimitingService;
+import com.ksonni.footballdb.users.domain.AuthMethod;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
@@ -53,14 +54,14 @@ public class UsersControllerTests {
     @BeforeEach
     void setup() {
         user = User.builder().id("id").emailId("user@ksonni.com")
-                .role(Role.USER).build();
+                .role(Role.USER).authMethod(AuthMethod.PASSWORD).build();
         users = Arrays.asList(user);
 
         BDDMockito.given(usersRepository.findAll(ArgumentMatchers.<Query<User>>any()))
                 .willReturn(TestUtils.buildPage(users));
         BDDMockito.given(usersMapper.toUserResponse(user)).willReturn(
                 UserResponse.builder().id(user.getId()).emailId(user.getEmailId())
-                        .role(user.getRole()).build()
+                        .role(user.getRole()).authMethod(user.getAuthMethod()).build()
         );
         TestUtils.disableRateLimiting(rateLimitingService);
     }
@@ -75,7 +76,9 @@ public class UsersControllerTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].emailId",
                         Is.is(user.getEmailId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].role",
-                        Is.is(user.getRole().getValue())));
+                        Is.is(user.getRole().getValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].authMethod",
+                        Is.is(user.getAuthMethod().getValue())));
     }
 
     @Test

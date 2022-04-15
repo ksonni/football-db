@@ -2,6 +2,7 @@ package com.ksonni.footballdb.users.services;
 
 import com.ksonni.footballdb.queryparser.DefaultQueryParser;
 import com.ksonni.footballdb.queryparser.components.FilterQueryComponentSupplier;
+import com.ksonni.footballdb.users.domain.AuthMethod;
 import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
 
@@ -22,6 +23,8 @@ public class UserQueryParser extends DefaultQueryParser<User> {
 
         if (type.isAssignableFrom(Role.class)) {
             return Role.RoleFilterQueryComponent::new;
+        } else if (type.isAssignableFrom(AuthMethod.class)) {
+            return AuthMethod.AuthMethodFilterQueryComponent::new;
         }
 
         return super.getQueryComponentSupplier(field);

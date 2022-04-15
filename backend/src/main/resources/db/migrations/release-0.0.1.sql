@@ -101,3 +101,9 @@ FOREIGN KEY (`image`) REFERENCES `files`(`id`)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
 --rollback ALTER TABLE `players` DROP FOREIGN KEY `fk_players_files`;
+
+--changeset root:release-0.0.1-c9
+ALTER TABLE `users`
+ADD COLUMN `auth_method` VARCHAR(40) NOT NULL DEFAULT 'PASSWORD' AFTER `role`,
+CHANGE COLUMN `password` `password` VARCHAR(100) NULL;
+--rollback ALTER TABLE `users` DROP COLUMN `auth_method`, CHANGE COLUMN `password` `password` VARCHAR(100) NOT NULL;

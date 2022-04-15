@@ -24,6 +24,7 @@ public interface UsersMapper {
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "role", ignore = true)
+    @Mapping(target = "authMethod", ignore = true)
     User toUser(RegisterUserRequest request);
 
     /**

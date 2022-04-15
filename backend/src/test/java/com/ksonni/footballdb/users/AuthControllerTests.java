@@ -2,6 +2,7 @@ package com.ksonni.footballdb.users;
 
 import com.ksonni.footballdb.config.RoutesConfig;
 import com.ksonni.footballdb.ratelimiting.RateLimitingService;
+import com.ksonni.footballdb.users.domain.AuthMethod;
 import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.dto.LoginRequest;
@@ -42,6 +43,7 @@ class AuthControllerTests {
             .id("id")
             .emailId("test@ksonni.com")
             .password("sdfsdfsdf*&£1")
+            .authMethod(AuthMethod.PASSWORD)
             .build();
     private final RegisterUserRequest validRegisterRequest = RegisterUserRequest.builder()
             .emailId(validUser.getEmailId())
@@ -77,6 +79,7 @@ class AuthControllerTests {
         final ArgumentCaptor<User> createdUser = testSuccessfulUserRegistration();
 
         Assertions.assertEquals(Role.USER, createdUser.getValue().getRole());
+        Assertions.assertEquals(AuthMethod.PASSWORD, createdUser.getValue().getAuthMethod());
     }
 
     @Test
@@ -86,6 +89,7 @@ class AuthControllerTests {
         final ArgumentCaptor<User> createdUser = testSuccessfulUserRegistration();
 
         Assertions.assertEquals(Role.ADMIN, createdUser.getValue().getRole());
+        Assertions.assertEquals(AuthMethod.PASSWORD, createdUser.getValue().getAuthMethod());
     }
 
     @Test
@@ -118,6 +122,9 @@ class AuthControllerTests {
         Mockito.when(auth.getPrincipal()).thenReturn(validUser);
         Mockito.when(auth.isAuthenticated()).thenReturn(true);
 
+        BDDMockito.given(usersRepository.findByEmailId(ArgumentMatchers.anyString()))
+            .willReturn(validUser);
+
         BDDMockito.given(authenticationManager.authenticate(
                         ArgumentMatchers.any(UsernamePasswordAuthenticationToken.class)))
                 .willReturn(auth);
@@ -137,6 +144,9 @@ class AuthControllerTests {
 
     @Test
     void badCredentialsLoginRequest() throws Exception {
+        BDDMockito.given(usersRepository.findByEmailId(ArgumentMatchers.anyString()))
+                .willReturn(validUser);
+
         BDDMockito.given(authenticationManager.authenticate(
                         ArgumentMatchers.any(UsernamePasswordAuthenticationToken.class)))
                 .willThrow(BadCredentialsException.class);

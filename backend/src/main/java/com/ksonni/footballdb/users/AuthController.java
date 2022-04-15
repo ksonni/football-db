@@ -1,6 +1,7 @@
 package com.ksonni.footballdb.users;
 
 import com.ksonni.footballdb.config.RoutesConfig;
+import com.ksonni.footballdb.users.domain.AuthMethod;
 import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.dto.LoginRequest;
@@ -62,6 +63,7 @@ public class AuthController {
         final String password = passwordEncoder.encode(request.getPassword());
 
         user.setPassword(password);
+        user.setAuthMethod(AuthMethod.PASSWORD);
         user.setId(UUID.randomUUID().toString());
         user.setRole(isFirstUser ? Role.ADMIN : Role.USER);
 
@@ -78,6 +80,11 @@ public class AuthController {
     @Transactional(readOnly = true)
     @LoginDoc
     public void loginUser(final @Valid @RequestBody LoginRequest request) {
+        final var user = usersRepository.findByEmailId(request.getEmailId());
+        if (user == null || user.getAuthMethod() != AuthMethod.PASSWORD) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
         final var token = new UsernamePasswordAuthenticationToken(request.getEmailId(), request.getPassword());
 
         final Authentication auth;
