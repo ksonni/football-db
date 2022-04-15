@@ -1,10 +1,17 @@
 package com.ksonni.footballdb.users.services;
 
+import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
+@Service
+@RequiredArgsConstructor
 public class DefaultAuthService implements AuthService {
+
+    private final UsersRepository usersRepository;
 
     @Override
     public User getAuthenticatedUser() {
@@ -19,6 +26,12 @@ public class DefaultAuthService implements AuthService {
     @Override
     public void clearSessionAuth() {
         SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Override
+    public Role getDefaultRole() {
+        final boolean isFirstUser = usersRepository.findFirstByOrderByEmailIdAsc() == null;
+        return isFirstUser ? Role.ADMIN : Role.USER;
     }
 
 }

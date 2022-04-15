@@ -72,9 +72,8 @@ class AuthControllerTests {
     }
 
     @Test
-    void registerUserWhenThereArePreExistingUsers() throws Exception {
-        final User preExistingUser = User.builder().emailId("something@ksonni.com").build();
-        BDDMockito.given(usersRepository.findFirstByOrderByEmailIdAsc()).willReturn(preExistingUser);
+    void registerUserAsNonAdmin() throws Exception {
+        BDDMockito.given(authService.getDefaultRole()).willReturn(Role.USER);
 
         final ArgumentCaptor<User> createdUser = testSuccessfulUserRegistration();
 
@@ -83,8 +82,8 @@ class AuthControllerTests {
     }
 
     @Test
-    void registerUserWhenThereAreNoPreExistingUsers() throws Exception {
-        BDDMockito.given(usersRepository.findFirstByOrderByEmailIdAsc()).willReturn(null);
+    void registerUserAsAdmin() throws Exception {
+        BDDMockito.given(authService.getDefaultRole()).willReturn(Role.ADMIN);
 
         final ArgumentCaptor<User> createdUser = testSuccessfulUserRegistration();
 

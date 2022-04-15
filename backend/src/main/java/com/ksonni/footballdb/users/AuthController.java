@@ -2,7 +2,6 @@ package com.ksonni.footballdb.users;
 
 import com.ksonni.footballdb.config.RoutesConfig;
 import com.ksonni.footballdb.users.domain.AuthMethod;
-import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.dto.LoginRequest;
 import com.ksonni.footballdb.users.dto.RegisterUserRequest;
@@ -59,13 +58,12 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email address already in use");
         }
 
-        final boolean isFirstUser = usersRepository.findFirstByOrderByEmailIdAsc() == null;
         final String password = passwordEncoder.encode(request.getPassword());
 
         user.setPassword(password);
         user.setAuthMethod(AuthMethod.PASSWORD);
         user.setId(UUID.randomUUID().toString());
-        user.setRole(isFirstUser ? Role.ADMIN : Role.USER);
+        user.setRole(authService.getDefaultRole());
 
         usersRepository.save(user);
         log.info("created user {} with role {}", user.getEmailId(), user.getRole());

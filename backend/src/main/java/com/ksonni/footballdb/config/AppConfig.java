@@ -10,8 +10,6 @@ import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.ratelimiting.IPRateLimitingService;
 import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.User;
-import com.ksonni.footballdb.users.services.AuthService;
-import com.ksonni.footballdb.users.services.DefaultAuthService;
 import com.ksonni.footballdb.users.services.UserQueryParser;
 import com.ksonni.footballdb.utils.DocUtils;
 import io.swagger.v3.oas.models.Components;
@@ -88,16 +86,6 @@ public class AppConfig {
     @Bean
     public QueryParser<FileRegistration> filesQueryParser() {
         return new DefaultQueryParser<>(FileRegistration.class);
-    }
-
-    /**
-     * Supplies an AuthService.
-     *
-     * @return AuthService
-     */
-    @Bean
-    public AuthService authService() {
-        return new DefaultAuthService();
     }
 
     /**

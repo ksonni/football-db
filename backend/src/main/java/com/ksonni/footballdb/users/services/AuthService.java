@@ -1,5 +1,6 @@
 package com.ksonni.footballdb.users.services;
 
+import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
 import org.springframework.security.core.Authentication;
 
@@ -24,4 +25,10 @@ public interface AuthService {
      */
     void clearSessionAuth();
 
+    /**
+     * Decides the role to assign to new users.
+     *
+     * @return role to assign to a new user
+     */
+    Role getDefaultRole();
 }
