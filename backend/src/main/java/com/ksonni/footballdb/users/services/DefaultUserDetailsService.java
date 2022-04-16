@@ -1,14 +1,14 @@
 package com.ksonni.footballdb.users.services;
 
 import com.ksonni.footballdb.users.domain.User;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class DefaultUserDetailsService implements UserDetailsService {
 
     private final UsersRepository usersRepository;

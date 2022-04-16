@@ -5,6 +5,7 @@ import com.ksonni.footballdb.users.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +16,14 @@ public class DefaultAuthService implements AuthService {
 
     @Override
     public User getAuthenticatedUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            return (User) principal;
+        }
+        if (principal instanceof OidcUser) {
+            return usersRepository.findByEmailId(((OidcUser) principal).getEmail());
+        }
+        return null;
     }
 
     @Override

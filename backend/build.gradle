@@ -25,6 +25,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
     implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.1.0'
     implementation 'org.apache.tika:tika-core:2.2.1'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.6.6'
 
     runtimeOnly 'mysql:mysql-connector-java:8.0.26'
 

@@ -17,6 +17,7 @@ public final class RoutesConfig {
             new UnauthenticatedRoute(HttpMethod.POST, Auth.LOGIN_PATH),
             new UnauthenticatedRoute(HttpMethod.POST, Auth.REGISTER_PATH),
             new UnauthenticatedRoute(HttpMethod.POST, Auth.LOGOUT_PATH),
+            // new UnauthenticatedRoute(HttpMethod.GET, Auth.GOOGLE_OAUTH2_PATH),
 
             // Queries
             new UnauthenticatedRoute(HttpMethod.GET, Leagues.PATH),
@@ -113,6 +114,11 @@ public final class RoutesConfig {
          * Me path.
          */
         public static final String ME_PATH = PATH + ME;
+
+        /**
+         * The OAuth2 login path for google auth.
+         */
+        public static final String GOOGLE_OAUTH2_PATH = "/oauth2/authorization/google";
     }
 
     public static class Users {

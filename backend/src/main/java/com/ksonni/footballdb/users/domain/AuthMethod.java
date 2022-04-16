@@ -20,9 +20,9 @@ public enum AuthMethod implements EnumUtils.ValueEnum {
     PASSWORD("PASSWORD"),
 
     /**
-     * Google Open ID connect auth.
+     * Open ID connect auth.
      */
-    GOOGLE_OAUTH2("GOOGLE_OAUTH2");
+    OIDC("OIDC");
 
     private final String value;
 

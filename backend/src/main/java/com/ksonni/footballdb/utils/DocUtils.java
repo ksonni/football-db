@@ -83,7 +83,10 @@ public final class DocUtils {
             + "permitted. Rate limiting is in place to discourage the same.</p>"
             + "<h3>Code</h3>"
             + "<p>The source code for this API is available on "
-            + "<a href ='https://github.com/ksonni/football-db' target='_blank'>GitHub</a>.</p>";
+            + "<a href ='https://github.com/ksonni/football-db' target='_blank'>GitHub</a>.</p>"
+            + "<h3>OAuth Login</h3>"
+            + "<p>Login with Google using the following "
+            + "<a href ='/oauth2/authorization/google'>link</a>.</p>";
 
     private DocUtils() {
     }

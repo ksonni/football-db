@@ -1,9 +1,11 @@
 package com.ksonni.footballdb.config;
 
 import com.ksonni.footballdb.ratelimiting.RateLimitingInterceptor;
+import com.ksonni.footballdb.users.services.OpenIDConnectService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -13,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -34,6 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
     private final UserDetailsService userDetailsService;
     private final RateLimitingInterceptor rateLimitInterceptor;
+    private final OpenIDConnectService openIDConnectService;
 
     @Override
     protected void configure(final HttpSecurity security) throws Exception {
@@ -43,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
         http = http.csrf().disable();
         http = configureUnauthenticatedRoutes(http);
         http = enableAuthentication(http);
+        http = enableOpenIDConnect(http);
     }
 
     @Override
@@ -90,7 +95,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
     }
 
     private HttpSecurity enableAuthentication(final HttpSecurity http) throws Exception {
-        return http.authorizeRequests().anyRequest().authenticated().and();
+        return http.authorizeRequests().anyRequest().authenticated().and()
+                .exceptionHandling().authenticationEntryPoint(
+                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)).and();
+    }
+
+    private HttpSecurity enableOpenIDConnect(final HttpSecurity http) throws Exception {
+        return http.oauth2Login().userInfoEndpoint().oidcUserService(openIDConnectService).and()
+                .defaultSuccessUrl("/swagger-ui/index.html").and();
     }
 
     private HttpSecurity requireHttps(final HttpSecurity http) throws Exception {

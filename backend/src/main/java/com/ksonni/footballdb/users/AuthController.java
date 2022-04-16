@@ -9,6 +9,7 @@ import com.ksonni.footballdb.users.dto.UserResponse;
 import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
+import com.ksonni.footballdb.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -62,7 +62,7 @@ public class AuthController {
 
         user.setPassword(password);
         user.setAuthMethod(AuthMethod.PASSWORD);
-        user.setId(UUID.randomUUID().toString());
+        user.setId(StringUtils.uuid());
         user.setRole(authService.getDefaultRole());
 
         usersRepository.save(user);
