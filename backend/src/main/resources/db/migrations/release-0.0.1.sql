@@ -6,7 +6,6 @@ CREATE TABLE `leagues` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 );
---rollback DROP TABLE leagues;
 
 --changeset root:release-0.0.1-c2
 CREATE TABLE `clubs` (
@@ -25,7 +24,6 @@ CREATE TABLE `clubs` (
   CONSTRAINT `fk_teams_leagues` FOREIGN KEY (`league_id`)
   REFERENCES `leagues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
---rollback DROP TABLE clubs;
 
 --changeset root:release-0.0.1-c3
 CREATE TABLE `players` (
@@ -59,7 +57,6 @@ CREATE TABLE `players` (
   CONSTRAINT `fk_players_teams` FOREIGN KEY (`club_id`)
   REFERENCES `clubs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
---rollback DROP TABLE players;
 
 --changeset root:release-0.0.1-c4
 CREATE TABLE `users` (
@@ -69,11 +66,9 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email_id_UNIQUE` (`email_id` ASC) VISIBLE
 );
---rollback DROP TABLE users;
 
 --changeset root:release-0.0.1-c5
 ALTER TABLE `users` ADD COLUMN `role` VARCHAR(40) NULL AFTER `password`;
---rollback ALTER TABLE `users` DROP COLUMN `role`;
 
 --changeset root:release-0.0.1-c6
 CREATE TABLE `files` (
@@ -88,11 +83,9 @@ CREATE TABLE `files` (
   CONSTRAINT `fk_files_users` FOREIGN KEY (`created_by`)
   REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
---rollback DROP TABLE files;
 
 --changeset root:release-0.0.1-c7
 ALTER TABLE `players` CHANGE COLUMN `image` `image` VARCHAR(36) NULL DEFAULT NULL;
---rollback ALTER TABLE `players` CHANGE COLUMN `image` `image` VARCHAR(255) NULL DEFAULT NULL;
 
 --changeset root:release-0.0.1-c8
 ALTER TABLE `players`
@@ -100,4 +93,3 @@ ADD CONSTRAINT `fk_players_files`
 FOREIGN KEY (`image`) REFERENCES `files`(`id`)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
---rollback ALTER TABLE `players` DROP FOREIGN KEY `fk_players_files`;

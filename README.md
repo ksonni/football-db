@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ksonni/football-db/actions/workflows/ci.yml/badge.svg)](https://github.com/ksonni/football-db/actions/workflows/ci.yml)
 
-Football DB is an API service that allows users to search a database of nearly 20,000 football (soccer) players from different clubs across the world using highly customizable search and sort queries.
+Football DB is an API service that allows users to search a database football (soccer) players from different clubs across the world using highly customizable search and sort queries.
 
 ## Technical overview
 
@@ -18,9 +18,7 @@ Football DB is an API service that allows users to search a database of nearly 2
 
 ## Using the API
 
-Demo and Open API docs are availalbe at: https://football-db.ksonni.com/swagger-ui/index.html
-
-<i>(This service is for demonstration purposes only and commercial use is not permitted. Rate limiting is in place to discourage the same)</i>
+Demo and Open API can be found by navigating to /swagger-ui/index.html
 
 The main endpoints are:
 - `api/v1/leagues` - Info about different football leagues
@@ -49,7 +47,7 @@ All responses are in JSON format.
 
 ### System requirements
 
-- Mac or Linux OS (The output jar can obviously run on Windows, but dev scripts won't)
+- Mac or Linux OS (The output jar can run on Windows, but dev scripts won't)
 - Java 11 + JDK
 - Docker
 
@@ -59,7 +57,7 @@ To stay as close to prod as possible, a self signed SSL certificate is needed fo
 
 `cd backend/ssl && bash ./gen-dev-certs.sh`
 
-This will be stored in a folder called `.certs` which will be ignored by git for security reasons.
+This will be stored in a folder called `.certs` which will be ignored by git.
 
 ### Environment setup
 
@@ -89,18 +87,3 @@ To access these scripts, start an interactive shell session inside the database 
 `cd /liquibase/db/scripts` 
 
 These scripts invoke the [Liquibase](https://www.liquibase.org/) schema versioning tool to perform tasks like rolling the datbase back to the previous version etc.
-
-## Dataset
-
-Sincere thanks to Alex for making the dataset available on Kaggle:
-https://www.kaggle.com/cashncarry/fifa-22-complete-player-dataset
-
-The data was originally made available in different CSV flat files. It was processed to make it suitable for storage in a MySQL relational database for this application.
-
-## Licensing
-
-The code in this repository is available under the [Apache 2.0 License](https://github.com/ksonni/football-db/blob/master/LICENSE). Note that this only applies to the contents of this repository and not the dataset.
-
-The dataset was originally published by the author mentioned above under the [
-CC BY-NC-SA 4.0 license](https://creativecommons.org/licenses/by-nc-sa/4.0/) and usage of any data extracted from the API service is dictated by the same license.
-

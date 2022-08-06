@@ -1,4 +1,4 @@
-FROM mysql:8
+FROM mysql:8-debian
 
 RUN apt-get update
 RUN apt-get -y install curl
