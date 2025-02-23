@@ -48,7 +48,7 @@ All responses are in JSON format.
 ### System requirements
 
 - Mac or Linux OS (The output jar can run on Windows, but dev scripts won't)
-- Java 11 + JDK
+- Java 17 + JDK
 - Docker
 
 ### SSL setup
