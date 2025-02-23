@@ -1,8 +1,8 @@
-FROM mysql:8-debian
+FROM mysql:8.0-debian
 
 RUN apt-get update
 RUN apt-get -y install curl
-RUN apt-get -y install openjdk-11-jre-headless
+RUN apt-get -y install openjdk-17-jre-headless
 
 WORKDIR /liquibase
 
