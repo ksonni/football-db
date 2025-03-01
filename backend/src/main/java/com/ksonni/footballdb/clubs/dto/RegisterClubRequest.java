@@ -1,16 +1,17 @@
 package com.ksonni.footballdb.clubs.dto;
 
 import com.ksonni.footballdb.utils.StringUtils;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
 @SuperBuilder
+@Jacksonized
 public class RegisterClubRequest extends ClubRequest {
 
     @NotBlank

@@ -27,7 +27,7 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -49,17 +49,17 @@ class ClubsControllerTests {
     private static final String CLUB_PATH = RoutesConfig.Clubs.PATH + "/" + CLUB_ID;
     private final MockMvcUtils utils = new MockMvcUtils();
 
-    @MockBean
+    @MockitoBean
     private ClubsRepository clubsRepository;
-    @MockBean
+    @MockitoBean
     private ClubsMapper mapper;
-    @MockBean
+    @MockitoBean
     private LeaguesRepository leaguesRepository;
-    @MockBean
+    @MockitoBean
     private QueryParser<Club> queryParser;
-    @MockBean
+    @MockitoBean
     private UserDetailsService userDetailsService;
-    @MockBean
+    @MockitoBean
     private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;

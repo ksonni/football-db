@@ -8,8 +8,8 @@ import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import com.ksonni.footballdb.utils.EnumUtils;
 import lombok.RequiredArgsConstructor;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 /**
  * Represents positions on the field players can assume.

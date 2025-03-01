@@ -7,13 +7,15 @@ import com.ksonni.footballdb.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 @Getter
 @Setter
 @SuperBuilder
+@Jacksonized
 public class PatchPlayerRequest extends PlayerRequest {
 
     @Length(min = 1, max = StringUtils.STRING_MAX_LEN)

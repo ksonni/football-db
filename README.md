@@ -65,7 +65,7 @@ The project requires some API keys and secrets to function properly. This is pro
 
 ### Running
 
-`cd` to the `backend` folder and run `bash ./run-debug`. The service will then be available on `localhost`. 
+`cd` to the `backend` folder and run `./run-debug`. The service will then be available on `localhost`. 
 
 ### Debugging
 

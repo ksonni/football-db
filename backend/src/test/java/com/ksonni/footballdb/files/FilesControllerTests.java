@@ -22,7 +22,7 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -47,19 +47,19 @@ public class FilesControllerTests {
     private static final String FILE_PARAM = "file";
     private final MockMvcUtils utils = new MockMvcUtils();
 
-    @MockBean
+    @MockitoBean
     private FilesService filesService;
-    @MockBean
+    @MockitoBean
     private AuthService authService;
-    @MockBean
+    @MockitoBean
     private QueryParser<FileRegistration> queryParser;
-    @MockBean
+    @MockitoBean
     private FilesMapper mapper;
     @Autowired
     private MockMvc mockMvc;
-    @MockBean
+    @MockitoBean
     private UserDetailsService userDetailsService;
-    @MockBean
+    @MockitoBean
     private RateLimitingService rateLimitingService;
 
     private List<FileRegistration> files;

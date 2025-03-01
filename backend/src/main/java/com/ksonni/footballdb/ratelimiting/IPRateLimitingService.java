@@ -2,11 +2,10 @@ package com.ksonni.footballdb.ratelimiting;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
@@ -74,8 +73,8 @@ public class IPRateLimitingService implements RateLimitingService {
     }
 
     private Bucket makeBucket(final String ipAddress) {
-        final Refill refillPolicy = Refill.intervally(maxRequests, duration);
-        final Bandwidth limit = Bandwidth.classic(maxRequests, refillPolicy);
+        final var limit = Bandwidth.builder().capacity(maxRequests)
+                .refillIntervally(maxRequests, duration).build();
         return Bucket.builder().addLimit(limit).build();
     }
 

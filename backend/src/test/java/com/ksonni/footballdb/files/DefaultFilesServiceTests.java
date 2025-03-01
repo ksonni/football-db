@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -30,9 +30,9 @@ public class DefaultFilesServiceTests {
     private static final String USER_ID = "uid";
     private static final String IMAGE_MIME_TYPE = "image/png";
 
-    @MockBean
+    @MockitoBean
     private FilesRepository filesRepository;
-    @MockBean
+    @MockitoBean
     private FileStorageService storageService;
 
     private FilesService filesService;
