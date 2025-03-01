@@ -2,7 +2,7 @@ set -xe
 
 # Setup environment
 LIQUIBASE_PATH=deps/liquibase-core-4.6.1.jar
-DB_FILES_PATH=../../backend/src/main/resources/db/
+DB_FILES_PATH=../../app/src/main/resources/db/
 BIN_PATH=./.bin
 MYSQL_CONNECTOR_ABS_PATH=$(pwd)/deps/mysql-connector-java-8.0.27.jar
 

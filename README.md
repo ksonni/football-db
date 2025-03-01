@@ -55,7 +55,7 @@ All responses are in JSON format.
 
 To stay as close to prod as possible, a self signed SSL certificate is needed for development. To generate one:
 
-`cd backend/ssl && bash ./gen-dev-certs.sh`
+`cd app/ssl && bash ./gen-dev-certs.sh`
 
 This will be stored in a folder called `.certs` which will be ignored by git.
 
@@ -65,7 +65,7 @@ The project requires some API keys and secrets to function properly. This is pro
 
 ### Running
 
-`cd` to the `backend` folder and run `./run-debug`. The service will then be available on `localhost`. 
+`cd` to the `app` folder and run `./run-debug`. The service will then be available on `localhost`. 
 
 ### Debugging
 

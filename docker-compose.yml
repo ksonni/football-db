@@ -11,12 +11,12 @@ services:
     volumes:
       - db-volume:/var/lib/mysql
     restart: on-failure
-  backend:
-    image: backend:latest
+  app:
+    image: app:latest
     env_file:
       - .env
     build:
-      context: backend
+      context: app
       dockerfile: Dockerfile
     depends_on:
       - db
@@ -24,8 +24,8 @@ services:
       - "80:8080"
       - "443:8080"
     volumes:
-      - backend-volume:/data
+      - app-volume:/data
     restart: on-failure
 volumes:
   db-volume:
-  backend-volume:
+  app-volume:

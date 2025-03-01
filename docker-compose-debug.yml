@@ -13,23 +13,23 @@ services:
       - db-volume:/var/lib/mysql
     ports:
       - "3306:3306"
-  backend:
-    image: backend:latest
+  app:
+    image: app:latest
     env_file:
       - .env
     environment:
       - JAVA_OPTS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
     build:
-      context: backend
+      context: app
       dockerfile: Dockerfile
     ports:
       - "80:8080"
       - "443:8080"
       - "8000:8000"
     volumes:
-      - backend-volume:/data
+      - app-volume:/data
     depends_on:
       - db
 volumes:
   db-volume:
-  backend-volume:
+  app-volume:

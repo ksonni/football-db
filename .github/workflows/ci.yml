@@ -17,4 +17,4 @@ jobs:
         java-version: '17'
         distribution: 'adopt'
     - name: Run Gradle build
-      run: cd backend && ./gradlew build
+      run: cd app && ./gradlew build
