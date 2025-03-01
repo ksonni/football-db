@@ -23,7 +23,7 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,19 +47,19 @@ class AuthControllerTests {
             .emailId(validUser.getEmailId())
             .password(validUser.getPassword())
             .build();
-    @MockBean
+    @MockitoBean
     private UsersMapper mapper;
-    @MockBean
+    @MockitoBean
     private PasswordEncoder encoder;
-    @MockBean
+    @MockitoBean
     private UsersRepository usersRepository;
-    @MockBean
+    @MockitoBean
     private AuthenticationManager authenticationManager;
-    @MockBean
+    @MockitoBean
     private UserDetailsService userDetailsService;
-    @MockBean
+    @MockitoBean
     private AuthService authService;
-    @MockBean
+    @MockitoBean
     private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;

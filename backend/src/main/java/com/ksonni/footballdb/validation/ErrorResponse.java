@@ -6,7 +6,7 @@ import com.ksonni.footballdb.utils.HttpUtils;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;

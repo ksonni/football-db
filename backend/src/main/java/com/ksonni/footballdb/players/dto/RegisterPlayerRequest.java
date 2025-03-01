@@ -7,15 +7,17 @@ import com.ksonni.footballdb.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @SuperBuilder
+@Jacksonized
 public class RegisterPlayerRequest extends PlayerRequest {
 
     @NotBlank

@@ -34,7 +34,7 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -58,19 +58,19 @@ class PlayersControllerTests {
 
     private final MockMvcUtils utils = new MockMvcUtils();
 
-    @MockBean
+    @MockitoBean
     private PlayersRepository playersRepository;
-    @MockBean
+    @MockitoBean
     private QueryParser<Player> queryParser;
-    @MockBean
+    @MockitoBean
     private UserDetailsService userDetailsService;
-    @MockBean
+    @MockitoBean
     private PlayersMapper mapper;
-    @MockBean
+    @MockitoBean
     private ClubsRepository clubsRepository;
-    @MockBean
+    @MockitoBean
     private FilesRepository filesRepository;
-    @MockBean
+    @MockitoBean
     private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;
@@ -305,8 +305,8 @@ class PlayersControllerTests {
         BDDMockito.given(playersRepository.findById(PLAYER_ID))
                 .willReturn(Optional.ofNullable(Player.builder().build()));
 
-        mockMvc.perform(utils.patchJSON(PLAYER_PATH,
-                        PatchPlayerRequest.builder().image(imageId).build()))
+        final var req = PatchPlayerRequest.builder().image(imageId).build();
+        mockMvc.perform(utils.patchJSON(PLAYER_PATH, req))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 

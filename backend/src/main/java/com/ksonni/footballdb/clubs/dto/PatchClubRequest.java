@@ -4,11 +4,13 @@ import com.ksonni.footballdb.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
 @SuperBuilder
+@Jacksonized
 public class PatchClubRequest extends ClubRequest {
 
     @Length(max = StringUtils.STRING_MAX_LEN)

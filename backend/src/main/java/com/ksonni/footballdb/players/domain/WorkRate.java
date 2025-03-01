@@ -9,8 +9,8 @@ import com.ksonni.footballdb.utils.EnumUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 /**
  * Working rate of a player in a given area of the game.

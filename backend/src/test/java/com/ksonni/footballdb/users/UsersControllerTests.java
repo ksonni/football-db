@@ -22,7 +22,7 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,15 +35,15 @@ import java.util.List;
 public class UsersControllerTests {
 
     private final MockMvcUtils utils = new MockMvcUtils();
-    @MockBean
+    @MockitoBean
     private UserDetailsService userDetailsService;
-    @MockBean
+    @MockitoBean
     private UsersRepository usersRepository;
-    @MockBean
+    @MockitoBean
     private UsersMapper usersMapper;
-    @MockBean
+    @MockitoBean
     private QueryParser<User> queryParser;
-    @MockBean
+    @MockitoBean
     private RateLimitingService rateLimitingService;
     @Autowired
     private MockMvc mockMvc;
