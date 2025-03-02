@@ -1,13 +1,19 @@
 plugins {
-    id 'org.springframework.boot' version '3.4.3'
-    id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
     id 'checkstyle'
+
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.deps)
 }
 
 group = 'com.ksonni'
 version = '0.0.1'
-sourceCompatibility = '17'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
+    }
+}
 
 repositories {
     mavenCentral()
@@ -18,31 +24,33 @@ configurations {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.4.3'
-    implementation 'org.springframework.boot:spring-boot-starter-validation:3.4.3'
-    implementation 'org.springframework.boot:spring-boot-starter-security:3.4.3'
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.4.3'
-    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-    implementation 'org.projectlombok:lombok:1.18.36'
-    implementation 'org.liquibase:liquibase-core:4.31.1'
-    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
-    implementation 'com.bucket4j:bucket4j-core:8.10.1'
-    implementation 'org.apache.tika:tika-core:3.1.0'
+    implementation libs.spring.data
+    implementation libs.spring.validation
+    implementation libs.spring.security
+    implementation libs.spring.web
+    implementation libs.spring.openapi
 
-    runtimeOnly 'com.mysql:mysql-connector-j:9.2.0'
+    implementation libs.lombok
+    implementation libs.mapstruct
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.4.3'
-    testImplementation 'org.springframework.security:spring-security-test:6.4.3'
+    implementation libs.liquibase
+    runtimeOnly libs.mysql
 
-    testImplementation 'org.mockito:mockito-core:5.15.2'
-    mockitoAgent("org.mockito:mockito-core:5.15.2") {
+    implementation libs.apache.http
+    implementation libs.apache.tika
+    implementation libs.bucket4j
+
+    testImplementation libs.spring.test
+    testImplementation libs.spring.security.test
+
+    testImplementation libs.mockito
+    mockitoAgent(libs.mockito) {
         transitive = false
     }
 
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
-    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor libs.lombok
+    annotationProcessor libs.mapstruct.processor
+    annotationProcessor libs.mapstruct.binding
 }
 
 test {
@@ -63,5 +71,5 @@ springBoot {
 }
 
 checkstyle {
-    toolVersion '8.40'
+    toolVersion libs.versions.checkstyle.get()
 }
