@@ -60,7 +60,7 @@ public interface FilesService {
     Page<FileRegistration> queryFiles(Query<FileRegistration> query);
 
     class FileNotRegisteredException extends Exception {
-        public FileNotRegisteredException(final String message) {
+        FileNotRegisteredException(final String message) {
             super(message);
         }
     }

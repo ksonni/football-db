@@ -2,7 +2,7 @@
 java = "17"
 spring = "3.4.3"
 mapstruct = "1.4.2.Final"
-checkstyle = "8.40"
+checkstyle = "10.21.3"
 
 [libraries]
 
