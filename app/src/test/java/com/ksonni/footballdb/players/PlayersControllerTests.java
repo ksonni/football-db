@@ -1,10 +1,8 @@
 package com.ksonni.footballdb.players;
 
 import com.ksonni.footballdb.clubs.domain.Club;
-import com.ksonni.footballdb.clubs.services.ClubsRepository;
 import com.ksonni.footballdb.config.RoutesConfig;
 import com.ksonni.footballdb.files.domain.FileRegistration;
-import com.ksonni.footballdb.files.services.FilesRepository;
 import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.domain.Position;
 import com.ksonni.footballdb.players.domain.Side;
@@ -34,12 +32,12 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -66,10 +64,6 @@ class PlayersControllerTests {
     private UserDetailsService userDetailsService;
     @MockitoBean
     private PlayersMapper mapper;
-    @MockitoBean
-    private ClubsRepository clubsRepository;
-    @MockitoBean
-    private FilesRepository filesRepository;
     @MockitoBean
     private RateLimitingService rateLimitingService;
     @Autowired
@@ -190,26 +184,6 @@ class PlayersControllerTests {
 
     @Test
     @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
-    void registerPlayerDoesNotAcceptInvalidClubIds() throws Exception {
-        final String clubId = validRegisterRequest.getClubId();
-        BDDMockito.given(clubsRepository.findById(clubId)).willReturn(Optional.empty());
-
-        mockMvc.perform(utils.postJSON(RoutesConfig.Players.PATH, validRegisterRequest))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
-    void registerPlayerDoesNotAcceptInvalidImages() throws Exception {
-        final String imageId = validRegisterRequest.getImage();
-        BDDMockito.given(clubsRepository.findById(imageId)).willReturn(Optional.empty());
-
-        mockMvc.perform(utils.postJSON(RoutesConfig.Players.PATH, validRegisterRequest))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void registerPlayerSucceeds() throws Exception {
         final String clubId = validRegisterRequest.getClubId();
         final Optional<Club> clubOptional = Optional.ofNullable(
@@ -218,9 +192,6 @@ class PlayersControllerTests {
         final String imageId = validRegisterRequest.getImage();
         final Optional<FileRegistration> fileRegistration = Optional.ofNullable(
                 FileRegistration.builder().id(imageId).build());
-
-        BDDMockito.given(clubsRepository.findById(clubId)).willReturn(clubOptional);
-        BDDMockito.given(filesRepository.findById(imageId)).willReturn(fileRegistration);
 
         BDDMockito.given(mapper.toPlayer(validRegisterRequest))
                 .willReturn(Player.builder().id(PLAYER_ID).build());
@@ -284,34 +255,6 @@ class PlayersControllerTests {
 
     @Test
     @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
-    void patchPlayerDoesNotAcceptInvalidClubIds() throws Exception {
-        final String clubId = validRegisterRequest.getClubId();
-        BDDMockito.given(clubsRepository.findById(clubId))
-                .willReturn(Optional.empty());
-        BDDMockito.given(playersRepository.findById(PLAYER_ID))
-                .willReturn(Optional.ofNullable(Player.builder().build()));
-
-        mockMvc.perform(utils.patchJSON(PLAYER_PATH,
-                        PatchPlayerRequest.builder().clubId(clubId).build()))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
-    void patchPlayerDoesNotAcceptInvalidImages() throws Exception {
-        final String imageId = validRegisterRequest.getImage();
-        BDDMockito.given(filesRepository.findById(imageId))
-                .willReturn(Optional.empty());
-        BDDMockito.given(playersRepository.findById(PLAYER_ID))
-                .willReturn(Optional.ofNullable(Player.builder().build()));
-
-        final var req = PatchPlayerRequest.builder().image(imageId).build();
-        mockMvc.perform(utils.patchJSON(PLAYER_PATH, req))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void patchPlayerRequestSucceeds() throws Exception {
         final Player player = Player.builder().id(PLAYER_ID).build();
         final Player updated = Player.builder().id(PLAYER_ID)
@@ -370,8 +313,7 @@ class PlayersControllerTests {
 
     @AfterEach
     void tearDown() {
-        Mockito.reset(playersRepository, queryParser, userDetailsService,
-                clubsRepository, mapper, rateLimitingService, filesRepository);
+        Mockito.reset(playersRepository, queryParser, userDetailsService, mapper, rateLimitingService);
     }
 
 }

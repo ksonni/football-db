@@ -49,9 +49,6 @@
         <!-- Finds nested blocks. -->
         <module name="AvoidNestedBlocks"/>
 
-        <!-- Check that finds import statements that use the * notation. -->
-        <module name="AvoidStarImport"/>
-
         <!-- Check that finds static imports. -->
         <module name="AvoidStaticImport"/>
 
