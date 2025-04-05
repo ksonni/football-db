@@ -12,7 +12,10 @@ public final class RoutesConfig {
     /**
      * Routes that do not need an authenticated session.
      */
-    public static final List<UnauthenticatedRoute> UNAUTHENTICATED_ROUTES = Arrays.asList(
+    public static  final List<UnauthenticatedRoute> UNAUTHENTICATED_ROUTES = Arrays.asList(
+            // GraphQL - auth handled based on query
+            new UnauthenticatedRoute(HttpMethod.POST, GraphQL.PATH),
+
             // Auth
             new UnauthenticatedRoute(HttpMethod.POST, Auth.LOGIN_PATH),
             new UnauthenticatedRoute(HttpMethod.POST, Auth.REGISTER_PATH),
@@ -25,6 +28,7 @@ public final class RoutesConfig {
 
             // Docs
             new UnauthenticatedRoute(HttpMethod.GET, Docs.UI),
+            new UnauthenticatedRoute(HttpMethod.GET, Docs.GRAPH_IQL),
             new UnauthenticatedRoute(HttpMethod.GET, Docs.JSON).crossOrigin(true),
             new UnauthenticatedRoute(HttpMethod.GET, Docs.YML).crossOrigin(true),
 
@@ -142,6 +146,18 @@ public final class RoutesConfig {
          * Open API docs in YAML format.
          */
         public static final String YML = "/v3/api-docs.yaml";
+
+        /**
+         * Endpoint that serves Graph QL UI.
+         */
+        public static final String GRAPH_IQL = "/graphiql/**";
+    }
+
+    public static class GraphQL {
+        /**
+         * GraphQL endpoint.
+         */
+        public static final String PATH = "/graphql";
     }
 
 }

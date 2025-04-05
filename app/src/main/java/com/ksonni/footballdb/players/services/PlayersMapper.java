@@ -1,6 +1,7 @@
 package com.ksonni.footballdb.players.services;
 
 import com.ksonni.footballdb.config.MapStructConfig;
+import com.ksonni.footballdb.generated.ql.QLPlayer;
 import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.dto.PatchPlayerRequest;
 import com.ksonni.footballdb.players.dto.PlayerResponse;
@@ -47,5 +48,13 @@ public interface PlayersMapper {
      * @return mapped response
      */
     PlayerResponse toPlayerResponse(Player player);
+
+    /**
+     * Maps a Player to QLPlayer DTO.
+     *
+     * @param player Player
+     * @return mapped response
+     */
+    QLPlayer toPlayerQL(Player player);
 
 }
