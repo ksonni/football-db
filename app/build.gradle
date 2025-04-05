@@ -4,6 +4,7 @@ plugins {
 
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.deps)
+    alias(libs.plugins.graphql.codegen)
 }
 
 group = 'com.ksonni'
@@ -29,6 +30,7 @@ dependencies {
     implementation libs.spring.security
     implementation libs.spring.web
     implementation libs.spring.openapi
+    implementation libs.spring.graphql
 
     implementation libs.lombok
     implementation libs.mapstruct
@@ -41,6 +43,8 @@ dependencies {
     implementation libs.bucket4j
 
     testImplementation libs.spring.test
+    testImplementation libs.spring.graphql.test
+    testImplementation libs.webflux
     testImplementation libs.spring.security.test
 
     testImplementation libs.mockito
@@ -52,6 +56,20 @@ dependencies {
     annotationProcessor libs.mapstruct.processor
     annotationProcessor libs.mapstruct.binding
 }
+
+def graphqlOutDir = "${layout.buildDirectory.get()}/generated/sources/graphql"
+
+graphqlCodegen {
+    graphqlSchemas.includePattern = "schema\\.graphqls"
+    packageName = "com.ksonni.footballdb.generated.ql"
+    outputDir = new File(graphqlOutDir)
+    generateApis = false
+    modelNamePrefix = "QL"
+    generatedAnnotation = "jakarta.annotation.Generated"
+    modelValidationAnnotation = "jakarta.validation.constraints.NotNull"
+}
+compileJava.dependsOn 'graphqlCodegen'
+sourceSets.main.java.srcDir graphqlOutDir
 
 test {
     useJUnitPlatform()
