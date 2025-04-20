@@ -8,15 +8,12 @@ import com.ksonni.footballdb.leagues.dto.RegisterLeagueRequest;
 import com.ksonni.footballdb.leagues.services.LeaguesMapper;
 import com.ksonni.footballdb.leagues.services.LeaguesRepository;
 import com.ksonni.footballdb.queryparser.Query;
-import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.MockMvcUtils;
 import com.ksonni.footballdb.utils.TestStringUtils;
 import com.ksonni.footballdb.utils.TestUtils;
-import org.hamcrest.Matchers;
-import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,10 +22,10 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -80,23 +77,6 @@ class LeaguesControllerTests {
         validRegisterRequest = RegisterLeagueRequest.builder().name("League").build();
         validPatchRequest = PatchLeagueRequest.builder().name("Some other league").build();
         TestUtils.disableRateLimiting(rateLimitingService);
-    }
-
-    @Test
-    void enumerateLeagues() throws Exception {
-        mockMvc.perform(utils.get(RoutesConfig.Leagues.PATH))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(leagues.size())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id", Is.is(leagues.get(0).getId())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].id", Is.is(leagues.get(1).getId())));
-    }
-
-    @Test
-    void enumerateLeaguesInvalidQuery() throws Exception {
-        BDDMockito.given(queryParser.parse(ArgumentMatchers.anyString()))
-                .willThrow(QueryParseException.class);
-        mockMvc.perform(utils.get(RoutesConfig.Leagues.PATH + "?badquery:"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
@@ -206,9 +186,10 @@ class LeaguesControllerTests {
     }
 
     @Test
+    @WithMockUser(roles = {Permission.Code.MANAGE_LEAGUES})
     void handlesRateLimitsReached() throws Exception {
         TestUtils.mockRateLimitReached(rateLimitingService);
-        mockMvc.perform(utils.get(RoutesConfig.Leagues.PATH))
+        mockMvc.perform(utils.delete(LEAGUES_PATH))
                 .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
     }
 

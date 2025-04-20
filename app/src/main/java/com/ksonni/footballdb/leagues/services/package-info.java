@@ -1,4 +1,4 @@
 /**
- * Service classes related to leagues.
+ * Services associated with leagues.
  */
 package com.ksonni.footballdb.leagues.services;
