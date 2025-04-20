@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-public class PlayersQueryParserTests {
+public class PlayersFilterParserTests {
 
     private QueryParser<Player> queryParser = new PlayerQueryParser();
 

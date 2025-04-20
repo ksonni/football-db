@@ -2,9 +2,15 @@ package com.ksonni.footballdb.config;
 
 import com.ksonni.footballdb.clubs.domain.Club;
 import com.ksonni.footballdb.files.domain.FileRegistration;
+import com.ksonni.footballdb.generated.ql.*;
 import com.ksonni.footballdb.leagues.domain.League;
 import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.services.PlayerQueryParser;
+import com.ksonni.footballdb.players.services.PlayersMapper;
+import com.ksonni.footballdb.qlquery.DefaultFilterParser;
+import com.ksonni.footballdb.qlquery.DefaultSortParser;
+import com.ksonni.footballdb.qlquery.FilterParser;
+import com.ksonni.footballdb.qlquery.SortParser;
 import com.ksonni.footballdb.queryparser.DefaultQueryParser;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.ratelimiting.IPRateLimitingService;
@@ -39,6 +45,35 @@ public class AppConfig {
 
     @Value("${app.max-requests-per-min}")
     private Integer maxRequestsPerMin;
+
+    /**
+     * Supplies a GraphQL filter parser for players.
+     *
+     * @param playersMapper object mapper for player related types
+     * @return FilterParser
+     */
+    @Bean
+    public FilterParser<Player, QLPlayerFilter> playersFilterParser(final PlayersMapper playersMapper) {
+        final FilterParser<Player, QLPlayerFilter> parser = new DefaultFilterParser<>();
+
+        parser.registerDecoder(QLSide.class, playersMapper::toSide);
+        parser.registerDecoder(QLWorkRate.class, playersMapper::toWorkRate);
+        parser.registerDecoder(QLPosition.class, playersMapper::toPosition);
+
+        parser.assertDecodable(QLPlayerFilter.class);
+
+        return parser;
+    }
+
+    /**
+     * Supplies a GraphQL sort parser for players.
+     *
+     * @return SortParser
+     */
+    @Bean
+    public SortParser<QLPlayerSort> playersSortSortParser() {
+        return new DefaultSortParser<>();
+    }
 
     /**
      * Supplies a QueryParser for clubs.
@@ -135,5 +170,4 @@ public class AppConfig {
     public RateLimitingService rateLimitingService() {
         return new IPRateLimitingService(maxRequestsPerMin, Duration.ofMinutes(1));
     }
-
 }

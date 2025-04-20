@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 
-public class QueryParserTests {
+public class FilterParserTests {
 
     private QueryParser<TestClass> queryParser = new DefaultQueryParser<>(TestClass.class);
 

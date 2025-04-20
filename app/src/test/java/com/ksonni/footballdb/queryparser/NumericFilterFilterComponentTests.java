@@ -5,7 +5,7 @@ import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class NumericFilterQueryComponentTests {
+public class NumericFilterFilterComponentTests {
 
     @Test
     void parsesDecimalQueries() throws QueryParseException {

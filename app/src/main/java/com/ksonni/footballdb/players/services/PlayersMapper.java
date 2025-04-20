@@ -1,16 +1,16 @@
 package com.ksonni.footballdb.players.services;
 
 import com.ksonni.footballdb.config.MapStructConfig;
-import com.ksonni.footballdb.generated.ql.QLPlayer;
+import com.ksonni.footballdb.generated.ql.*;
 import com.ksonni.footballdb.players.domain.Player;
+import com.ksonni.footballdb.players.domain.Position;
+import com.ksonni.footballdb.players.domain.Side;
+import com.ksonni.footballdb.players.domain.WorkRate;
 import com.ksonni.footballdb.players.dto.PatchPlayerRequest;
 import com.ksonni.footballdb.players.dto.PlayerResponse;
 import com.ksonni.footballdb.players.dto.RegisterPlayerRequest;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import com.ksonni.footballdb.queryparser.PageResult;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(config = MapStructConfig.class)
@@ -57,4 +57,35 @@ public interface PlayersMapper {
      */
     QLPlayer toPlayerQL(Player player);
 
+    /**
+     * Maps a PageResult to QLPlayerPage DTO.
+     *
+     * @param page QLPlayerPage
+     * @return QLPlayerPage
+     */
+    QLPlayerPage toQLPage(PageResult<Player> page);
+
+    /**
+     * Maps a QLWorkRate DTO to WorkRate.
+     *
+     * @param workRate QLWorkRate
+     * @return WorkRate
+     */
+    WorkRate toWorkRate(QLWorkRate workRate);
+
+    /**
+     * Maps a QLSide DTO to Side.
+     *
+     * @param side QLSide
+     * @return QLSide
+     */
+    Side toSide(QLSide side);
+
+    /**
+     * Maps a QLPosition DTO to Position.
+     *
+     * @param position QLPosition
+     * @return QLPosition
+     */
+    Position toPosition(QLPosition position);
 }
