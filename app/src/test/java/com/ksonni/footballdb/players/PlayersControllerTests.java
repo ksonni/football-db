@@ -14,7 +14,6 @@ import com.ksonni.footballdb.players.dto.RegisterPlayerRequest;
 import com.ksonni.footballdb.players.services.PlayersMapper;
 import com.ksonni.footballdb.players.services.PlayersRepository;
 import com.ksonni.footballdb.queryparser.Query;
-import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
@@ -22,8 +21,6 @@ import com.ksonni.footballdb.utils.MathUtils;
 import com.ksonni.footballdb.utils.MockMvcUtils;
 import com.ksonni.footballdb.utils.TestStringUtils;
 import com.ksonni.footballdb.utils.TestUtils;
-import org.hamcrest.Matchers;
-import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,29 +102,6 @@ class PlayersControllerTests {
         validRegisterRequest = registerRequestSupplier.get().build();
         validPatchRequest = PatchPlayerRequest.builder().fullName("Some other player").build();
         TestUtils.disableRateLimiting(rateLimitingService);
-    }
-
-    @Test
-    void enumeratePlayers() throws Exception {
-        mockMvc.perform(utils.get(RoutesConfig.Players.PATH))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content", Matchers.hasSize(players.size())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id", Is.is(players.get(0).getId())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].attackingWorkRate",
-                        Is.is(players.get(0).getAttackingWorkRate().getValue())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].defensiveWorkRate",
-                        Is.is(players.get(0).getDefensiveWorkRate().getValue())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].preferredFoot",
-                        Is.is(players.get(0).getPreferredFoot().getValue())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].id", Is.is(players.get(1).getId())));
-    }
-
-    @Test
-    void enumeratePlayersInvalidQuery() throws Exception {
-        BDDMockito.given(queryParser.parse(ArgumentMatchers.anyString()))
-                .willThrow(QueryParseException.class);
-        mockMvc.perform(utils.get(RoutesConfig.Players.PATH + "?badquery:"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
@@ -305,9 +279,10 @@ class PlayersControllerTests {
     }
 
     @Test
+    @WithMockUser(roles = {Permission.Code.MANAGE_PLAYERS})
     void handlesRateLimitsReached() throws Exception {
         TestUtils.mockRateLimitReached(rateLimitingService);
-        mockMvc.perform(utils.get(RoutesConfig.Players.PATH))
+        mockMvc.perform(utils.delete(PLAYER_PATH))
                 .andExpect(MockMvcResultMatchers.status().isTooManyRequests());
     }
 

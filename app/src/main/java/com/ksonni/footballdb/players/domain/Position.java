@@ -2,14 +2,10 @@ package com.ksonni.footballdb.players.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.ksonni.footballdb.queryparser.components.EnumFilterQueryComponent;
-import com.ksonni.footballdb.queryparser.components.InvalidQueryValueException;
-import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import com.ksonni.footballdb.utils.EnumUtils;
-import lombok.RequiredArgsConstructor;
-
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Represents positions on the field players can assume.
@@ -99,25 +95,6 @@ public enum Position implements EnumUtils.ValueEnum {
     @JsonValue
     public String getValue() {
         return value;
-    }
-
-    public static class PositionFilterQueryComponent extends EnumFilterQueryComponent<Player, Position> {
-        /**
-         * Parsed QueryComponent that can be used to filter players properties by Position.
-         *
-         * @param key   parsed FilterQueryKey
-         * @param value string value of the Position enum
-         * @throws InvalidQueryValueException if enum parsing fails
-         */
-        public PositionFilterQueryComponent(final FilterQueryKey key, final String value)
-                throws InvalidQueryValueException {
-            super(key, value);
-        }
-
-        @Override
-        public Position parseEnum(final String value) throws IllegalArgumentException {
-            return Position.of(value);
-        }
     }
 
     @Converter(autoApply = true)

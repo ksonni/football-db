@@ -1,4 +1,4 @@
 /**
- * DB Domain objects related to players.
+ * Players domain objects.
  */
 package com.ksonni.footballdb.players.domain;
