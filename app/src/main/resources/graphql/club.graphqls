@@ -1,0 +1,48 @@
+extend type Query {
+    club(id: ID): Club
+    clubs(filter: ClubFilter = {}, sort: ClubSort = {}, page: Pagination = {}): ClubPage!
+}
+
+type Club {
+    id: ID!
+    name: String!
+    leagueId: String!
+    overallRating: Int
+    attackRating: Int
+    midfieldRating: Int
+    defenseRating: Int
+    transferBudget: Int
+    domesticPrestige: Int
+    internationalPrestige: Int
+}
+
+input ClubFilter {
+    name: StringFilter
+    leagueId: StringFilter
+    overallRating: IntFilter
+    attackRating: IntFilter
+    midfieldRating: IntFilter
+    defenseRating: IntFilter
+    transferBudget: IntFilter
+    domesticPrestige: IntFilter
+    internationalPrestige: IntFilter
+}
+
+input ClubSort {
+    name: Sort
+    leagueId: Sort
+    overallRating: Sort
+    attackRating: Sort
+    midfieldRating: Sort
+    defenseRating: Sort
+    transferBudget: Sort
+    domesticPrestige: Sort
+    internationalPrestige: Sort
+}
+
+type ClubPage {
+    content: [Club!]!
+    totalElements: Int!
+    totalPages: Int!
+    size: Int!
+}

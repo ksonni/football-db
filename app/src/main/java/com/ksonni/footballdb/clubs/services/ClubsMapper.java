@@ -5,11 +5,10 @@ import com.ksonni.footballdb.clubs.dto.ClubResponse;
 import com.ksonni.footballdb.clubs.dto.PatchClubRequest;
 import com.ksonni.footballdb.clubs.dto.RegisterClubRequest;
 import com.ksonni.footballdb.config.MapStructConfig;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import com.ksonni.footballdb.generated.ql.QLClub;
+import com.ksonni.footballdb.generated.ql.QLClubPage;
+import com.ksonni.footballdb.queryparser.PageResult;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 
@@ -48,5 +47,21 @@ public interface ClubsMapper {
      * @return Mapped ClubResponse
      */
     ClubResponse toClubResponse(Club club);
+
+    /**
+     * Maps a Club to QLClub DTO.
+     *
+     * @param club Club
+     * @return mapped response
+     */
+    QLClub toClubQL(Club club);
+
+    /**
+     * Maps a PageResult to QLClubPage DTO.
+     *
+     * @param page QLClubPage
+     * @return QLClubPage
+     */
+    QLClubPage toQLPage(PageResult<Club> page);
 
 }

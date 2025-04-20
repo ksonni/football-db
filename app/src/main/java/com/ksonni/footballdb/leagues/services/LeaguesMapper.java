@@ -51,7 +51,7 @@ public interface LeaguesMapper {
     /**
      * Maps a League to QLLeague DTO.
      *
-     * @param league Player
+     * @param league League
      * @return mapped response
      */
     QLLeague toLeagueQL(League league);

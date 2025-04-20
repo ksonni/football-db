@@ -27,7 +27,7 @@ public class DefaultSortParser<SortParams> implements SortParser<SortParams> {
         for (var component : components) {
             spec = spec.map(s -> s.and(component.build())).or(() -> Optional.of(component.build()));
         }
-        final var page = Math.min(0, pagination.getPage());
+        final var page = Math.max(0, pagination.getPage());
         final var size = Math.min(Math.max(0, pagination.getSize()), maxResults);
         return spec.map(orders -> PageRequest.of(page, size, orders)).orElseGet(() -> PageRequest.of(page, size));
     }
