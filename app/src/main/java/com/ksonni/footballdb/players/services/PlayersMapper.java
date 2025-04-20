@@ -13,6 +13,9 @@ import com.ksonni.footballdb.queryparser.PageResult;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * Interface definition for MapStruct to generate object mappers.
+ */
 @Mapper(config = MapStructConfig.class)
 public interface PlayersMapper {
 

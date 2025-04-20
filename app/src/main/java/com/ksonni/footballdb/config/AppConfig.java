@@ -5,7 +5,6 @@ import com.ksonni.footballdb.files.domain.FileRegistration;
 import com.ksonni.footballdb.generated.ql.*;
 import com.ksonni.footballdb.leagues.domain.League;
 import com.ksonni.footballdb.players.domain.Player;
-import com.ksonni.footballdb.players.services.PlayerQueryParser;
 import com.ksonni.footballdb.players.services.PlayersMapper;
 import com.ksonni.footballdb.qlquery.DefaultFilterParser;
 import com.ksonni.footballdb.qlquery.DefaultSortParser;
@@ -83,16 +82,6 @@ public class AppConfig {
     @Bean
     public QueryParser<Club> clubsQueryParser() {
         return new DefaultQueryParser<>(Club.class);
-    }
-
-    /**
-     * Supplies a QueryParser for players.
-     *
-     * @return QueryParser
-     */
-    @Bean
-    public QueryParser<Player> playersQueryParser() {
-        return new PlayerQueryParser();
     }
 
     /**

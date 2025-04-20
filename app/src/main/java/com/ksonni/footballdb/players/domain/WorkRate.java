@@ -2,15 +2,11 @@ package com.ksonni.footballdb.players.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.ksonni.footballdb.queryparser.components.EnumFilterQueryComponent;
-import com.ksonni.footballdb.queryparser.components.InvalidQueryValueException;
-import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import com.ksonni.footballdb.utils.EnumUtils;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Working rate of a player in a given area of the game.
@@ -49,29 +45,6 @@ public enum WorkRate implements EnumUtils.ValueEnum {
     @JsonValue
     public Integer getValue() {
         return this.value;
-    }
-
-    public static class WorkRateFilterQueryComponent extends EnumFilterQueryComponent<Player, WorkRate> {
-        /**
-         * Parsed QueryComponent that can be used to filter players properties by WorkRate.
-         *
-         * @param key   parsed FilterQueryKey
-         * @param value string value of the WorkRate enum
-         * @throws InvalidQueryValueException if enum parsing fails
-         */
-        public WorkRateFilterQueryComponent(final FilterQueryKey key, final String value)
-                throws InvalidQueryValueException {
-            super(key, value);
-        }
-
-        @Override
-        public WorkRate parseEnum(final String value) throws IllegalArgumentException {
-            try {
-                return WorkRate.of(Integer.parseInt(value));
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException();
-            }
-        }
     }
 
     @Converter(autoApply = true)

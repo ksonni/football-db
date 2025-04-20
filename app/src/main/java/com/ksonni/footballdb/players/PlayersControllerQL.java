@@ -14,8 +14,12 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * GraphQL mappings to query players.
+ */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -27,12 +31,13 @@ public class PlayersControllerQL {
     private final SortParser<QLPlayerSort> playersSortParser;
 
     /**
-     * Resolver to get a player by id.
+     * Get a player by id.
      *
      * @param id id of the player
      * @return player with the id
      */
     @QueryMapping
+    @Transactional(readOnly = true)
     public QLPlayer player(@Argument final String id) {
         final var player = playersRepository.findById(id).orElseThrow(() ->
             new ResponseStatusException(HttpStatus.NOT_FOUND, "player not found")
@@ -42,7 +47,7 @@ public class PlayersControllerQL {
     }
 
     /**
-     * Query players with dynamic filtering, sorting & pagination.
+     * Query players with filtering, sorting & pagination.
      *
      * @param filter filter to select players
      * @param sort specifies sort order for results
@@ -50,6 +55,7 @@ public class PlayersControllerQL {
      * @return paginated list of players matching the filter.
      */
     @QueryMapping
+    @Transactional(readOnly = true)
     public QLPlayerPage players(
         @Argument final QLPlayerFilter filter,
         @Argument final QLPlayerSort sort,
@@ -62,4 +68,5 @@ public class PlayersControllerQL {
         log.info("returning {} players", results.content().size());
         return playersMapper.toQLPage(results);
     }
+
 }
