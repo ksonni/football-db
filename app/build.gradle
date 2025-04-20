@@ -60,7 +60,6 @@ dependencies {
 def graphqlOutDir = "${layout.buildDirectory.get()}/generated/sources/graphql"
 
 graphqlCodegen {
-    graphqlSchemas.includePattern = "schema\\.graphqls"
     packageName = "com.ksonni.footballdb.generated.ql"
     outputDir = new File(graphqlOutDir)
     generateApis = false

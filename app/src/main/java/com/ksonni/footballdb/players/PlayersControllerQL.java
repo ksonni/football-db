@@ -1,9 +1,14 @@
 package com.ksonni.footballdb.players;
 
-import com.ksonni.footballdb.generated.ql.QLPlayer;
+import com.ksonni.footballdb.generated.ql.*;
+import com.ksonni.footballdb.players.domain.Player;
 import com.ksonni.footballdb.players.services.PlayersMapper;
 import com.ksonni.footballdb.players.services.PlayersRepository;
-import lombok.AllArgsConstructor;
+import com.ksonni.footballdb.qlquery.FilterParseException;
+import com.ksonni.footballdb.qlquery.FilterParser;
+import com.ksonni.footballdb.qlquery.SortParseException;
+import com.ksonni.footballdb.qlquery.SortParser;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -13,26 +18,48 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PlayersControllerQL {
 
-    private final PlayersMapper mapper;
+    private final PlayersMapper playersMapper;
     private final PlayersRepository playersRepository;
+    private final FilterParser<Player, QLPlayerFilter> playersFilterParser;
+    private final SortParser<QLPlayerSort> playersSortParser;
 
     /**
      * Resolver to get a player by id.
      *
-     * @param id test
-     * @return test
+     * @param id id of the player
+     * @return player with the id
      */
     @QueryMapping
-    public QLPlayer playerById(@Argument final String id) {
+    public QLPlayer player(@Argument final String id) {
         final var player = playersRepository.findById(id).orElseThrow(() ->
             new ResponseStatusException(HttpStatus.NOT_FOUND, "player not found")
         );
         log.info("returning player {}", player.getId());
-        return mapper.toPlayerQL(player);
+        return playersMapper.toPlayerQL(player);
     }
 
-
+    /**
+     * Query players with dynamic filtering, sorting & pagination.
+     *
+     * @param filter filter to select players
+     * @param sort specifies sort order for results
+     * @param page configures pagination
+     * @return paginated list of players matching the filter.
+     */
+    @QueryMapping
+    public QLPlayerPage players(
+        @Argument final QLPlayerFilter filter,
+        @Argument final QLPlayerSort sort,
+        @Argument final QLPagination page
+    ) throws FilterParseException, SortParseException {
+        final var results = playersRepository.findAllResults(
+            playersFilterParser.parse(filter).orElse(null),
+            playersSortParser.parse(sort, page)
+        );
+        log.info("returning {} players", results.content().size());
+        return playersMapper.toQLPage(results);
+    }
 }

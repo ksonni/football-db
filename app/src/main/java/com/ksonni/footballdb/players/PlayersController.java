@@ -31,7 +31,7 @@ public class PlayersController {
 
     private final PlayersRepository playersRepository;
     private final QueryParser<Player> queryParser;
-    private final PlayersMapper mapper;
+    private final PlayersMapper playersMapper;
 
     /**
      * Query players.
@@ -47,7 +47,7 @@ public class PlayersController {
         final String query = request.getQueryString();
         log.info("Processing query: {}", query);
         return playersRepository.findAll(queryParser.parse(query))
-                .map(mapper::toPlayerResponse);
+                .map(playersMapper::toPlayerResponse);
     }
 
     /**
@@ -62,11 +62,11 @@ public class PlayersController {
     @Transactional
     @RegisterPlayerDoc
     public PlayerResponse registerPlayer(final @Valid @RequestBody RegisterPlayerRequest request) {
-        final Player player = mapper.toPlayer(request);
+        final Player player = playersMapper.toPlayer(request);
         player.setId(StringUtils.uuid());
         playersRepository.save(player);
         log.info("created player {}", player.getId());
-        return mapper.toPlayerResponse(player);
+        return playersMapper.toPlayerResponse(player);
     }
 
     /**
@@ -84,10 +84,10 @@ public class PlayersController {
                                       final @Valid @RequestBody PatchPlayerRequest request) {
         final Player currentPlayer = playersRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Player not found"));
-        final Player player = mapper.toPlayer(request, currentPlayer);
+        final Player player = playersMapper.toPlayer(request, currentPlayer);
         playersRepository.save(player);
         log.info("updated player {}", player.getId());
-        return mapper.toPlayerResponse(player);
+        return playersMapper.toPlayerResponse(player);
     }
 
     /**

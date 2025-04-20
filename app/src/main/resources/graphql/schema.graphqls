@@ -1,60 +1,31 @@
-type Query {
-    playerById(id: ID): Player
+type Query {}
+
+input IntFilter {
+    eq: Int
+    ne: Int
+    lt: Int
+    lte: Int
+    gt: Int
+    gte: Int
 }
 
-type Player {
-    id: ID!
-    fullName: String!
-    height: Int
-    weight: Int
-    overall: Int
-    valueEuro: Int
-    wageEuro: Int
-    contractEndYear: Int
-    contractStartYear: Int
-    preferredFoot: Side
-    reputation: Int
-    attackingWorkRate: WorkRate
-    defensiveWorkRate: WorkRate
-    shootingTotal: Int
-    passingTotal: Int
-    dribblingTotal: Int
-    defendingTotal: Int
-    headingAccuracy: Int
-    penalties: Int
-    clubId: String
-    squadNumber: Int
-    position: Position
-    birthYear: Int
-    countryCode: String
-    image: String
+input StringFilter {
+    eq: String
+    ne: String
+    contains: String
 }
 
-enum Side {
-    LEFT
-    RIGHT
+enum SortDirection {
+    ASC,
+    DESC,
 }
 
-enum WorkRate {
-    LOW
-    MEDIUM
-    HIGH
+input Sort {
+    priority: Int = 0,
+    direction: SortDirection = ASC,
 }
 
-enum Position {
-    GOALKEEPER
-    STRIKER
-    CENTRAL_MIDFIELDER
-    CENTRAL_DEFENSIVE_MIDFIELDER
-    CENTRAL_ATTACKING_MIDFIELDER
-    RIGHT_MIDFIELDER
-    LEFT_MIDFIELDER
-    CENTER_FORWARD
-    CENTER_BACK
-    LEFT_BACK
-    RIGHT_BACK
-    LEFT_WING
-    RIGHT_WING
-    LEFT_WING_BACK
-    RIGHT_WING_BACK
+input Pagination {
+    page: Int = 0,
+    size: Int = 20,
 }

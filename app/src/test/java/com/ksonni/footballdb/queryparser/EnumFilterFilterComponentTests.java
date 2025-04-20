@@ -6,7 +6,7 @@ import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class EnumFilterQueryComponentTests {
+public class EnumFilterFilterComponentTests {
 
     @Test
     void storesContainsQueriesAsStrings() throws QueryParseException {

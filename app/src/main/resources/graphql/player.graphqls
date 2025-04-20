@@ -1,0 +1,136 @@
+extend type Query {
+    player(id: ID): Player
+    players(filter: PlayerFilter = {}, sort: PlayerSort = {}, page: Pagination = {}): PlayerPage!
+}
+
+type Player {
+    id: ID!
+    fullName: String!
+    height: Int
+    weight: Int
+    overall: Int
+    valueEuro: Int
+    wageEuro: Int
+    contractEndYear: Int
+    contractStartYear: Int
+    preferredFoot: Side
+    reputation: Int
+    attackingWorkRate: WorkRate
+    defensiveWorkRate: WorkRate
+    shootingTotal: Int
+    passingTotal: Int
+    dribblingTotal: Int
+    defendingTotal: Int
+    headingAccuracy: Int
+    penalties: Int
+    clubId: String
+    squadNumber: Int
+    position: Position
+    birthYear: Int
+    countryCode: String
+    image: String
+}
+
+enum Side {
+    LEFT
+    RIGHT
+}
+
+enum WorkRate {
+    LOW
+    MEDIUM
+    HIGH
+}
+
+enum Position {
+    GOALKEEPER
+    STRIKER
+    CENTRAL_MIDFIELDER
+    CENTRAL_DEFENSIVE_MIDFIELDER
+    CENTRAL_ATTACKING_MIDFIELDER
+    RIGHT_MIDFIELDER
+    LEFT_MIDFIELDER
+    CENTER_FORWARD
+    CENTER_BACK
+    LEFT_BACK
+    RIGHT_BACK
+    LEFT_WING
+    RIGHT_WING
+    LEFT_WING_BACK
+    RIGHT_WING_BACK
+}
+
+input PlayerFilter {
+    fullName: StringFilter
+    height: IntFilter
+    weight: IntFilter
+    overall: IntFilter
+    valueEuro: IntFilter
+    wageEuro: IntFilter
+    contractStartYear: IntFilter
+    contractEndYear: IntFilter
+    preferredFoot: SideFilter
+    reputation: IntFilter
+    attackingWorkRate: WorkRateFilter
+    defensiveWorkRate: WorkRateFilter
+    shootingTotal: IntFilter
+    passingTotal: IntFilter
+    dribblingTotal: IntFilter
+    defendingTotal: IntFilter
+    headingAccuracy: IntFilter
+    penalties: IntFilter
+    clubId: StringFilter
+    squadNumber: IntFilter
+    position: PositionFilter
+    birthYear: IntFilter
+    countryCode: StringFilter
+}
+
+input PlayerSort {
+    fullName: Sort
+    height: Sort
+    weight: Sort
+    overall: Sort
+    valueEuro: Sort
+    wageEuro: Sort
+    contractStartYear: Sort
+    contractEndYear: Sort
+    reputation: Sort
+    attackingWorkRate: Sort
+    defensiveWorkRate: Sort
+    shootingTotal: Sort
+    passingTotal: Sort
+    dribblingTotal: Sort
+    defendingTotal: Sort
+    headingAccuracy: Sort
+    penalties: Sort
+    squadNumber: Sort
+    birthYear: Sort
+    countryCode: StringFilter
+}
+
+input WorkRateFilter {
+    eq: WorkRate
+    ne: WorkRate
+    lt: WorkRate
+    lte: WorkRate
+    gt: WorkRate
+    gte: WorkRate
+}
+
+input SideFilter {
+    eq: Side
+    ne: Side
+}
+
+input PositionFilter {
+    eq: Position
+    ne: Position
+}
+
+type PlayerPage {
+    content: [Player!]!
+    totalElements: Int!
+    totalPages: Int!
+    size: Int!
+}
