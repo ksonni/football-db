@@ -7,7 +7,6 @@ import com.ksonni.footballdb.players.dto.PlayerResponse;
 import com.ksonni.footballdb.players.dto.RegisterPlayerRequest;
 import com.ksonni.footballdb.players.services.PlayersMapper;
 import com.ksonni.footballdb.players.services.PlayersRepository;
-import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.DocUtils;
 import com.ksonni.footballdb.utils.StringUtils;
@@ -30,7 +29,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class PlayersController {
 
     private final PlayersRepository playersRepository;
-    private final QueryParser<Player> queryParser;
     private final PlayersMapper playersMapper;
 
     /**

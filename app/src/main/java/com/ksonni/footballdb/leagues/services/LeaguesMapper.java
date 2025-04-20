@@ -1,10 +1,13 @@
 package com.ksonni.footballdb.leagues.services;
 
 import com.ksonni.footballdb.config.MapStructConfig;
+import com.ksonni.footballdb.generated.ql.QLLeague;
+import com.ksonni.footballdb.generated.ql.QLLeaguePage;
 import com.ksonni.footballdb.leagues.domain.League;
 import com.ksonni.footballdb.leagues.dto.LeagueResponse;
 import com.ksonni.footballdb.leagues.dto.PatchLeagueRequest;
 import com.ksonni.footballdb.leagues.dto.RegisterLeagueRequest;
+import com.ksonni.footballdb.queryparser.PageResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -45,4 +48,19 @@ public interface LeaguesMapper {
     @Mapping(target = "id", ignore = true)
     League toLeague(PatchLeagueRequest request, @MappingTarget League league);
 
+    /**
+     * Maps a League to QLLeague DTO.
+     *
+     * @param league Player
+     * @return mapped response
+     */
+    QLLeague toLeagueQL(League league);
+
+    /**
+     * Maps a PageResult to QLLeaguePage DTO.
+     *
+     * @param page QLLeaguePage
+     * @return QLLeaguePage
+     */
+    QLLeaguePage toQLPage(PageResult<League> page);
 }

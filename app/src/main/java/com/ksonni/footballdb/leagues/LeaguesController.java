@@ -7,58 +7,32 @@ import com.ksonni.footballdb.leagues.dto.PatchLeagueRequest;
 import com.ksonni.footballdb.leagues.dto.RegisterLeagueRequest;
 import com.ksonni.footballdb.leagues.services.LeaguesMapper;
 import com.ksonni.footballdb.leagues.services.LeaguesRepository;
-import com.ksonni.footballdb.queryparser.QueryParseException;
-import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
+import com.ksonni.footballdb.utils.DocUtils;
 import com.ksonni.footballdb.utils.StringUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Leagues.PATH)
-@LeaguesControllerDoc
+@Tag(name = "Leagues", description = "Search for and manage leagues")
 public class LeaguesController {
 
     private final LeaguesRepository leaguesRepository;
-    private final QueryParser<League> queryParser;
-    private final LeaguesMapper mapper;
-
-    /**
-     * Query leagues.
-     *
-     * @param request HTTP request.
-     * @return Paginated list of leagues.
-     * @throws QueryParseException if the query is not valid
-     */
-    @GetMapping
-    @Transactional(readOnly = true)
-    @EnumerateLeaguesDoc
-    public Page<LeagueResponse> enumerateLeagues(final HttpServletRequest request) throws QueryParseException {
-        final String query = request.getQueryString();
-        log.info("Processing query: {}", query);
-        return leaguesRepository.findAll(queryParser.parse(query)).map(mapper::toLeagueResponse);
-    }
+    private final LeaguesMapper leaguesMapper;
 
     /**
      * Register a new league.
@@ -70,13 +44,16 @@ public class LeaguesController {
     @ResponseStatus(HttpStatus.CREATED)
     @RolesAllowed({Permission.Code.MANAGE_LEAGUES})
     @Transactional
-    @RegisterLeagueDoc
+    @Operation(
+        summary = "Register a new league",
+        description = DocUtils.PERMISSIONS + Permission.Code.MANAGE_LEAGUES
+    )
     public LeagueResponse registerLeague(final @Valid @RequestBody RegisterLeagueRequest request) {
-        final League league = mapper.toLeague(request);
+        final League league = leaguesMapper.toLeague(request);
         league.setId(StringUtils.uuid());
         leaguesRepository.save(league);
         log.info("created league {}", league.getId());
-        return mapper.toLeagueResponse(league);
+        return leaguesMapper.toLeagueResponse(league);
     }
 
     /**
@@ -89,7 +66,10 @@ public class LeaguesController {
     @PatchMapping("/{id}")
     @RolesAllowed({Permission.Code.MANAGE_LEAGUES})
     @Transactional
-    @PatchLeagueDoc
+    @Operation(
+        summary = "Update an existing league",
+        description = DocUtils.PERMISSIONS + Permission.Code.MANAGE_LEAGUES
+    )
     public LeagueResponse patchLeague(final @PathVariable("id") String id,
                                       final @Valid @RequestBody PatchLeagueRequest request) {
         final Optional<League> leagueOptional = leaguesRepository.findById(id);
@@ -97,10 +77,10 @@ public class LeaguesController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "League not found");
         }
 
-        final League league = mapper.toLeague(request, leagueOptional.get());
+        final League league = leaguesMapper.toLeague(request, leagueOptional.get());
         leaguesRepository.save(league);
         log.info("updated league {}", league.getId());
-        return mapper.toLeagueResponse(league);
+        return leaguesMapper.toLeagueResponse(league);
     }
 
     /**
@@ -111,7 +91,13 @@ public class LeaguesController {
     @DeleteMapping("/{id}")
     @PreAuthorize(Permission.Compound.DELETE_LEAGUES)
     @Transactional
-    @DeleteLeagueDoc
+    @Operation(
+        summary = "Delete an existing league",
+        description = DocUtils.PERMISSIONS + Permission.Code.MANAGE_LEAGUES
+            + DocUtils.SEPARATOR + Permission.Code.MANAGE_CLUBS
+            + DocUtils.SEPARATOR + Permission.Code.MANAGE_PLAYERS
+            + DocUtils.LINE_SEPARATOR + "Delete a league and all its clubs and players."
+    )
     public void deleteLeague(final @PathVariable("id") String id) {
         final Optional<League> leagueOptional = leaguesRepository.findById(id);
         if (leagueOptional.isEmpty()) {
