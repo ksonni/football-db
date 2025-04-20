@@ -92,18 +92,30 @@ public class AppConfig {
      * @return SortParser
      */
     @Bean
-    public SortParser<QLLeagueSort> leagueSortParser() {
+    public SortParser<QLLeagueSort> leaguesSortParser() {
         return new DefaultSortParser<>();
     }
 
     /**
-     * Supplies a QueryParser for clubs.
+     * Supplies a GraphQL filter parser for clubs.
      *
-     * @return QueryParser
+     * @return FilterParser
      */
     @Bean
-    public QueryParser<Club> clubsQueryParser() {
-        return new DefaultQueryParser<>(Club.class);
+    public FilterParser<Club, QLClubFilter> clubsFilterParser() {
+        final FilterParser<Club, QLClubFilter> parser = new DefaultFilterParser<>();
+        parser.assertDecodable(QLClubFilter.class);
+        return parser;
+    }
+
+    /**
+     * Supplies a GraphQL sort parser for clubs.
+     *
+     * @return SortParser
+     */
+    @Bean
+    public SortParser<QLClubSort> clubsSortParser() {
+        return new DefaultSortParser<>();
     }
 
     /**
