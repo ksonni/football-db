@@ -1,7 +1,6 @@
 package com.ksonni.footballdb.query;
 
 import com.ksonni.footballdb.utils.ReflectionUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
@@ -10,15 +9,18 @@ import java.util.*;
 
 public class DefaultFilterParser<Entity, Filter> implements FilterParser<Entity, Filter> {
 
-    @Value("${app.max-query-components}")
-    private Integer maxComponents;
-
     private final Map<Class<?>, ValueDecoder<?, ?>> decoders = new HashMap<>();
+
+    private final Integer maxComponents;
 
     /**
      * Constructs a parser registering ValueDecoders for primitive Java types.
+     *
+     * @param maxComponents max number of components that should be allowed in a query
      */
-    public DefaultFilterParser() {
+    public DefaultFilterParser(final Integer maxComponents) {
+        this.maxComponents = maxComponents;
+
         registerDecoder(Byte.class, new PrimitiveValueDecoder<>());
         registerDecoder(Short.class, new PrimitiveValueDecoder<>());
         registerDecoder(Integer.class, new PrimitiveValueDecoder<>());
@@ -64,10 +66,10 @@ public class DefaultFilterParser<Entity, Filter> implements FilterParser<Entity,
     List<FilterComponent<Entity>> parseComponents(final Filter filter) throws FilterParseException {
         final List<FilterComponent<Entity>> components = new ArrayList<>();
         ReflectionUtils.forEachField(filter, (fieldName, value) -> {
-            if (components.size() >= maxComponents) {
+            components.addAll(parseFilter(fieldName, value));
+            if (components.size() > maxComponents) {
                 throw new FilterParseException("Filter has too many components");
             }
-            components.addAll(parseFilter(fieldName, value));
         });
         return components;
     }

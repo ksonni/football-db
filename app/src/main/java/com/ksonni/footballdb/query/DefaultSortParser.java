@@ -4,7 +4,7 @@ import com.ksonni.footballdb.generated.ql.QLPagination;
 import com.ksonni.footballdb.generated.ql.QLSort;
 import com.ksonni.footballdb.generated.ql.QLSortDirection;
 import com.ksonni.footballdb.utils.ReflectionUtils;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -13,12 +13,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class DefaultSortParser<SortParams> implements SortParser<SortParams> {
-    @Value("${app.max-results-per-page}")
-    private Integer maxResults;
-
-    @Value("${app.max-query-components}")
-    private Integer maxComponents;
+    private final Integer maxComponents;
+    private final Integer maxResults;
 
     @Override
     public PageRequest parse(final SortParams sort, final QLPagination pagination) throws SortParseException {

@@ -106,7 +106,7 @@ input PlayerSort {
     penalties: Sort
     squadNumber: Sort
     birthYear: Sort
-    countryCode: StringFilter
+    countryCode: Sort
 }
 
 input WorkRateFilter {
