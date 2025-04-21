@@ -28,6 +28,7 @@ mysql = { module = "com.mysql:mysql-connector-j", version = "9.2.0" }
 apache-http = { module = "org.apache.httpcomponents:httpclient", version = "4.5.13" }
 apache-tika = { module = "org.apache.tika:tika-core", version = "3.1.0" }
 bucket4j = { module = "com.bucket4j:bucket4j-core", version = "8.10.1" }
+graphql-extension = { module = "com.graphql-java:graphql-java-extended-scalars", version = "22.0" }
 
 # Testing
 spring-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring" }

@@ -5,57 +5,33 @@ import com.ksonni.footballdb.files.domain.FileRegistration;
 import com.ksonni.footballdb.files.dto.FileRegistrationResponse;
 import com.ksonni.footballdb.files.services.FilesMapper;
 import com.ksonni.footballdb.files.services.FilesService;
-import com.ksonni.footballdb.queryparser.QueryParseException;
-import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.services.AuthService;
+import com.ksonni.footballdb.utils.DocUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Slf4j
 @RestController
 @RequestMapping(value = RoutesConfig.Files.PATH)
 @RequiredArgsConstructor
-@FilesControllerDoc
+@Tag(name = "Files", description = "Upload and retrieve files")
 public class FilesController {
 
     private final FilesService filesService;
     private final AuthService authService;
-    private final QueryParser<FileRegistration> queryParser;
-    private final FilesMapper mapper;
-
-    /**
-     * Query files.
-     *
-     * @param request HTTP request
-     * @return Paginated list of files
-     * @throws QueryParseException if the query is not valid
-     */
-    @GetMapping
-    @RolesAllowed({Permission.Code.MANAGE_FILES})
-    @EnumerateFilesDoc
-    public Page<FileRegistrationResponse> enumerateFiles(final HttpServletRequest request) throws QueryParseException {
-        final String query = request.getQueryString();
-        log.info("Processing query: {}", query);
-        return filesService.queryFiles(queryParser.parse(query))
-                .map(mapper::toFileRegistrationResponse);
-    }
+    private final FilesMapper filesMapper;
 
     /**
      * Retrieves a file.
@@ -64,7 +40,12 @@ public class FilesController {
      * @return contents of the file as bytes
      */
     @GetMapping("/{id}")
-    @GetFileDoc
+    @Operation(
+        summary = "Retrieve a file",
+        description = DocUtils.NO_PERMISSIONS
+            + DocUtils.LINE_SEPARATOR + "Retrieves a file from storage. This returns the actual file rather"
+            + " than just the registration."
+    )
     public ResponseEntity<byte[]> getFile(final @PathVariable("id") String id) {
         final FileRegistration registration;
         try {
@@ -94,7 +75,11 @@ public class FilesController {
      */
     @PostMapping
     @RolesAllowed({Permission.Code.MANAGE_FILES})
-    @UploadFileDoc
+    @Operation(
+        summary = "Upload a file",
+        description = DocUtils.PERMISSIONS + Permission.Code.MANAGE_FILES
+            + DocUtils.LINE_SEPARATOR + "Currently only image files under 500KB are allowed."
+    )
     public FileRegistrationResponse uploadFile(final @PathVariable("file") MultipartFile file) {
         if (file == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must include a valid file");
@@ -120,7 +105,7 @@ public class FilesController {
         }
 
         log.info("Saved file: {}", registration.getId());
-        return mapper.toFileRegistrationResponse(registration);
+        return filesMapper.toFileRegistrationResponse(registration);
     }
 
     /**
@@ -130,7 +115,10 @@ public class FilesController {
      */
     @DeleteMapping("/{id}")
     @RolesAllowed({Permission.Code.MANAGE_FILES})
-    @DeleteFileDoc
+    @Operation(
+        summary = "Delete a file",
+        description = DocUtils.PERMISSIONS + Permission.Code.MANAGE_FILES
+    )
     public void deleteFile(final @PathVariable("id") String id) {
         try {
             filesService.deleteFile(id);

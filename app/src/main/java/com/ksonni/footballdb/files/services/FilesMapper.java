@@ -3,6 +3,8 @@ package com.ksonni.footballdb.files.services;
 import com.ksonni.footballdb.config.MapStructConfig;
 import com.ksonni.footballdb.files.domain.FileRegistration;
 import com.ksonni.footballdb.files.dto.FileRegistrationResponse;
+import com.ksonni.footballdb.generated.ql.QLFileRegistrationPage;
+import com.ksonni.footballdb.queryparser.PageResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -22,4 +24,11 @@ public interface FilesMapper {
      */
     FileRegistrationResponse toFileRegistrationResponse(FileRegistration fileRegistration);
 
+    /**
+     * Maps a PageResult to QLFileRegistrationPage DTO.
+     *
+     * @param page PageResult
+     * @return QLFileRegistrationPage
+     */
+    QLFileRegistrationPage toQLPage(PageResult<FileRegistration> page);
 }
