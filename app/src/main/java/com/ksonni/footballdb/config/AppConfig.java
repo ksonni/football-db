@@ -45,6 +45,12 @@ public class AppConfig {
     @Value("${app.max-requests-per-min}")
     private Integer maxRequestsPerMin;
 
+    @Value("${app.max-query-components}")
+    private Integer maxQueryComponents;
+
+    @Value("${app.max-results-per-page}")
+    private Integer maxQueryResults;
+
     /**
      * Supplies a GraphQL filter parser for players.
      *
@@ -53,7 +59,7 @@ public class AppConfig {
      */
     @Bean
     public FilterParser<Player, QLPlayerFilter> playersFilterParser(final PlayersMapper playersMapper) {
-        final FilterParser<Player, QLPlayerFilter> parser = new DefaultFilterParser<>();
+        final FilterParser<Player, QLPlayerFilter> parser = new DefaultFilterParser<>(maxQueryComponents);
 
         parser.registerDecoder(QLSide.class, playersMapper::toSide);
         parser.registerDecoder(QLWorkRate.class, playersMapper::toWorkRate);
@@ -71,7 +77,7 @@ public class AppConfig {
      */
     @Bean
     public SortParser<QLPlayerSort> playersSortParser() {
-        return new DefaultSortParser<>();
+        return new DefaultSortParser<>(maxQueryComponents, maxQueryResults);
     }
 
     /**
@@ -81,7 +87,7 @@ public class AppConfig {
      */
     @Bean
     public FilterParser<League, QLLeagueFilter> leaguesFilterParser() {
-        final FilterParser<League, QLLeagueFilter> parser = new DefaultFilterParser<>();
+        final FilterParser<League, QLLeagueFilter> parser = new DefaultFilterParser<>(maxQueryComponents);
         parser.assertDecodable(QLLeagueFilter.class);
         return parser;
     }
@@ -93,7 +99,7 @@ public class AppConfig {
      */
     @Bean
     public SortParser<QLLeagueSort> leaguesSortParser() {
-        return new DefaultSortParser<>();
+        return new DefaultSortParser<>(maxQueryComponents, maxQueryResults);
     }
 
     /**
@@ -103,7 +109,7 @@ public class AppConfig {
      */
     @Bean
     public FilterParser<Club, QLClubFilter> clubsFilterParser() {
-        final FilterParser<Club, QLClubFilter> parser = new DefaultFilterParser<>();
+        final FilterParser<Club, QLClubFilter> parser = new DefaultFilterParser<>(maxQueryComponents);
         parser.assertDecodable(QLClubFilter.class);
         return parser;
     }
@@ -115,7 +121,7 @@ public class AppConfig {
      */
     @Bean
     public SortParser<QLClubSort> clubsSortParser() {
-        return new DefaultSortParser<>();
+        return new DefaultSortParser<>(maxQueryComponents, maxQueryResults);
     }
 
 
@@ -126,7 +132,8 @@ public class AppConfig {
      */
     @Bean
     public FilterParser<FileRegistration, QLFileRegistrationFilter> filesFilterParser() {
-        final FilterParser<FileRegistration, QLFileRegistrationFilter> parser = new DefaultFilterParser<>();
+        final FilterParser<FileRegistration, QLFileRegistrationFilter> parser =
+            new DefaultFilterParser<>(maxQueryComponents);
         parser.assertDecodable(QLFileRegistrationFilter.class);
         return parser;
     }
@@ -138,7 +145,7 @@ public class AppConfig {
      */
     @Bean
     public SortParser<QLFileRegistrationSort> filesSortParser() {
-        return new DefaultSortParser<>();
+        return new DefaultSortParser<>(maxQueryComponents, maxQueryResults);
     }
 
     /**
@@ -149,7 +156,7 @@ public class AppConfig {
      */
     @Bean
     public FilterParser<User, QLUserFilter> usersFilterParser(final UsersMapper usersMapper) {
-        final FilterParser<User, QLUserFilter> parser = new DefaultFilterParser<>();
+        final FilterParser<User, QLUserFilter> parser = new DefaultFilterParser<>(maxQueryComponents);
         parser.registerDecoder(QLRole.class, usersMapper::toRole);
         parser.assertDecodable(QLUserFilter.class);
         return parser;
@@ -162,7 +169,7 @@ public class AppConfig {
      */
     @Bean
     public SortParser<QLUserSort> usersSortParser() {
-        return new DefaultSortParser<>();
+        return new DefaultSortParser<>(maxQueryComponents, maxQueryResults);
     }
 
     /**
