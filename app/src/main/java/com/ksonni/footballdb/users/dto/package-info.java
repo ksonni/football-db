@@ -1,4 +1,4 @@
 /**
- * Data Transfer Objects used by Users and Auth controllers.
+ * Data transfer objects for users.
  */
 package com.ksonni.footballdb.users.dto;

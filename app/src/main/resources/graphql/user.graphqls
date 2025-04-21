@@ -1,0 +1,41 @@
+extend type Query {
+    user(id: ID): User
+    users(filter: UserFilter = {}, sort: UserSort = {}, page: Pagination = {}): UserPage!
+}
+
+type User {
+    id: ID!
+    emailId: String
+    password: String
+    role: Role
+}
+
+input UserFilter {
+    emailId: StringFilter
+    password: StringFilter
+    role: RoleFilter
+}
+
+input UserSort {
+    emailId: Sort
+    password: Sort
+    role: Sort
+}
+
+type UserPage {
+    content: [User!]!
+    totalElements: Int!
+    totalPages: Int!
+    size: Int!
+}
+
+enum Role {
+    ADMIN,
+    CONTROLLER,
+    USER,
+}
+
+input RoleFilter {
+    eq: Role
+    ne: Role
+}

@@ -1,4 +1,4 @@
 /**
- * Service classes related to users and auth.
+ * Services associated with users and auth.
  */
 package com.ksonni.footballdb.users.services;
