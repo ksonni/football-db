@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class DefaultFilterParser<Entity, Filter> implements FilterParser<Entity, Filter> {
@@ -25,6 +26,7 @@ public class DefaultFilterParser<Entity, Filter> implements FilterParser<Entity,
         registerDecoder(Float.class, new PrimitiveValueDecoder<>());
         registerDecoder(Double.class, new PrimitiveValueDecoder<>());
         registerDecoder(String.class, new PrimitiveValueDecoder<>());
+        registerDecoder(ZonedDateTime.class, new DateTimeDecoder());
     }
 
     @Override

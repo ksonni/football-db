@@ -1,4 +1,4 @@
 /**
- * Classes related to persisting and serving files.
+ * Services associated with files.
  */
 package com.ksonni.footballdb.files.services;

@@ -19,6 +19,7 @@ import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.DefaultAuthService;
 import com.ksonni.footballdb.users.services.UserQueryParser;
 import com.ksonni.footballdb.utils.DocUtils;
+import graphql.scalars.ExtendedScalars;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 
@@ -118,6 +120,29 @@ public class AppConfig {
         return new DefaultSortParser<>();
     }
 
+
+    /**
+     * Supplies a GraphQL filter parser for files.
+     *
+     * @return FilterParser
+     */
+    @Bean
+    public FilterParser<FileRegistration, QLFileRegistrationFilter> filesFilterParser() {
+        final FilterParser<FileRegistration, QLFileRegistrationFilter> parser = new DefaultFilterParser<>();
+        parser.assertDecodable(QLFileRegistrationFilter.class);
+        return parser;
+    }
+
+    /**
+     * Supplies a GraphQL sort parser for files.
+     *
+     * @return SortParser
+     */
+    @Bean
+    public SortParser<QLFileRegistrationSort> filesSortParser() {
+        return new DefaultSortParser<>();
+    }
+
     /**
      * Supplies a QueryParser for users.
      *
@@ -182,5 +207,14 @@ public class AppConfig {
     @Bean
     public RateLimitingService rateLimitingService() {
         return new IPRateLimitingService(maxRequestsPerMin, Duration.ofMinutes(1));
+    }
+
+    /**
+     * Supports DateTime custom primitive in GraphQL types.
+     * @return configurer
+     */
+    @Bean
+    public RuntimeWiringConfigurer runtimeWiringConfigurer() {
+        return wiringBuilder -> wiringBuilder.scalar(ExtendedScalars.DateTime);
     }
 }

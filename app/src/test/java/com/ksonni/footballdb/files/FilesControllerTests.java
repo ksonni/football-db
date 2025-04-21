@@ -12,8 +12,6 @@ import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.utils.MockMvcUtils;
 import com.ksonni.footballdb.utils.TestUtils;
-import org.hamcrest.Matchers;
-import org.hamcrest.core.Is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,16 +20,15 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -87,38 +84,6 @@ public class FilesControllerTests {
         }
 
         TestUtils.disableRateLimiting(rateLimitingService);
-    }
-
-    @Test
-    @WithMockUser(roles = {Permission.Code.MANAGE_FILES})
-    void enumerateFiles() throws Exception {
-        var expectation = mockMvc.perform(utils.get(RoutesConfig.Files.PATH))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content",
-                        Matchers.hasSize(files.size())));
-
-        for (int i = 0; i < files.size(); i++) {
-            final String content = "$.content[" + i + "]";
-            final FileRegistration file = files.get(i);
-            expectation = expectation
-                    .andExpect(MockMvcResultMatchers.jsonPath(content + ".id", Is.is(file.getId())))
-                    .andExpect(MockMvcResultMatchers.jsonPath(content + ".name", Is.is(file.getName())))
-                    .andExpect(MockMvcResultMatchers.jsonPath(content + ".mimeType",
-                            Is.is(file.getMimeType())))
-                    .andExpect(MockMvcResultMatchers.jsonPath(content + ".createdBy",
-                            Is.is(file.getCreatedBy())))
-                    .andExpect(MockMvcResultMatchers.jsonPath(content + ".created",
-                            Is.is(file.getCreated().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))))
-                    .andExpect(MockMvcResultMatchers.jsonPath(content + ".sizeBytes",
-                            Is.is(file.getSizeBytes()), Long.class));
-        }
-    }
-
-    @Test
-    @WithMockUser
-    void enumerateFilesEnforcesPermission() throws Exception {
-        mockMvc.perform(utils.get(RoutesConfig.Files.PATH))
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test

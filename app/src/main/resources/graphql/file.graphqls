@@ -1,0 +1,35 @@
+extend type Query {
+    files(filter: FileRegistrationFilter = {}, sort: FileRegistrationSort = {}, page: Pagination = {}): FileRegistrationPage!
+}
+
+type FileRegistration {
+    id: ID!
+    name: String!
+    mimeType: String
+    sizeBytes: Int
+    created: DateTime
+    createdBy: String
+}
+
+input FileRegistrationFilter {
+    name: StringFilter
+    mimeType: StringFilter
+    sizeBytes: IntFilter
+    created: DateTimeFilter
+    createdBy: StringFilter
+}
+
+input FileRegistrationSort {
+    name: Sort
+    mimeType: Sort
+    sizeBytes: Sort
+    created: Sort
+    createdBy: Sort
+}
+
+type FileRegistrationPage {
+    content: [FileRegistration!]!
+    totalElements: Int!
+    totalPages: Int!
+    size: Int!
+}

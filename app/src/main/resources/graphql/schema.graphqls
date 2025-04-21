@@ -29,3 +29,14 @@ input Pagination {
     page: Int = 0,
     size: Int = 20,
 }
+
+scalar DateTime
+
+input DateTimeFilter {
+    eq: DateTime
+    ne: DateTime
+    lt: DateTime
+    lte: DateTime
+    gt: DateTime
+    gte: DateTime
+}
