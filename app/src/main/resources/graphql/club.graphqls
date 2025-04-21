@@ -1,6 +1,6 @@
 extend type Query {
     club(id: ID): Club
-    clubs(filter: ClubFilter = {}, sort: ClubSort = {}, page: Pagination = {}): ClubPage!
+    clubs(filter: ClubFilter = {}, sort: ClubSort = {}, page: Pagination = {}): ClubPage
 }
 
 type Club {

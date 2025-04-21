@@ -1,6 +1,6 @@
 extend type Query {
     user(id: ID): User
-    users(filter: UserFilter = {}, sort: UserSort = {}, page: Pagination = {}): UserPage!
+    users(filter: UserFilter = {}, sort: UserSort = {}, page: Pagination = {}): UserPage
 }
 
 type User {
