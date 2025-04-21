@@ -5,7 +5,6 @@ import com.ksonni.footballdb.files.domain.FileRegistration;
 import com.ksonni.footballdb.files.dto.FileRegistrationResponse;
 import com.ksonni.footballdb.files.services.FilesMapper;
 import com.ksonni.footballdb.files.services.FilesService;
-import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.users.domain.User;
@@ -20,7 +19,6 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -49,8 +47,6 @@ public class FilesControllerTests {
     @MockitoBean
     private AuthService authService;
     @MockitoBean
-    private QueryParser<FileRegistration> queryParser;
-    @MockitoBean
     private FilesMapper mapper;
     @Autowired
     private MockMvc mockMvc;
@@ -69,10 +65,6 @@ public class FilesControllerTests {
                 FileRegistration.builder().id("id2").name("file2").created(ZonedDateTime.now())
                         .createdBy(USER_ID).mimeType("image/png").sizeBytes(RANDOM_FILE_SIZE).build()
         );
-
-        final Page<FileRegistration> pagedFiles = TestUtils.buildPage(files);
-        BDDMockito.given(filesService.queryFiles(ArgumentMatchers.any()))
-                .willReturn(pagedFiles);
 
         for (FileRegistration file : files) {
             BDDMockito.given(mapper.toFileRegistrationResponse(file)).willReturn(
@@ -185,7 +177,7 @@ public class FilesControllerTests {
 
     @AfterEach
     void tearDown() {
-        Mockito.reset(filesService, queryParser, mapper, userDetailsService, rateLimitingService, authService);
+        Mockito.reset(filesService, mapper, userDetailsService, rateLimitingService, authService);
     }
 
 }

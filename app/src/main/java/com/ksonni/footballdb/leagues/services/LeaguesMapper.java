@@ -7,7 +7,7 @@ import com.ksonni.footballdb.leagues.domain.League;
 import com.ksonni.footballdb.leagues.dto.LeagueResponse;
 import com.ksonni.footballdb.leagues.dto.PatchLeagueRequest;
 import com.ksonni.footballdb.leagues.dto.RegisterLeagueRequest;
-import com.ksonni.footballdb.queryparser.PageResult;
+import com.ksonni.footballdb.query.PageResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

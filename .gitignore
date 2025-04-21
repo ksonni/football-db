@@ -41,4 +41,5 @@ db/scripts/.bin
 db/scripts/deps
 
 # SSL
-backend/ssl/.certs
+app/ssl/.certs
+

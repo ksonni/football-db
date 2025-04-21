@@ -1,6 +1,5 @@
 package com.ksonni.footballdb;
 
-import com.ksonni.footballdb.queryparser.QueryParseException;
 import com.ksonni.footballdb.validation.ErrorResponse;
 import com.ksonni.footballdb.validation.FieldError;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,19 +16,6 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-    /**
-     * Maps query parsing exceptions to appropriate responses.
-     *
-     * @param e Query parsing exception
-     * @return Error response
-     */
-    @ResponseBody
-    @ExceptionHandler(QueryParseException.class)
-    public ResponseEntity<ErrorResponse> handleQueryParseErrors(final QueryParseException e) {
-        final var response = new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
-        return new ResponseEntity<>(response, response.getHttpStatus());
-    }
 
     /**
      * Intercepts request validation exceptions to provide a cleaner response.

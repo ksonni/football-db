@@ -13,8 +13,6 @@ import com.ksonni.footballdb.players.dto.PlayerResponse;
 import com.ksonni.footballdb.players.dto.RegisterPlayerRequest;
 import com.ksonni.footballdb.players.services.PlayersMapper;
 import com.ksonni.footballdb.players.services.PlayersRepository;
-import com.ksonni.footballdb.queryparser.Query;
-import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.MathUtils;
@@ -29,9 +27,6 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -56,8 +51,6 @@ class PlayersControllerTests {
     @MockitoBean
     private PlayersRepository playersRepository;
     @MockitoBean
-    private QueryParser<Player> queryParser;
-    @MockitoBean
     private UserDetailsService userDetailsService;
     @MockitoBean
     private PlayersMapper mapper;
@@ -78,11 +71,6 @@ class PlayersControllerTests {
                         .defensiveWorkRate(WorkRate.LOW).preferredFoot(Side.LEFT).build(),
                 Player.builder().id("id2").fullName("Some player 2").build()
         );
-
-        final Page<Player> pagedPlayers = new PageImpl<>(players,
-                PageRequest.of(0, players.size()), players.size());
-        BDDMockito.given(playersRepository.findAll(ArgumentMatchers.<Query<Player>>any()))
-                .willReturn(pagedPlayers);
 
         for (Player player : players) {
             BDDMockito.given(mapper.toPlayerResponse(player)).willReturn(
@@ -288,7 +276,7 @@ class PlayersControllerTests {
 
     @AfterEach
     void tearDown() {
-        Mockito.reset(playersRepository, queryParser, userDetailsService, mapper, rateLimitingService);
+        Mockito.reset(playersRepository, userDetailsService, mapper, rateLimitingService);
     }
 
 }

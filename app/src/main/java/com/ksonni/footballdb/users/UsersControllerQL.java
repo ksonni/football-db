@@ -1,13 +1,15 @@
 package com.ksonni.footballdb.users;
 
 import com.ksonni.footballdb.generated.ql.*;
-import com.ksonni.footballdb.qlquery.FilterParseException;
-import com.ksonni.footballdb.qlquery.FilterParser;
-import com.ksonni.footballdb.qlquery.SortParseException;
-import com.ksonni.footballdb.qlquery.SortParser;
+import com.ksonni.footballdb.query.FilterParseException;
+import com.ksonni.footballdb.query.FilterParser;
+import com.ksonni.footballdb.query.SortParseException;
+import com.ksonni.footballdb.query.SortParser;
+import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -38,6 +40,7 @@ public class UsersControllerQL {
      */
     @QueryMapping
     @Transactional(readOnly = true)
+    @RolesAllowed(Permission.Code.VIEW_USERS)
     public QLUser user(@Argument final String id) {
         final var user = usersRepository.findById(id).orElseThrow(() ->
             new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found")
@@ -56,6 +59,7 @@ public class UsersControllerQL {
      */
     @QueryMapping
     @Transactional(readOnly = true)
+    @RolesAllowed(Permission.Code.VIEW_USERS)
     public QLUserPage users(
         @Argument final QLUserFilter filter,
         @Argument final QLUserSort sort,

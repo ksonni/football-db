@@ -4,7 +4,7 @@ import com.ksonni.footballdb.config.MapStructConfig;
 import com.ksonni.footballdb.generated.ql.QLRole;
 import com.ksonni.footballdb.generated.ql.QLUser;
 import com.ksonni.footballdb.generated.ql.QLUserPage;
-import com.ksonni.footballdb.queryparser.PageResult;
+import com.ksonni.footballdb.query.PageResult;
 import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.dto.RegisterUserRequest;

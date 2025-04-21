@@ -9,8 +9,6 @@ import com.ksonni.footballdb.clubs.services.ClubsRepository;
 import com.ksonni.footballdb.config.RoutesConfig;
 import com.ksonni.footballdb.leagues.domain.League;
 import com.ksonni.footballdb.leagues.services.LeaguesRepository;
-import com.ksonni.footballdb.queryparser.Query;
-import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.Permission;
 import com.ksonni.footballdb.utils.MathUtils;
@@ -19,12 +17,10 @@ import com.ksonni.footballdb.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -53,8 +49,6 @@ class ClubsControllerTests {
     @MockitoBean
     private LeaguesRepository leaguesRepository;
     @MockitoBean
-    private QueryParser<Club> queryParser;
-    @MockitoBean
     private UserDetailsService userDetailsService;
     @MockitoBean
     private RateLimitingService rateLimitingService;
@@ -70,10 +64,6 @@ class ClubsControllerTests {
                 Club.builder().id("id").name("Some club").build(),
                 Club.builder().id("id2").name("Some club 2").build()
         );
-
-        final Page<Club> pagedClubs = TestUtils.buildPage(clubs);
-        BDDMockito.given(clubsRepository.findAll(ArgumentMatchers.<Query<Club>>any()))
-                .willReturn(pagedClubs);
 
         for (Club club : clubs) {
             BDDMockito.given(mapper.toClubResponse(club)).willReturn(
@@ -262,8 +252,7 @@ class ClubsControllerTests {
 
     @AfterEach
     void tearDown() {
-        Mockito.reset(clubsRepository, queryParser, userDetailsService, leaguesRepository,
-                mapper, rateLimitingService);
+        Mockito.reset(clubsRepository, userDetailsService, leaguesRepository, mapper, rateLimitingService);
     }
 
     @WithMockUser(roles = {

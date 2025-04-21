@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,6 +47,7 @@ public class FilesController {
             + DocUtils.LINE_SEPARATOR + "Retrieves a file from storage. This returns the actual file rather"
             + " than just the registration."
     )
+    @Transactional(readOnly = true)
     public ResponseEntity<byte[]> getFile(final @PathVariable("id") String id) {
         final FileRegistration registration;
         try {
@@ -75,6 +77,7 @@ public class FilesController {
      */
     @PostMapping
     @RolesAllowed({Permission.Code.MANAGE_FILES})
+    @Transactional
     @Operation(
         summary = "Upload a file",
         description = DocUtils.PERMISSIONS + Permission.Code.MANAGE_FILES
@@ -115,6 +118,7 @@ public class FilesController {
      */
     @DeleteMapping("/{id}")
     @RolesAllowed({Permission.Code.MANAGE_FILES})
+    @Transactional
     @Operation(
         summary = "Delete a file",
         description = DocUtils.PERMISSIONS + Permission.Code.MANAGE_FILES

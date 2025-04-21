@@ -9,6 +9,9 @@ import com.ksonni.footballdb.users.dto.UserResponse;
 import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.users.services.UsersRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,25 +21,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import jakarta.validation.Valid;
 import java.util.UUID;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Auth.PATH)
-@AuthControllerDoc
+@Tag(name = "Auth", description = "User registration and auth")
 public class AuthController {
 
-    private final UsersMapper mapper;
+    private final UsersMapper usersMapper;
     private final PasswordEncoder passwordEncoder;
     private final UsersRepository usersRepository;
     private final AuthenticationManager authenticationManager;
@@ -50,9 +47,9 @@ public class AuthController {
     @PostMapping(value = RoutesConfig.Auth.REGISTER)
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
-    @RegisterUserDoc
+    @Operation(summary = "Register a new user account")
     public void registerUser(final @Valid @RequestBody RegisterUserRequest request) {
-        final User user = mapper.toUser(request);
+        final User user = usersMapper.toUser(request);
 
         if (usersRepository.findByEmailId(user.getEmailId()) != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email address already in use");
@@ -76,7 +73,7 @@ public class AuthController {
      */
     @PostMapping(value = RoutesConfig.Auth.LOGIN)
     @Transactional(readOnly = true)
-    @LoginDoc
+    @Operation(summary = "Login to start a new session")
     public void loginUser(final @Valid @RequestBody LoginRequest request) {
         final var token = new UsernamePasswordAuthenticationToken(request.getEmailId(), request.getPassword());
 
@@ -95,7 +92,7 @@ public class AuthController {
      * Logout current user.
      */
     @PostMapping(value = RoutesConfig.Auth.LOGOUT)
-    @LogoutDoc
+    @Operation(summary = "Logout")
     public void logoutUser() {
         log.info("logging out");
         authService.clearSessionAuth();
@@ -108,13 +105,13 @@ public class AuthController {
      */
     @GetMapping(value = RoutesConfig.Auth.ME)
     @Transactional(readOnly = true)
-    @MeDoc
+    @Operation(summary = "Fetch details about the logged in user")
     public UserResponse getMe() {
         final User user = authService.getAuthenticatedUser();
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        return mapper.toUserResponse(user);
+        return usersMapper.toUserResponse(user);
     }
 
 }

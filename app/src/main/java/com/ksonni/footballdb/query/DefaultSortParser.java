@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.qlquery;
+package com.ksonni.footballdb.query;
 
 import com.ksonni.footballdb.generated.ql.QLPagination;
 import com.ksonni.footballdb.generated.ql.QLSort;

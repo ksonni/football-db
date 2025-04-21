@@ -1,8 +1,6 @@
 package com.ksonni.footballdb.files.services;
 
 import com.ksonni.footballdb.files.domain.FileRegistration;
-import com.ksonni.footballdb.queryparser.Query;
-import org.springframework.data.domain.Page;
 
 import java.io.IOException;
 
@@ -50,14 +48,6 @@ public interface FilesService {
      * @throws IOException when deleting the file fails
      */
     void deleteFile(String id) throws IOException, FileNotRegisteredException;
-
-    /**
-     * Queries to find a paginated list of file registrations.
-     *
-     * @param query query to execute
-     * @return paginated list of registrations
-     */
-    Page<FileRegistration> queryFiles(Query<FileRegistration> query);
 
     class FileNotRegisteredException extends Exception {
         FileNotRegisteredException(final String message) {

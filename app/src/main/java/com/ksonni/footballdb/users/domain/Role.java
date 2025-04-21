@@ -2,14 +2,11 @@ package com.ksonni.footballdb.users.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.ksonni.footballdb.queryparser.components.EnumFilterQueryComponent;
-import com.ksonni.footballdb.queryparser.components.InvalidQueryValueException;
-import com.ksonni.footballdb.queryparser.keys.FilterQueryKey;
 import com.ksonni.footballdb.utils.EnumUtils;
-import lombok.RequiredArgsConstructor;
-
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -76,25 +73,6 @@ public enum Role implements EnumUtils.ValueEnum {
                 );
             default:
                 return Arrays.asList();
-        }
-    }
-
-    public static class RoleFilterQueryComponent extends EnumFilterQueryComponent<User, Role> {
-        /**
-         * Parsed QueryComponent that can be used to filter users by Role.
-         *
-         * @param key   parsed FilterQueryKey
-         * @param value string value of the Role enum
-         * @throws InvalidQueryValueException if enum parsing fails
-         */
-        public RoleFilterQueryComponent(final FilterQueryKey key, final String value)
-                throws InvalidQueryValueException {
-            super(key, value);
-        }
-
-        @Override
-        public Role parseEnum(final String value) throws IllegalArgumentException {
-            return Role.of(value);
         }
     }
 
