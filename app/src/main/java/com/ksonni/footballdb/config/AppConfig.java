@@ -10,14 +10,12 @@ import com.ksonni.footballdb.qlquery.DefaultFilterParser;
 import com.ksonni.footballdb.qlquery.DefaultSortParser;
 import com.ksonni.footballdb.qlquery.FilterParser;
 import com.ksonni.footballdb.qlquery.SortParser;
-import com.ksonni.footballdb.queryparser.DefaultQueryParser;
-import com.ksonni.footballdb.queryparser.QueryParser;
 import com.ksonni.footballdb.ratelimiting.IPRateLimitingService;
 import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.DefaultAuthService;
-import com.ksonni.footballdb.users.services.UserQueryParser;
+import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.utils.DocUtils;
 import graphql.scalars.ExtendedScalars;
 import io.swagger.v3.oas.models.Components;
@@ -144,23 +142,27 @@ public class AppConfig {
     }
 
     /**
-     * Supplies a QueryParser for users.
+     * Supplies a GraphQL filter parser for users.
      *
-     * @return QueryParser
+     * @param usersMapper object mapper for user related types
+     * @return FilterParser
      */
     @Bean
-    public QueryParser<User> usersQueryParser() {
-        return new UserQueryParser();
+    public FilterParser<User, QLUserFilter> usersFilterParser(final UsersMapper usersMapper) {
+        final FilterParser<User, QLUserFilter> parser = new DefaultFilterParser<>();
+        parser.registerDecoder(QLRole.class, usersMapper::toRole);
+        parser.assertDecodable(QLUserFilter.class);
+        return parser;
     }
 
     /**
-     * Supplies a QueryParser for files.
+     * Supplies a GraphQL sort parser for users.
      *
-     * @return QueryParser
+     * @return SortParser
      */
     @Bean
-    public QueryParser<FileRegistration> filesQueryParser() {
-        return new DefaultQueryParser<>(FileRegistration.class);
+    public SortParser<QLUserSort> usersSortParser() {
+        return new DefaultSortParser<>();
     }
 
     /**

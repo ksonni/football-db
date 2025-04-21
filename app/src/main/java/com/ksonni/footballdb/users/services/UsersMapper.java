@@ -1,6 +1,11 @@
 package com.ksonni.footballdb.users.services;
 
 import com.ksonni.footballdb.config.MapStructConfig;
+import com.ksonni.footballdb.generated.ql.QLRole;
+import com.ksonni.footballdb.generated.ql.QLUser;
+import com.ksonni.footballdb.generated.ql.QLUserPage;
+import com.ksonni.footballdb.queryparser.PageResult;
+import com.ksonni.footballdb.users.domain.Role;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.dto.RegisterUserRequest;
 import com.ksonni.footballdb.users.dto.UserResponse;
@@ -34,4 +39,28 @@ public interface UsersMapper {
      */
     UserResponse toUserResponse(User user);
 
+    /**
+     * Maps a User to QLUser DTO.
+     *
+     * @param user User
+     * @return mapped response
+     */
+    QLUser toUserQL(User user);
+
+
+    /**
+     * Maps a PageResult to QLUserPage DTO.
+     *
+     * @param page PageResult
+     * @return QLUserPage
+     */
+    QLUserPage toQLPage(PageResult<User> page);
+
+    /**
+     * Maps a QLRole DTO to Role.
+     *
+     * @param role QLRole
+     * @return Role
+     */
+    Role toRole(QLRole role);
 }
