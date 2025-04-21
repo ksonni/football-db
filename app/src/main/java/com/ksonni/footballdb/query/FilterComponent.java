@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.qlquery;
+package com.ksonni.footballdb.query;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;

@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.queryparser;
+package com.ksonni.footballdb.query;
 
 import java.util.List;
 

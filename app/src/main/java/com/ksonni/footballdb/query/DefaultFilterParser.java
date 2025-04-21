@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.qlquery;
+package com.ksonni.footballdb.query;
 
 import com.ksonni.footballdb.utils.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Value;

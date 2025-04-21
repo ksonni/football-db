@@ -30,7 +30,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Clubs.PATH)
-@Tag(name = "Clubs", description = "Search for and manage clubs")
+@Tag(name = "Clubs", description = "Manage clubs")
 public class ClubsController {
 
     private final LeaguesRepository leaguesRepository;

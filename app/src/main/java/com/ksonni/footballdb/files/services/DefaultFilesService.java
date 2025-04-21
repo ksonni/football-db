@@ -1,12 +1,10 @@
 package com.ksonni.footballdb.files.services;
 
 import com.ksonni.footballdb.files.domain.FileRegistration;
-import com.ksonni.footballdb.queryparser.Query;
 import com.ksonni.footballdb.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -82,11 +80,6 @@ public class DefaultFilesService implements FilesService {
 
         filesRepository.delete(registration);
         storageService.deleteFile(file);
-    }
-
-    @Override
-    public Page<FileRegistration> queryFiles(final Query<FileRegistration> query) {
-        return filesRepository.findAll(query);
     }
 
     private String getPath(final String name) {

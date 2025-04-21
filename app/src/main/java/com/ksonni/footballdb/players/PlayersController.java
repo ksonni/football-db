@@ -25,7 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = RoutesConfig.Players.PATH)
-@Tag(name = "Players", description = "REST endpoints to manage players")
+@Tag(name = "Players", description = "Manage players")
 public class PlayersController {
 
     private final PlayersRepository playersRepository;

@@ -7,7 +7,7 @@ import com.ksonni.footballdb.clubs.dto.RegisterClubRequest;
 import com.ksonni.footballdb.config.MapStructConfig;
 import com.ksonni.footballdb.generated.ql.QLClub;
 import com.ksonni.footballdb.generated.ql.QLClubPage;
-import com.ksonni.footballdb.queryparser.PageResult;
+import com.ksonni.footballdb.query.PageResult;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 

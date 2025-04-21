@@ -9,7 +9,7 @@ import com.ksonni.footballdb.players.domain.WorkRate;
 import com.ksonni.footballdb.players.dto.PatchPlayerRequest;
 import com.ksonni.footballdb.players.dto.PlayerResponse;
 import com.ksonni.footballdb.players.dto.RegisterPlayerRequest;
-import com.ksonni.footballdb.queryparser.PageResult;
+import com.ksonni.footballdb.query.PageResult;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 

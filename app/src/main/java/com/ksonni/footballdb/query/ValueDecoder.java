@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.qlquery;
+package com.ksonni.footballdb.query;
 
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;

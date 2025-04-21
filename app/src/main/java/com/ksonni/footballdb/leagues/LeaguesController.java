@@ -28,7 +28,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = RoutesConfig.Leagues.PATH)
-@Tag(name = "Leagues", description = "Search for and manage leagues")
+@Tag(name = "Leagues", description = "Manage leagues")
 public class LeaguesController {
 
     private final LeaguesRepository leaguesRepository;

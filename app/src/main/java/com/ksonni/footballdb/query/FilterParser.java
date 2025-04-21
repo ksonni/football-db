@@ -1,4 +1,4 @@
-package com.ksonni.footballdb.qlquery;
+package com.ksonni.footballdb.query;
 
 import org.springframework.data.jpa.domain.Specification;
 
