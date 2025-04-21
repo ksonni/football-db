@@ -1,5 +1,5 @@
 extend type Query {
-    files(filter: FileRegistrationFilter = {}, sort: FileRegistrationSort = {}, page: Pagination = {}): FileRegistrationPage!
+    files(filter: FileRegistrationFilter = {}, sort: FileRegistrationSort = {}, page: Pagination = {}): FileRegistrationPage
 }
 
 type FileRegistration {

@@ -34,11 +34,11 @@ public class DefaultSortParser<SortParams> implements SortParser<SortParams> {
         final List<SortComponent> components = new ArrayList<>();
         ReflectionUtils.forEachField(sort, (fieldName, value) -> {
             if (components.size() >= maxComponents) {
-                throw new SortParseException("Sort has too many components");
+                throw new SortParseException("sort has too many components");
             }
             if (!(value instanceof QLSort params)) {
                 throw new SortParseException(
-                    String.format("Sort has invalid value type: %s", value.getClass().getName())
+                    String.format("sort has invalid value type: %s", value.getClass().getName())
                 );
             }
             components.add(

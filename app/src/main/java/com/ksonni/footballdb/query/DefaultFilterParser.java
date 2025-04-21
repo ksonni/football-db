@@ -68,7 +68,7 @@ public class DefaultFilterParser<Entity, Filter> implements FilterParser<Entity,
         ReflectionUtils.forEachField(filter, (fieldName, value) -> {
             components.addAll(parseFilter(fieldName, value));
             if (components.size() > maxComponents) {
-                throw new FilterParseException("Filter has too many components");
+                throw new FilterParseException("filter has too many components");
             }
         });
         return components;
@@ -90,7 +90,7 @@ public class DefaultFilterParser<Entity, Filter> implements FilterParser<Entity,
                 case "gte" -> FilterComponent.Comparison.GREATER_THAN_EQUALS;
                 case "contains" -> FilterComponent.Comparison.CONTAINS;
                 default ->
-                    throw new FilterParseException(String.format("Filter has unsupported comparison: %s", fieldName));
+                    throw new FilterParseException(String.format("filter has unsupported comparison: %s", fieldName));
             };
             components.add(new FilterComponent<>(key, comparison, dbValue));
         });
@@ -101,7 +101,7 @@ public class DefaultFilterParser<Entity, Filter> implements FilterParser<Entity,
     @SuppressWarnings("unchecked")
     private <T> Comparable<?> decodeValue(final Object value, final Class<T> type) throws FilterParseException {
         if (!decoders.containsKey(type)) {
-            throw new FilterParseException(String.format("No decoders registered for type : %s", type.getName()));
+            throw new FilterParseException(String.format("no decoders registered for type : %s", type.getName()));
         }
         final var decoder = (ValueDecoder<T, ?>) decoders.get(type);
         final var typedValue = type.cast(value);

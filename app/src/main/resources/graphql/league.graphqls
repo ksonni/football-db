@@ -1,6 +1,6 @@
 extend type Query {
     league(id: ID): League
-    leagues(filter: LeagueFilter = {}, sort: LeagueSort = {}, page: Pagination = {}): LeaguePage!
+    leagues(filter: LeagueFilter = {}, sort: LeagueSort = {}, page: Pagination = {}): LeaguePage
 }
 
 type League {
