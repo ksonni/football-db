@@ -12,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 /**
  * GraphQL mappings to query players.
@@ -38,12 +38,9 @@ public class PlayersControllerQL {
      */
     @QueryMapping
     @Transactional(readOnly = true)
-    public QLPlayer player(@Argument final String id) {
-        final var player = playersRepository.findById(id).orElseThrow(() ->
-            new ResponseStatusException(HttpStatus.NOT_FOUND, "player not found")
-        );
-        log.info("returning player {}", player.getId());
-        return playersMapper.toPlayerQL(player);
+    public Optional<QLPlayer> player(@Argument final String id) {
+        log.info("finding player {}", id);
+        return playersRepository.findById(id).map(playersMapper::toPlayerQL);
     }
 
     /**

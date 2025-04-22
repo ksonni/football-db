@@ -17,7 +17,6 @@ import com.ksonni.footballdb.users.services.AuthService;
 import com.ksonni.footballdb.users.services.DefaultAuthService;
 import com.ksonni.footballdb.users.services.UsersMapper;
 import com.ksonni.footballdb.utils.DocUtils;
-import graphql.scalars.ExtendedScalars;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 
@@ -42,8 +40,11 @@ public class AppConfig {
 
     private final BuildProperties buildProperties;
 
-    @Value("${app.max-requests-per-min}")
-    private Integer maxRequestsPerMin;
+    @Value("${app.max-requests-per-window}")
+    private Integer maxRequestsPerWindow;
+
+    @Value("${app.throttling-window-minutes}")
+    private Integer throttlingWindowMinutes;
 
     @Value("${app.max-filter-components}")
     private Integer maxFilterComponents;
@@ -218,15 +219,10 @@ public class AppConfig {
      */
     @Bean
     public RateLimitingService rateLimitingService() {
-        return new IPRateLimitingService(maxRequestsPerMin, Duration.ofMinutes(1));
+        return new IPRateLimitingService(
+            maxRequestsPerWindow,
+            Duration.ofMinutes(throttlingWindowMinutes)
+        );
     }
 
-    /**
-     * Supports DateTime custom primitive in GraphQL types.
-     * @return configurer
-     */
-    @Bean
-    public RuntimeWiringConfigurer runtimeWiringConfigurer() {
-        return wiringBuilder -> wiringBuilder.scalar(ExtendedScalars.DateTime);
-    }
 }

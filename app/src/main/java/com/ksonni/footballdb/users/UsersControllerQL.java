@@ -14,10 +14,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 /**
  * GraphQL mappings to query users.
@@ -41,12 +41,9 @@ public class UsersControllerQL {
     @QueryMapping
     @Transactional(readOnly = true)
     @RolesAllowed(Permission.Code.VIEW_USERS)
-    public QLUser user(@Argument final String id) {
-        final var user = usersRepository.findById(id).orElseThrow(() ->
-            new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found")
-        );
-        log.info("returning user {}", user.getId());
-        return usersMapper.toUserQL(user);
+    public Optional<QLUser> user(@Argument final String id) {
+        log.info("finding user {}", id);
+        return usersRepository.findById(id).map(usersMapper::toUserQL);
     }
 
     /**
