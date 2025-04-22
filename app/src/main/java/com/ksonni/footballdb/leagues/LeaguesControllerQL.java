@@ -12,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 /**
  * GraphQL mappings to query leagues.
@@ -38,12 +38,9 @@ public class LeaguesControllerQL {
      */
     @QueryMapping
     @Transactional(readOnly = true)
-    public QLLeague league(@Argument final String id) {
-        final var league = leaguesRepository.findById(id).orElseThrow(() ->
-            new ResponseStatusException(HttpStatus.NOT_FOUND, "league not found")
-        );
-        log.info("returning league {}", league.getId());
-        return leaguesMapper.toLeagueQL(league);
+    public Optional<QLLeague> league(@Argument final String id) {
+        log.info("finding league {}", id);
+        return leaguesRepository.findById(id).map(leaguesMapper::toLeagueQL);
     }
 
     /**

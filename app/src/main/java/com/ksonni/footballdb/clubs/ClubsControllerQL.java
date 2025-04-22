@@ -12,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 /**
  * GraphQL mappings to query clubs.
@@ -38,12 +38,9 @@ public class ClubsControllerQL {
      */
     @QueryMapping
     @Transactional(readOnly = true)
-    public QLClub club(@Argument final String id) {
-        final var club = clubsRepository.findById(id).orElseThrow(() ->
-            new ResponseStatusException(HttpStatus.NOT_FOUND, "club not found")
-        );
-        log.info("returning club {}", club.getId());
-        return clubsMapper.toClubQL(club);
+    public Optional<QLClub> club(@Argument final String id) {
+        log.info("finding club {}", id);
+        return clubsRepository.findById(id).map(clubsMapper::toClubQL);
     }
 
     /**
