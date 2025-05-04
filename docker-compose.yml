@@ -15,6 +15,8 @@ services:
     image: app:latest
     env_file:
       - .env
+    environment:
+      - JAVA_OPTS=-Xms128m -Xmx512m
     build:
       context: app
       dockerfile: Dockerfile

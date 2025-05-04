@@ -18,7 +18,7 @@ services:
     env_file:
       - .env
     environment:
-      - JAVA_OPTS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+      - JAVA_OPTS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -Xms128m -Xmx512m
     build:
       context: app
       dockerfile: Dockerfile
