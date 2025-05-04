@@ -23,6 +23,8 @@ public final class TestUtils {
     public static void disableRateLimiting(final RateLimitingService rateLimitingService) {
         BDDMockito.given(rateLimitingService.evaluateRequest(ArgumentMatchers.any()))
                 .willReturn(RateLimitingResult.accept());
+        BDDMockito.given(rateLimitingService.evaluateRequest())
+            .willReturn(RateLimitingResult.accept());
     }
 
     /**
@@ -31,8 +33,11 @@ public final class TestUtils {
      * @param rateLimitingService a mocked instance of the service.
      */
     public static void mockRateLimitReached(final RateLimitingService rateLimitingService) {
+        final var rejection = RateLimitingResult.reject("Too many requests");
         BDDMockito.given(rateLimitingService.evaluateRequest(ArgumentMatchers.any()))
-                .willReturn(RateLimitingResult.reject("Too many requests"));
+                .willReturn(rejection);
+        BDDMockito.given(rateLimitingService.evaluateRequest())
+            .willReturn(rejection);
     }
 
     /**

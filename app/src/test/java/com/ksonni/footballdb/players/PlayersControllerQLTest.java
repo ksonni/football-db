@@ -12,8 +12,11 @@ import com.ksonni.footballdb.query.FilterParseException;
 import com.ksonni.footballdb.query.FilterParser;
 import com.ksonni.footballdb.query.PageResult;
 import com.ksonni.footballdb.query.SortParser;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
+import com.ksonni.footballdb.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -37,10 +40,17 @@ public class PlayersControllerQLTest {
     @MockitoBean
     private FilterParser<Player, QLPlayerFilter> playersFilterParser;
     @MockitoBean
+    private RateLimitingService rateLimitingService;
+    @MockitoBean
     private SortParser<QLPlayerSort> playersSortParser;
 
     private final String playersPath = "players";
     private final String playersQuery = "query { players { content { id fullName } } }";
+
+    @BeforeEach
+    void setup() {
+        TestUtils.disableRateLimiting(rateLimitingService);
+    }
 
     @Test
     void testPlayersPath() {
@@ -108,8 +118,20 @@ public class PlayersControllerQLTest {
         Assertions.assertEquals(player.getFullName(), response.getFullName());
     }
 
+    @Test
+    void testEnforcesRateLimits() {
+        // Setup
+        TestUtils.mockRateLimitReached(rateLimitingService);
+
+        // Execute
+        graphQlTester.document(playersQuery)
+            .execute().errors()
+            .expect(e -> e.getErrorType().equals(graphql.ErrorType.DataFetchingException)).verify()
+            .path(playersPath).pathDoesNotExist();
+    }
+
     @AfterEach
     void tearDown() {
-        Mockito.reset(playersRepository, playersFilterParser, playersSortParser);
+        Mockito.reset(playersRepository, playersFilterParser, playersSortParser, rateLimitingService);
     }
 }

@@ -40,8 +40,8 @@ public class AppConfig {
 
     private final BuildProperties buildProperties;
 
-    @Value("${app.max-requests-per-window}")
-    private Integer maxRequestsPerWindow;
+    @Value("${app.max-requests-in-window}")
+    private Integer maxRequestsInWindow;
 
     @Value("${app.throttling-window-minutes}")
     private Integer throttlingWindowMinutes;
@@ -220,7 +220,7 @@ public class AppConfig {
     @Bean
     public RateLimitingService rateLimitingService() {
         return new IPRateLimitingService(
-            maxRequestsPerWindow,
+            maxRequestsInWindow,
             Duration.ofMinutes(throttlingWindowMinutes)
         );
     }

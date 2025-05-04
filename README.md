@@ -36,12 +36,19 @@ query {
 
 Swagger UI docs for the management REST endpoints (these are authenticated APIs) can be found at: https://football-db.k-sonni.com/swagger-ui/index.html
 
+### Rate limiting
+
+[Token bucket](https://en.wikipedia.org/wiki/Token_bucket) algorithm is used to implement rate-limiting based on the request IP address.
+
+- Has 60 tokens refreshing in a 3-minute window
+- For GraphQL, the number of tokens used per request depends on the complexity of the query
+- For the REST API, since the scope is fixed, it uses 1 token per request
+
 ## Technical overview
 
 - GraphQL API built with Java and Spring
   - The implementation of the query mechanism is in `app/src/main/.../query` and uses reflection to construct Spring Data specifications to execute queries
   - Code-generation is used to generate Java models from the GraphQL schema
-- Spring Security and [token bucket](https://en.wikipedia.org/wiki/Token_bucket) rate limiting to secure the application
 - Schema management with [Liquibase](https://www.liquibase.org/) to automate database migrations
 - Continuous Integration with GitHub Actions
 - Runs in a containerised docker-compose setup

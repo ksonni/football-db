@@ -10,8 +10,11 @@ import com.ksonni.footballdb.leagues.services.LeaguesRepository;
 import com.ksonni.footballdb.query.FilterParser;
 import com.ksonni.footballdb.query.PageResult;
 import com.ksonni.footballdb.query.SortParser;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
+import com.ksonni.footballdb.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -35,6 +38,16 @@ class LeaguesControllerQLTest {
     private FilterParser<League, QLLeagueFilter> leaguesFilterParser;
     @MockitoBean
     private SortParser<QLLeagueSort> leaguesSortParser;
+    @MockitoBean
+    private RateLimitingService rateLimitingService;
+
+    private final String leaguesPath = "leagues";
+    private final String leaguesQuery = "query { leagues { content { id name } } }";
+
+    @BeforeEach
+    void setup() {
+        TestUtils.disableRateLimiting(rateLimitingService);
+    }
 
     @Test
     void testLeaguesPath() {
@@ -48,7 +61,7 @@ class LeaguesControllerQLTest {
 
         // Execute
         final var contentPath = "leagues.content";
-        final var response = graphQlTester.document("query { leagues { content { id name } } }")
+        final var response = graphQlTester.document(leaguesQuery)
             .execute().path(contentPath).entityList(QLLeague.class).get();
 
         // Verify
@@ -74,8 +87,20 @@ class LeaguesControllerQLTest {
         Assertions.assertEquals(league.getName(), response.getName());
     }
 
+    @Test
+    void testEnforcesRateLimits() {
+        // Setup
+        TestUtils.mockRateLimitReached(rateLimitingService);
+
+        // Execute
+        graphQlTester.document(leaguesQuery)
+            .execute().errors()
+            .expect(e -> e.getErrorType().equals(graphql.ErrorType.DataFetchingException)).verify()
+            .path(leaguesPath).pathDoesNotExist();
+    }
+
     @AfterEach
     void tearDown() {
-        Mockito.reset(leaguesRepository, leaguesFilterParser, leaguesSortParser);
+        Mockito.reset(leaguesRepository, leaguesFilterParser, leaguesSortParser, rateLimitingService);
     }
 }
