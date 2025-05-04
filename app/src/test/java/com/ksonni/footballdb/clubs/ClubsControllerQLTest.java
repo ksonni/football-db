@@ -10,8 +10,11 @@ import com.ksonni.footballdb.generated.ql.QLClubSort;
 import com.ksonni.footballdb.query.FilterParser;
 import com.ksonni.footballdb.query.PageResult;
 import com.ksonni.footballdb.query.SortParser;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
+import com.ksonni.footballdb.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -35,6 +38,15 @@ class ClubsControllerQLTest {
     private FilterParser<Club, QLClubFilter> clubsFilterParser;
     @MockitoBean
     private SortParser<QLClubSort> clubsSortParser;
+    @MockitoBean
+    private RateLimitingService rateLimitingService;
+
+    private final String clubsQuery = "query { clubs { content { id name } } }";
+
+    @BeforeEach
+    void setup() {
+        TestUtils.disableRateLimiting(rateLimitingService);
+    }
 
     @Test
     void testClubsPath() {
@@ -48,7 +60,7 @@ class ClubsControllerQLTest {
 
         // Execute
         final var contentPath = "clubs.content";
-        final var response = graphQlTester.document("query { clubs { content { id name } } }")
+        final var response = graphQlTester.document(clubsQuery)
             .execute().path(contentPath).entityList(QLClub.class).get();
 
         // Verify
@@ -74,8 +86,20 @@ class ClubsControllerQLTest {
         Assertions.assertEquals(club.getName(), response.getName());
     }
 
+    @Test
+    void testEnforcesRateLimits() {
+        // Setup
+        TestUtils.mockRateLimitReached(rateLimitingService);
+
+        // Execute
+        graphQlTester.document(clubsQuery)
+            .execute().errors()
+            .expect(e -> e.getErrorType().equals(graphql.ErrorType.DataFetchingException)).verify()
+            .path("clubs").pathDoesNotExist();
+    }
+
     @AfterEach
     void tearDown() {
-        Mockito.reset(clubsRepository, clubsFilterParser, clubsSortParser);
+        Mockito.reset(clubsRepository, clubsFilterParser, clubsSortParser, rateLimitingService);
     }
 }

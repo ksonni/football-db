@@ -6,7 +6,6 @@ import com.ksonni.footballdb.utils.HttpUtils;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -44,8 +43,9 @@ public class ErrorResponse {
     }
 
     private String getRequestPath() {
-        final HttpServletRequest request = HttpUtils.getCurrentRequest();
-        return request.getRequestURI().substring(request.getContextPath().length());
+        return HttpUtils.getCurrentRequest()
+            .map(r -> r.getRequestURI().substring(r.getContextPath().length()))
+            .orElse("");
     }
 
 }

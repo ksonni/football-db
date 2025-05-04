@@ -7,11 +7,14 @@ import com.ksonni.footballdb.generated.ql.QLUserSort;
 import com.ksonni.footballdb.query.FilterParser;
 import com.ksonni.footballdb.query.PageResult;
 import com.ksonni.footballdb.query.SortParser;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
 import com.ksonni.footballdb.users.domain.User;
 import com.ksonni.footballdb.users.services.UsersMapperImpl;
 import com.ksonni.footballdb.users.services.UsersRepository;
+import com.ksonni.footballdb.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -35,6 +38,15 @@ class UsersControllerQLTest {
     private FilterParser<User, QLUserFilter> usersFilterParser;
     @MockitoBean
     private SortParser<QLUserSort> usersSortParser;
+    @MockitoBean
+    private RateLimitingService rateLimitingService;
+
+    private final String usersQuery = "query { users { content { id emailId } } }";
+
+    @BeforeEach
+    void setup() {
+        TestUtils.disableRateLimiting(rateLimitingService);
+    }
 
     @Test
     void testUsersPath() {
@@ -48,7 +60,7 @@ class UsersControllerQLTest {
 
         // Execute
         final var contentPath = "users.content";
-        final var response = graphQlTester.document("query { users { content { id emailId } } }")
+        final var response = graphQlTester.document(usersQuery)
             .execute().path(contentPath).entityList(QLUser.class).get();
 
         // Verify
@@ -74,8 +86,20 @@ class UsersControllerQLTest {
         Assertions.assertEquals(user.getEmailId(), response.getEmailId());
     }
 
+    @Test
+    void testEnforcesRateLimits() {
+        // Setup
+        TestUtils.mockRateLimitReached(rateLimitingService);
+
+        // Execute
+        graphQlTester.document(usersQuery)
+            .execute().errors()
+            .expect(e -> e.getErrorType().equals(graphql.ErrorType.DataFetchingException)).verify()
+            .path("users").pathDoesNotExist();
+    }
+
     @AfterEach
     void tearDown() {
-        Mockito.reset(usersRepository, usersFilterParser, usersSortParser);
+        Mockito.reset(usersRepository, usersFilterParser, usersSortParser, rateLimitingService);
     }
 }

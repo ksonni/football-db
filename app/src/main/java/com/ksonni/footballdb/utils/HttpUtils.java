@@ -1,17 +1,21 @@
 package com.ksonni.footballdb.utils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 public final class HttpUtils {
 
     private HttpUtils() {
     }
 
-    public static HttpServletRequest getCurrentRequest() {
-        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    public static Optional<HttpServletRequest> getCurrentRequest() {
+        return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+            .filter(ServletRequestAttributes.class::isInstance)
+            .map(ServletRequestAttributes.class::cast)
+            .map(ServletRequestAttributes::getRequest);
     }
 
 }

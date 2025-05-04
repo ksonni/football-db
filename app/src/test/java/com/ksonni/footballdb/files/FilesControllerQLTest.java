@@ -10,8 +10,11 @@ import com.ksonni.footballdb.generated.ql.QLFileRegistrationSort;
 import com.ksonni.footballdb.query.FilterParser;
 import com.ksonni.footballdb.query.PageResult;
 import com.ksonni.footballdb.query.SortParser;
+import com.ksonni.footballdb.ratelimiting.RateLimitingService;
+import com.ksonni.footballdb.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -34,6 +37,15 @@ class FilesControllerQLTest {
     private FilterParser<FileRegistration, QLFileRegistrationFilter> filesFilterParser;
     @MockitoBean
     private SortParser<QLFileRegistrationSort> filesSortParser;
+    @MockitoBean
+    private RateLimitingService rateLimitingService;
+
+    private final String filesQuery = "query { files { content { id name } } }";
+
+    @BeforeEach
+    void setup() {
+        TestUtils.disableRateLimiting(rateLimitingService);
+    }
 
     @Test
     void testFilesPath() {
@@ -47,7 +59,7 @@ class FilesControllerQLTest {
 
         // Execute
         final var contentPath = "files.content";
-        final var response = graphQlTester.document("query { files { content { id name } } }")
+        final var response = graphQlTester.document(filesQuery)
             .execute().path(contentPath).entityList(QLFileRegistration.class).get();
 
         // Verify
@@ -58,8 +70,20 @@ class FilesControllerQLTest {
         }
     }
 
+    @Test
+    void testEnforcesRateLimits() {
+        // Setup
+        TestUtils.mockRateLimitReached(rateLimitingService);
+
+        // Execute
+        graphQlTester.document(filesQuery)
+            .execute().errors()
+            .expect(e -> e.getErrorType().equals(graphql.ErrorType.DataFetchingException)).verify()
+            .path("files").pathDoesNotExist();
+    }
+
     @AfterEach
     void tearDown() {
-        Mockito.reset(filesRepository, filesFilterParser, filesSortParser);
+        Mockito.reset(filesRepository, filesFilterParser, filesSortParser, rateLimitingService);
     }
 }
